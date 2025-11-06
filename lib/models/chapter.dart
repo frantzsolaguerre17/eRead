@@ -36,17 +36,17 @@ class Chapter {
   set isSynced(bool value) => _isSynced = value;
   set userId(String value) => _userId = value;
 
-  // 🔁 Convertir depuis JSON (lecture depuis Supabase)
   factory Chapter.fromJson(Map<String, dynamic> json) {
     return Chapter(
       id: json['id'] as String,
       title: json['title'] as String,
-      createdAt: json['created_at'],
+      createdAt: DateTime.parse(json['created_at'] as String),
       bookId: json['book_id'] as String,
-      isSynced: json['isSynced'] as bool,
+      isSynced: json['isSynced'] as bool? ?? false,
       userId: json['user_id'] as String,
     );
   }
+
 
   // 🔁 Convertir vers JSON (insertion dans Supabase)
   Map<String, dynamic> toJson() {

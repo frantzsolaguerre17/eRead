@@ -1,84 +1,85 @@
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../models/chapter.dart';
-import '../services/chapter_service.dart';
-import '../services/locale_database_service.dart';
 
 class ChapterController with ChangeNotifier {
-  final ChapterService _chapterService = ChapterService();
-  final LocalDBService _localDB = LocalDBService();
-
-  List<Chapter> _chapters = [];
-  List<Chapter> get chapters => _chapters;
-
+  final SupabaseClient _supabase = Supabase.instance.client;
+  final Map<String, List<Chapter>> _chaptersByBook = {};
   bool isLoading = false;
+  final uuid = const Uuid();
 
-  /// 🔹 Récupérer tous les chapitres d’un livre (local d’abord, puis Supabase)
+  // 🔹 Récupérer les chapitres d’un livre
   Future<void> fetchChapters(String bookId) async {
-    isLoading = true;
-    notifyListeners();
-
     try {
-      // 🔸 1. Charger depuis la base locale
-      _chapters = await _localDB.getChaptersByBook(bookId);
+      isLoading = true;
+      notifyListeners();
 
-      // 🔸 2. Tenter de récupérer les données en ligne
-      final remoteChapters = await _chapterService.getChaptersByBook(bookId);
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) return;
 
-      if (remoteChapters.isNotEmpty) {
-        _chapters = remoteChapters;
-        // 🔁 Mettre à jour la base locale
-        await _localDB.clearChaptersByBook(bookId);
-        for (var c in remoteChapters) {
-          await _localDB.insertChapter(c);
-        }
-      }
+      final response = await _supabase
+          .from('chapter')
+          .select()
+          .eq('book_id', bookId)
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      final chapters = (response as List)
+          .map((e) => Chapter.fromJson(e))
+          .toList();
+
+      _chaptersByBook[bookId] = chapters;
     } catch (e) {
-      print('⚠️ Erreur lors du chargement des chapitres : $e');
+      debugPrint("Erreur fetchChapters : $e");
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  /// 🔹 Ajouter un chapitre (offline-first)
-  Future<void> addChapter(Chapter chapter) async {
+  // 🔹 Ajouter un chapitre
+  Future<void> addChapter(String title, String bookId, String userId) async {
     try {
-      // 🔸 Enregistrer dans la base locale
-      await _localDB.insertChapter(chapter);
+      final chapter = Chapter(
+        id: uuid.v4(),
+        title: title,
+        createdAt: DateTime.now(),
+        bookId: bookId,
+        userId: userId,
+        isSynced: true,
+      );
 
-      // 🔸 Essayer d’envoyer à Supabase (si connecté)
-      try {
-        await _chapterService.addChapter(chapter);
-        chapter.isSynced = true;
-        await _localDB.updateChapterSyncStatus(chapter.id, true);
-      } catch (e) {
-        chapter.isSynced = false;
-        print('📴 Chapitre ajouté localement (offline mode)');
-      }
+      await _supabase.from('chapter').insert(chapter.toJson());
 
-      _chapters.add(chapter);
+      _chaptersByBook.putIfAbsent(bookId, () => []);
+      _chaptersByBook[bookId]!.insert(0, chapter);
       notifyListeners();
     } catch (e) {
-      print('Erreur lors de l\'ajout du chapitre : $e');
+      debugPrint("Erreur addChapter : $e");
+      throw Exception("Erreur insertion chapitre");
     }
   }
 
-  /// 🔄 Synchroniser les chapitres locaux non synchronisés avec Supabase
-  Future<void> syncLocalChapters() async {
+  // 🔹 Supprimer un chapitre
+  Future<void> deleteChapter(String chapterId, String bookId) async {
     try {
-      final unsyncedChapters = await _localDB.getUnsyncedChapters();
-
-      for (var chapter in unsyncedChapters) {
-        try {
-          await _chapterService.addChapter(chapter);
-          await _localDB.updateChapterSyncStatus(chapter.id, true);
-          print('✅ Chapitre synchronisé : ${chapter.title}');
-        } catch (e) {
-          print('⚠️ Échec de la synchronisation du chapitre ${chapter.title} : $e');
-        }
-      }
+      await _supabase.from('chapter').delete().eq('id', chapterId);
+      _chaptersByBook[bookId]?.removeWhere((c) => c.id == chapterId);
+      notifyListeners();
     } catch (e) {
-      print('Erreur lors de la synchronisation des chapitres : $e');
+      debugPrint("Erreur deleteChapter : $e");
     }
+  }
+
+  // 🔹 Récupérer les chapitres d’un livre
+  List<Chapter> getChapters(String bookId) {
+    return _chaptersByBook[bookId] ?? [];
+  }
+
+  // 🔹 Vider les chapitres
+  void clearChapters() {
+    _chaptersByBook.clear();
+    notifyListeners();
   }
 }

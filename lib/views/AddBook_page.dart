@@ -32,11 +32,15 @@ class _AddBookPageState extends State<AddBookPage> {
 
   // 🔹 Liste des catégories
   final List<String> categories = [
-    'Roman',
-    'Science',
+    'Biographie',
+    'Developpement Personnel',
+    'Economie / Finance'
     'Histoire',
-    'Technologie',
-    'Art',
+    'Philosophie',
+    'Psychologie'
+    'Roman',
+    'Science / Technologie',
+    'Spiritualité / Réligion'
     'Autre'
   ];
   String? selectedCategory;

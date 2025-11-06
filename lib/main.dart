@@ -67,13 +67,13 @@ void _monitorNetwork() {
       //  await BookController().syncLocalBooks();
 
         // 🔁 Synchronisation des chapitres
-        await ChapterController().syncLocalChapters();
+        //await ChapterController().syncLocalChapters();
 
         // 🔁 Synchronisation des extraits
-        await ExcerptController().syncLocalExcerpts();
+      //  await ExcerptController().syncLocalExcerpts();
 
         // 🔁 Synchronisation des vocabulaires
-        await VocabularyController().syncVocabulary();
+        //await VocabularyController().syncVocabulary();
 
         print('✅ Synchronisation terminée avec succès.');
       } catch (e) {

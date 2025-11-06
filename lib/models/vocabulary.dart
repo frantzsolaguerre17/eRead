@@ -52,13 +52,14 @@ class Vocabulary {
       id: json['id'] as String,
       word: json['word'] as String,
       definition: json['definition'] as String,
-      example: json['example'] as String,
-      createdAt: json['created_at'],
+      example: json['example'],
+      createdAt: DateTime.parse(json['created_at'] as String), // ← conversion obligatoire
       bookId: json['book_id'] as String,
       isSynced: json['isSynced'] as bool,
       userId: json['user_id'] as String,
     );
   }
+
 
   // 🔁 Convertir vers JSON (insertion dans Supabase)
   Map<String, dynamic> toJson() {

@@ -1,108 +1,51 @@
-import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/excerpt.dart';
-import 'locale_database_service.dart';
 
 class ExcerptService {
-  final SupabaseClient _supabase = Supabase.instance.client;
-  final LocalDBService _localDB = LocalDBService();
+  final supabase = Supabase.instance.client;
 
-  /// ➕ Ajouter un extrait (offline-first)
-  Future<void> addExcerpt(Excerpt excerpt) async {
+  /// ➕ Ajouter un extrait dans la base de données
+  Future<Excerpt> addExcerpt(Excerpt excerpt, String userId) async {
     try {
-      // 💾 Enregistrer localement d'abord
-      await _localDB.insertExcerpt(excerpt);
+      final response = await supabase
+          .from('excerpt')
+          .insert({
+        'chapter_id': excerpt.chapterId,
+        'content': excerpt.content,
+        'comment': excerpt.comment,
+        'created_at': excerpt.createdAt.toIso8601String(),
+        'isSynced': excerpt.isSynced,
+        'user_id': userId,
+      })
+          .select()
+          .single(); // récupère directement l’élément inséré
 
-      // 🌐 Vérifie la connexion Internet
-      final hasConnection = await _hasInternetConnection();
-
-      if (hasConnection) {
-        await _supabase.from('excerpt').insert(excerpt.toJson());
-        await _localDB.updateExcerptSyncStatus(excerpt.id, true);
-        print("✅ Extrait synchronisé avec Supabase");
-      } else {
-        print("📴 Hors ligne : extrait enregistré localement");
-      }
+      return Excerpt.fromJson(response);
     } catch (e) {
-      throw Exception("Erreur lors de l'ajout de l'extrait : $e");
+      throw Exception('Erreur addExcerpt : $e');
     }
   }
 
-  /// 🔄 Récupérer les extraits d’un chapitre
-  Future<List<Excerpt>> getExcerptsByChapter(String chapterId) async {
+  /// 📚 Récupérer les extraits d’un chapitre donné
+  Future<List<Excerpt>> fetchExcerpts(String chapterId) async {
     try {
-      final hasConnection = await _hasInternetConnection();
+      final userId = supabase.auth.currentUser!.id;
 
-      if (hasConnection) {
-        // 🌐 Charger depuis Supabase
-        final data = await _supabase
-            .from('excerpt')
-            .select('id, chapter_id, content, comment, created_at')
-            .eq('chapter_id', chapterId)
-            .order('created_at', ascending: true);
+      final response = await supabase
+          .from('excerpt')
+          .select()
+          .eq('chapter_id', chapterId)
+          .eq('user_id', userId);
 
-        if (data == null || (data as List).isEmpty) {
-          print("⚠️ Aucun extrait trouvé pour ce chapitre");
-          return [];
-        }
+      if (response == null) return [];
 
-        // 🔁 Convertir en liste d'objets Excerpt
-        final excerpts = (data as List)
-            .map((e) => Excerpt.fromJson(e as Map<String, dynamic>))
-            .toList();
+      final excerpts = (response as List)
+          .map((json) => Excerpt.fromJson(json))
+          .toList();
 
-        // 💾 Met à jour la base locale
-        for (var ex in excerpts) {
-          await _localDB.insertOrUpdateExcerpt(ex);
-        }
-
-        print("🌐 Extraits chargés depuis Supabase");
-        return excerpts;
-      } else {
-        // 📴 Mode hors ligne
-        print("📴 Mode hors ligne : chargement local des extraits");
-        return await _localDB.getExcerptsByChapter(chapterId);
-      }
+      return excerpts;
     } catch (e) {
-      throw Exception("Erreur lors de la récupération des extraits : $e");
-    }
-  }
-
-  /// 🔁 Synchroniser les extraits non envoyés vers Supabase
-  Future<void> syncOfflineExcerpts() async {
-    try {
-      final unsynced = await _localDB.getUnsyncedExcerpts();
-
-      if (unsynced.isEmpty) {
-        print("✅ Aucun extrait à synchroniser");
-        return;
-      }
-
-      final hasConnection = await _hasInternetConnection();
-      if (!hasConnection) {
-        print("📴 Pas de connexion, synchronisation reportée");
-        return;
-      }
-
-      for (var ex in unsynced) {
-        await _supabase.from('excerpt').insert(ex.toJson());
-        await _localDB.updateExcerptSyncStatus(ex.id, true);
-        print("🔄 Extrait synchronisé : ${ex.content}");
-      }
-
-      print("✅ Synchronisation des extraits terminée !");
-    } catch (e) {
-      throw Exception("Erreur lors de la synchronisation : $e");
-    }
-  }
-
-  /// 🌐 Vérifie la connexion Internet
-  Future<bool> _hasInternetConnection() async {
-    try {
-      final result = await InternetAddress.lookup('example.com');
-      return result.isNotEmpty && result.first.rawAddress.isNotEmpty;
-    } catch (_) {
-      return false;
+      throw Exception('Erreur fetchExcerpts : $e');
     }
   }
 }

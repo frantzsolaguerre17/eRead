@@ -70,11 +70,15 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Annuler")),
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              "Annuler",
+              style: TextStyle(color: Colors.deepPurple),
+            ),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal,
+              backgroundColor: Colors.deepPurple,
             ),
             onPressed: () async {
               final word = wordController.text.trim();
@@ -105,7 +109,8 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                 );
               }
             },
-            child: const Text("Ajouter"),
+            child: const Text("Ajouter",
+              style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -179,9 +184,11 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
               ),
               SizedBox(height: 4),
               Text(
-                "Visualisez et ajoutez vos mots pour ce livre",
-                style: TextStyle(fontSize: 12, color: Colors.white70),
+                "Visualisez et ajoutez les mots appris en lisant ce livre",
+                style: TextStyle(fontSize:13,color: Colors.white70),
               ),
+             /* Text("Le pouvoir du moment present",
+                  style: TextStyle(fontSize: 13, color: Colors.white))*/
             ],
           ),
           shape: const RoundedRectangleBorder(
@@ -221,7 +228,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                     Row(
                       children: [
                         const Icon(Icons.lightbulb_outline,
-                            color: Colors.teal),
+                            color: Colors.deepPurple),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -253,7 +260,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                             color: Colors.grey),
                       ),
                     ],
-                    const SizedBox(height: 8),
+                   /* const SizedBox(height: 8),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Text(
@@ -261,7 +268,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                         style: const TextStyle(
                             fontSize: 12, color: Colors.grey),
                       ),
-                    ),
+                    ),*/
                   ],
                 ),
               ),
@@ -271,7 +278,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'addVocabulary',
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.deepPurple.shade700,
         icon: const Icon(Icons.lightbulb),
         label: const Text("Ajouter mot"),
         onPressed: _addVocabularyDialog,

@@ -30,38 +30,31 @@ class _AddBookPageState extends State<AddBookPage> {
   String? imageUrl;
   String? pdfUrl;
 
-  // 🔹 Liste des catégories
   final List<String> categories = [
     'Biographie',
-    'Developpement Personnel',
-    'Economie / Finance'
+    'Développement Personnel',
+    'Économie / Finance',
     'Histoire',
     'Philosophie',
-    'Psychologie'
+    'Psychologie',
     'Roman',
     'Science / Technologie',
-    'Spiritualité / Réligion'
+    'Spiritualité / Religion',
     'Autre'
   ];
   String? selectedCategory;
 
-  // 🔹 Vérifie les permissions
   Future<bool> _checkStoragePermission() async {
     final status = await Permission.storage.request();
     return status.isGranted;
   }
 
-  // 🔹 Nettoie le nom de fichier pour Supabase Storage
   String getSafeFileName(String originalName) {
     final extension = originalName.contains('.') ? originalName.split('.').last : '';
-    final nameWithoutExt = originalName
-        .split('.')
-        .first
-        .replaceAll(RegExp(r'[^\w\-]'), '_'); // remplace tout sauf lettres, chiffres et tirets par _
-    return '${Uuid().v4()}_${nameWithoutExt}.${extension}';
+    final nameWithoutExt = originalName.split('.').first.replaceAll(RegExp(r'[^\w\-]'), '_');
+    return '${Uuid().v4()}_${nameWithoutExt}.$extension';
   }
 
-  // 🔹 Sélection d'image
   Future<void> pickImage() async {
     final hasPermission = await _checkStoragePermission();
     if (!hasPermission) {
@@ -80,7 +73,6 @@ class _AddBookPageState extends State<AddBookPage> {
     }
   }
 
-  // 🔹 Sélection de PDF
   Future<void> pickPdf() async {
     final hasPermission = await _checkStoragePermission();
     if (!hasPermission) {
@@ -103,18 +95,44 @@ class _AddBookPageState extends State<AddBookPage> {
     }
   }
 
-  // 🔹 Upload fichier vers Supabase
   Future<String> uploadFile(File file, String bucket) async {
     final user = supabase.auth.currentUser;
     if (user == null) throw Exception("Utilisateur non connecté");
 
-    final fileName = getSafeFileName(file.path.split('/').last); // <-- Nom safe
+    final fileName = getSafeFileName(file.path.split('/').last);
     await supabase.storage.from(bucket).upload(fileName, file);
 
     return supabase.storage.from(bucket).getPublicUrl(fileName);
   }
 
-  // 🔹 Sauvegarder le livre
+  // 🔹 Alerte de confirmation avant l'ajout
+  Future<void> _showConfirmationDialog() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        title: const Text("Confirmer l’ajout 📚"),
+        content: const Text("Voulez-vous vraiment ajouter ce livre dans la bibliothèque ?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Annuler", style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.deepPurple,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Confirmer"),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) saveBook();
+  }
+
   Future<void> saveBook() async {
     final user = supabase.auth.currentUser;
     if (user == null) {
@@ -133,8 +151,24 @@ class _AddBookPageState extends State<AddBookPage> {
     setState(() => isLoading = true);
 
     try {
+      // 🔍 Vérification du doublon
+      final existingBooks = await supabase
+          .from('book')
+          .select()
+          .eq('title', titleController.text.trim())
+          .eq('author', authorController.text.trim());
+
+      if (existingBooks.isNotEmpty) {
+        setState(() => isLoading = false);
+        _showDuplicateDialog();
+        return;
+      }
+
+      // 🔹 Image par défaut si aucune sélection
       if (selectedImage != null) {
         imageUrl = await uploadFile(selectedImage!, 'book_covers');
+      } else {
+        imageUrl = "assets/images/default_image.png";
       }
 
       if (selectedPdf != null) {
@@ -154,14 +188,10 @@ class _AddBookPageState extends State<AddBookPage> {
         category: selectedCategory ?? 'Non définie',
       );
 
-      final bookData = newBook.toJson();
-      bookData['category'] = selectedCategory;
-
-      await supabase.from('book').insert(bookData);
-
+      await supabase.from('book').insert(newBook.toJson());
       await Provider.of<BookController>(context, listen: false).addBook(newBook);
 
-      _showSnack("📚 Livre ajouté avec succès !");
+      _showSnack("📘 Livre ajouté avec succès !");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const BookListPage()),
@@ -173,6 +203,28 @@ class _AddBookPageState extends State<AddBookPage> {
     }
   }
 
+  // 🔹 Boîte de dialogue en cas de doublon
+  void _showDuplicateDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        title: const Text("Livre déjà existant 📖", style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text(
+          "Ce livre existe déjà dans l'application. "
+              "Veuillez vérifier le titre ou l'auteur.",
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK", style: TextStyle(color: Colors.deepPurple)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showSnack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
@@ -180,13 +232,13 @@ class _AddBookPageState extends State<AddBookPage> {
   InputDecoration _inputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.teal),
+      prefixIcon: Icon(icon, color: Colors.deepPurple.shade700),
       filled: true,
       fillColor: Colors.grey.shade100,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.teal.shade600, width: 2),
+        borderSide: BorderSide(color: Colors.deepPurple.shade700, width: 2),
       ),
     );
   }
@@ -196,11 +248,43 @@ class _AddBookPageState extends State<AddBookPage> {
     final textStyle = const TextStyle(fontSize: 16);
 
     return Scaffold(
-      backgroundColor: Colors.teal.shade50,
-      appBar: AppBar(
-        title: const Text("Ajouter un livre"),
-        backgroundColor: Colors.teal.shade700,
-        centerTitle: true,
+      backgroundColor: Colors.grey.shade100,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(100),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.deepPurple.shade700, Colors.deepPurple.shade400],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+          ),
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text(
+                "Ajouter un livre",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              Text(
+                "Ajoutez, partagez un livre avec la communauté eRead",
+                style: TextStyle(fontSize: 13, color: Colors.white),
+              )
+            ],
+          ),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+          ),
+        ),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -223,7 +307,6 @@ class _AddBookPageState extends State<AddBookPage> {
                   TextField(controller: pagesController, keyboardType: TextInputType.number, decoration: _inputDecoration("Nombre de pages", Icons.numbers), style: textStyle),
                   const SizedBox(height: 16),
 
-                  // 🔹 Dropdown pour catégorie
                   InputDecorator(
                     decoration: _inputDecoration("Catégorie", Icons.category),
                     child: DropdownButtonHideUnderline(
@@ -252,50 +335,60 @@ class _AddBookPageState extends State<AddBookPage> {
                     child: Container(
                       height: 170,
                       decoration: BoxDecoration(
-                        color: Colors.teal.shade50,
+                        color: Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.teal.shade200),
+                        border: Border.all(color: Colors.deepPurple.shade200),
                       ),
                       child: selectedImage == null
                           ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
-                            Icon(Icons.image_outlined, size: 40, color: Colors.teal),
+                            Icon(Icons.image_outlined, size: 40, color: Colors.deepPurple),
                             SizedBox(height: 8),
                             Text("Appuyez pour choisir une image"),
                           ],
                         ),
                       )
-                          : ClipRRect(borderRadius: BorderRadius.circular(14), child: Image.file(selectedImage!, fit: BoxFit.cover)),
+                          : ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: Image.file(selectedImage!, fit: BoxFit.cover),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 18),
                   ElevatedButton.icon(
                     onPressed: pickPdf,
                     icon: const Icon(Icons.picture_as_pdf_outlined),
-                    label: Text(selectedPdf == null ? "Choisir un fichier PDF" : "PDF : ${selectedPdf!.path.split('/').last}", overflow: TextOverflow.ellipsis),
+                    label: Text(
+                      selectedPdf == null
+                          ? "Choisir un fichier PDF"
+                          : "PDF : ${selectedPdf!.path.split('/').last}",
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal.shade600,
+                      backgroundColor: Colors.deepPurple.shade600,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      elevation: 4,
                     ),
                   ),
                   const SizedBox(height: 30),
                   Center(
                     child: ElevatedButton.icon(
-                      onPressed: isLoading ? null : saveBook,
+                      onPressed: isLoading ? null : _showConfirmationDialog,
                       icon: const Icon(Icons.save_rounded),
                       label: isLoading
                           ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                           : const Text("Enregistrer"),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal.shade700,
+                        backgroundColor: Colors.deepPurple.shade700,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
                         textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        elevation: 6,
                       ),
                     ),
                   ),

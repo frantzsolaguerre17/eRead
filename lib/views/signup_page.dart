@@ -72,18 +72,18 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
   InputDecoration _glassInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.teal.shade700),
+      prefixIcon: Icon(icon, color: Colors.deepPurple.shade900),
       filled: true,
       fillColor: Colors.white.withOpacity(0.15),
       floatingLabelStyle:
-      TextStyle(color: Colors.teal.shade900, fontWeight: FontWeight.w600),
+      TextStyle(color: Colors.deepPurple.shade900, fontWeight: FontWeight.w600),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.teal.shade700, width: 2),
+        borderSide: BorderSide(color: Colors.deepPurple.shade900, width: 2),
       ),
     );
   }
@@ -94,15 +94,21 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.teal.shade700,
+      backgroundColor: Colors.deepPurple.shade700,
       body: Stack(
         children: [
-          // 🌊 Top shape
+          // 🌊 Top wave
           ClipPath(
             clipper: TopWaveClipper(),
             child: Container(
               height: height * 0.35,
-              color: Colors.teal.shade900,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.deepPurple.shade800, Colors.deepPurple.shade600],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
           ),
 
@@ -119,7 +125,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                       width: width * 0.85,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(32),
                         border: Border.all(color: Colors.white.withOpacity(0.2)),
                         boxShadow: [
@@ -138,7 +144,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                             style: GoogleFonts.poppins(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Colors.deepPurple.shade900,
                             ),
                           ),
                           const SizedBox(height: 30),
@@ -146,16 +152,15 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                           // Display Name
                           TextField(
                             controller: displayNameController,
-                            style: const TextStyle(color: Colors.white),
-                            decoration:
-                            _glassInputDecoration("Nom Utilisateur", Icons.person_outline),
+                            style: const TextStyle(color: Colors.black87),
+                            decoration: _glassInputDecoration("Nom Utilisateur", Icons.person_outline),
                           ),
                           const SizedBox(height: 16),
 
                           // Email
                           TextField(
                             controller: emailController,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.black87),
                             decoration: _glassInputDecoration("Email", Icons.email_outlined),
                           ),
                           const SizedBox(height: 16),
@@ -164,25 +169,24 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                           TextField(
                             controller: passwordController,
                             obscureText: true,
-                            style: const TextStyle(color: Colors.white),
-                            decoration:
-                            _glassInputDecoration("Mot de passe", Icons.lock_outline),
+                            style: const TextStyle(color: Colors.black87),
+                            decoration: _glassInputDecoration("Mot de passe", Icons.lock_outline),
                           ),
                           const SizedBox(height: 30),
 
-                          // Signup Button with glow
+                          // Signup Button
                           SizedBox(
                             width: double.infinity,
                             height: 52,
                             child: ElevatedButton(
                               onPressed: isLoading ? null : signUp,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal.shade500,
+                                backgroundColor: Colors.deepPurple.shade900,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
-                                shadowColor: Colors.teal.shade200,
-                                elevation: 10,
+                                shadowColor: Colors.deepPurple.shade500,
+                                elevation: 8,
                               ),
                               child: isLoading
                                   ? const CircularProgressIndicator(color: Colors.white)

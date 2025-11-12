@@ -55,16 +55,16 @@ class _DashboardScreenState extends State<DashboardScreen>
         opacity: _fadeAnim,
         child: CustomScrollView(
           slivers: [
-            // 🧢 AppBar en dégradé
+            // 🧢 AppBar en dégradé DeepPurple
             SliverAppBar(
-              backgroundColor: Colors.teal.shade600,
+              backgroundColor: Colors.deepPurple.shade700,
               expandedHeight: 170,
               floating: false,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
-                title: Text(
+                title: const Text(
                   "eRead",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -72,7 +72,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                 background: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.teal.shade700, Colors.teal.shade400],
+                      colors: [Colors.deepPurple.shade700, Colors.deepPurple.shade400],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -113,7 +113,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           "Livres",
                           "${bookController.books.length}",
                           Icons.menu_book_rounded,
-                          Colors.teal,
+                          Colors.deepPurple,
                         ),
                         _buildStatCard(
                           "Favoris",
@@ -150,48 +150,23 @@ class _DashboardScreenState extends State<DashboardScreen>
                         _buildQuickAction(
                           icon: Icons.book_rounded,
                           label: "Mes livres",
-                          color: Colors.teal,
+                          color: Colors.deepPurple,
                           onTap: () => Navigator.of(context).push(_createRoute()),
                         ),
                         _buildQuickAction(
                           icon: Icons.star_border_rounded,
                           label: "Favoris",
-                          color: Colors.amber.shade700,
+                          color: Colors.deepPurple.shade300,
                           onTap: () {},
                         ),
                         _buildQuickAction(
                           icon: Icons.person_outline,
                           label: "Profil",
-                          color: Colors.blueGrey,
+                          color: Colors.deepPurple.shade200,
                           onTap: () {},
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 40),
-
-                    // 🖼 Illustration
-                  /*  Center(
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            'assets/images/lire_livre.png',
-                            height: 220,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            "Découvre, lis et grandis 📖",
-                            style: TextStyle(
-                              color: Colors.teal.shade700,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 100),*/
                   ],
                 ),
               ),

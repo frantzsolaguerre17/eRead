@@ -16,7 +16,7 @@
     <application
         android:label="eRead"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/default_image">
 
         <activity
             android:name=".MainActivity"

@@ -68,17 +68,18 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   InputDecoration _glassInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.teal.shade700),
+      prefixIcon: Icon(icon, color: Colors.deepPurple.shade900),
       filled: true,
       fillColor: Colors.white.withOpacity(0.15),
-      floatingLabelStyle: TextStyle(color: Colors.teal.shade900, fontWeight: FontWeight.w600),
+      floatingLabelStyle: TextStyle(
+          color: Colors.deepPurple.shade900, fontWeight: FontWeight.w600),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.teal.shade700, width: 2),
+        borderSide: BorderSide(color: Colors.deepPurple.shade900, width: 2),
       ),
     );
   }
@@ -89,15 +90,21 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.teal.shade700,
+      backgroundColor: Colors.deepPurple.shade700,
       body: Stack(
         children: [
-          // 🌊 Top Shape dynamique
+          // 🌊 Top DeepPurple wave
           ClipPath(
             clipper: TopWaveClipper(),
             child: Container(
               height: height * 0.35,
-              color: Colors.teal.shade900,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.deepPurple.shade800, Colors.deepPurple.shade600],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
           ),
 
@@ -114,7 +121,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       width: width * 0.85,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(32),
                         border: Border.all(color: Colors.white.withOpacity(0.2)),
                         boxShadow: [
@@ -133,7 +140,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                             style: GoogleFonts.poppins(
                                 fontSize: 27,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white),
+                                color: Colors.deepPurple.shade900),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 30),
@@ -141,7 +148,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           // Email field
                           TextField(
                             controller: emailController,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.black87),
                             decoration: _glassInputDecoration("Email", Icons.email_outlined),
                           ),
                           const SizedBox(height: 16),
@@ -150,12 +157,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           TextField(
                             controller: passwordController,
                             obscureText: true,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: _glassInputDecoration("Mot de passe", Icons.lock_outline),
+                            style: const TextStyle(color: Colors.black87),
+                            decoration:
+                            _glassInputDecoration("Mot de passe", Icons.lock_outline),
                           ),
                           const SizedBox(height: 30),
 
-                          // Login button with glow
+                          // Login button
                           SizedBox(
                             width: double.infinity,
                             height: 52,
@@ -175,12 +183,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal.shade500,
+                                backgroundColor: Colors.deepPurple.shade900,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
-                                shadowColor: Colors.teal.shade200,
-                                elevation: 10,
+                                shadowColor: Colors.deepPurple.shade500,
+                                elevation: 8,
                               ),
                               child: isLoading
                                   ? const CircularProgressIndicator(color: Colors.white)
@@ -204,7 +212,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                             child: Text(
                               "Créer un compte",
                               style: GoogleFonts.poppins(
-                                  color: Colors.white70, fontWeight: FontWeight.w500),
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.w500),
                             ),
                           ),
                         ],

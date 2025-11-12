@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:memo_livre/services/locale_database_service.dart';
 import 'package:memo_livre/views/login_page.dart';
+import 'package:memo_livre/views/splashscreen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'controllers/ChapterController.dart';
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
         ),
 
         debugShowCheckedModeBanner: false,
-        home: const LoginPage(),
+        home: const SplashScreen(),
       ),
     );
   }

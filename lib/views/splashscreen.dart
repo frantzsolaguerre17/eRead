@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'login_page.dart';
+import 'login_page.dart'; // Assure-toi que LoginPage existe
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,15 +18,15 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
+    // Animation fade-in du logo et texte
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
-
     _fadeAnim = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _controller.forward();
 
-    // ⏳ Attendre 3 secondes avant de naviguer vers LoginPage
+    // Naviguer vers LoginPage après 3 secondes
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
@@ -44,17 +44,36 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple.shade700,
+      backgroundColor: Colors.deepPurple.shade700, // Couleur principale
       body: FadeTransition(
         opacity: _fadeAnim,
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Ton logo ou icône
-              Icon(Icons.menu_book_rounded,
-                  color: Colors.white, size: 100),
+              // Logo de l'application
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.menu_book_rounded,
+                  color: Colors.deepPurple,
+                  size: 70,
+                ),
+              ),
               const SizedBox(height: 20),
+              // Nom de l'application
               const Text(
                 "eRead",
                 style: TextStyle(
@@ -65,8 +84,9 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               const SizedBox(height: 10),
+              // Slogan
               const Text(
-                "Read. Learn. Grow.",
+                "Lire. Apprendre. Progresser.",
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white70,
@@ -74,7 +94,10 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               const SizedBox(height: 40),
-              const CircularProgressIndicator(color: Colors.white),
+              // Barre de chargement circulaire
+              const CircularProgressIndicator(
+                color: Colors.white,
+              ),
             ],
           ),
         ),

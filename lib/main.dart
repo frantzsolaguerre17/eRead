@@ -15,13 +15,13 @@ Future<void> main() async{
   /*Avant de démarrer ton application (runApp()), cette ligne
   prépare Flutter à exécuter du code asynchrone au tout début*/
   WidgetsFlutterBinding.ensureInitialized();
-
+  //await MobileAds.instance.initialize();
   //Clés Supabase
   await Supabase.initialize(
     url: 'https://ujuswyzvftkkjklktwxv.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqdXN3eXp2ZnRra2prbGt0d3h2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc3OTg5NTcsImV4cCI6MjA3MzM3NDk1N30.7QGTmDz_yaGo4B4XXHBA71PivmTElC5Zx4sjpuv_w8Y',
   );
-  _monitorNetwork();
+  //_monitorNetwork();
   await LocalDBService().database; // Initialise la base locale
   runApp(const MyApp());
 }

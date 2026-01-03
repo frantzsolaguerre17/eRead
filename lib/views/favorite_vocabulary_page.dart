@@ -71,6 +71,10 @@ class _FavoriteVocabularyScreenState
                   _searchQuery = value;
                 });
               },
+              autocorrect: false,
+              enableSuggestions: false,
+              spellCheckConfiguration: SpellCheckConfiguration.disabled(),
+
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: "Rechercher un mot favori...",

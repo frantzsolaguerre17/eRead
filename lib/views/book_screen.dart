@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import '../controllers/book_controller.dart';
 import '../models/book.dart';
 import '../models/userBookProgress.dart';
 import '../services/book_service.dart';
@@ -106,6 +108,9 @@ class _BookListPageState extends State<BookListPage> {
             child: TextField(
               controller: _searchController,
               onChanged: _filterBooks,
+              autocorrect: false,
+              enableSuggestions: false,
+              spellCheckConfiguration: SpellCheckConfiguration.disabled(),
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: "Rechercher un livre...",
@@ -213,7 +218,9 @@ class _BookListPageState extends State<BookListPage> {
             context,
             MaterialPageRoute(builder: (_) => const AddBookPage()),
           );
-          if (result == true) _loadBooks();
+          if (result == true) {
+            Provider.of<BookController>(context, listen: false).fetchBooks();
+          }
         },
       ),
     );

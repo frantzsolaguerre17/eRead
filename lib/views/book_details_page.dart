@@ -3,13 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../controllers/ChapterController.dart';
 import '../controllers/ExcerptController.dart';
 import '../controllers/vocabulary_controller.dart';
 import '../models/book.dart';
 import '../models/excerpt.dart';
-import '../models/vocabulary.dart';
+import 'expression_list_page.dart';
 import 'vocabulary_list_screen.dart';
 
 class BookDetailScreen extends StatefulWidget {
@@ -22,6 +21,7 @@ class BookDetailScreen extends StatefulWidget {
 
 class _BookDetailScreenState extends State<BookDetailScreen> {
   final uuid = const Uuid();
+  bool _showLearningActions = false;
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     await vocabController.fetchVocabulary(widget.book.id);
   }
 
-  // ==================== DIALOGUES STYLÉS ====================
+  // ==================== DIALOGUE GÉNÉRIQUE ====================
 
   Future<void> _showStyledDialog({
     required String title,
@@ -110,6 +110,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
+
   void _addChapterDialog() {
     final titleController = TextEditingController();
 
@@ -137,6 +138,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       },
     );
   }
+
 
   void _addExcerptDialog(String chapterId) {
     final contentController = TextEditingController();
@@ -184,112 +186,64 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
-  void _editExcerptDialog(Excerpt ex) {
-    final contentController = TextEditingController(text: ex.content);
-    final commentController = TextEditingController(text: ex.comment);
+
+  /*void _addChapterDialog() {
+    final controller = TextEditingController();
 
     _showStyledDialog(
-      title: "Modifier l'extrait ✍️",
+      title: "Ajouter un chapitre",
+      content: TextField(
+        controller: controller,
+        decoration: const InputDecoration(labelText: "Titre"),
+      ),
+      onConfirm: () async {
+        if (controller.text.trim().isEmpty) return;
+        final user = Supabase.instance.client.auth.currentUser;
+        if (user == null) return;
+
+        await context
+            .read<ChapterController>()
+            .addChapter(controller.text.trim(), widget.book.id, user.id);
+
+        if (mounted) Navigator.pop(context);
+      },
+    );
+  }*/
+
+  /*void _addExcerptDialog(String chapterId) {
+    final contentController = TextEditingController();
+    final commentController = TextEditingController();
+
+    _showStyledDialog(
+      title: "Ajouter un extrait",
       content: Column(
         children: [
           TextField(
             controller: contentController,
-            decoration: const InputDecoration(
-              labelText: "Texte de l'extrait",
-              prefixIcon: Icon(Icons.format_quote),
-            ),
             maxLines: 3,
+            decoration: const InputDecoration(labelText: "Extrait"),
           ),
-          const SizedBox(height: 10),
           TextField(
             controller: commentController,
-            decoration: const InputDecoration(
-              labelText: "Commentaire (optionnel)",
-              prefixIcon: Icon(Icons.comment),
-            ),
             maxLines: 2,
+            decoration: const InputDecoration(labelText: "Commentaire"),
           ),
         ],
       ),
       onConfirm: () async {
-        final content = contentController.text.trim();
-        if (content.isEmpty) return;
+        if (contentController.text.trim().isEmpty) return;
 
-        await context.read<ExcerptController>().updateExcerpt(
-          ex.id,
-          content,
+        await context.read<ExcerptController>().addExcerpt(
+          chapterId,
+          contentController.text.trim(),
           commentController.text.trim(),
         );
 
-        await context.read<ExcerptController>().fetchExcerpts(ex.chapterId);
+        await context.read<ExcerptController>().fetchExcerpts(chapterId);
         if (mounted) Navigator.pop(context);
       },
     );
-  }
-
-  void _addVocabularyDialog() {
-    final wordController = TextEditingController();
-    final definitionController = TextEditingController();
-    final exampleController = TextEditingController();
-
-    _showStyledDialog(
-      title: "Ajouter un mot appris 🧠",
-      content: Column(
-        children: [
-          TextField(
-            controller: wordController,
-            decoration: const InputDecoration(
-              labelText: "Mot",
-              prefixIcon: Icon(Icons.lightbulb_outline),
-            ),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: definitionController,
-            decoration: const InputDecoration(
-              labelText: "Définition",
-              prefixIcon: Icon(Icons.book),
-            ),
-            maxLines: 2,
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: exampleController,
-            decoration: const InputDecoration(
-              labelText: "Exemple (optionnel)",
-              prefixIcon: Icon(Icons.edit_note),
-            ),
-            maxLines: 2,
-          ),
-        ],
-      ),
-      onConfirm: () async {
-        final word = wordController.text.trim();
-        final def = definitionController.text.trim();
-        if (word.isEmpty || def.isEmpty) return;
-
-        final user = Supabase.instance.client.auth.currentUser;
-        if (user == null) return;
-
-        final vocab = Vocabulary(
-          id: uuid.v4(),
-          bookId: widget.book.id,
-          word: word,
-          definition: def,
-          example: exampleController.text.trim(),
-          createdAt: DateTime.now(),
-          userId: user.id,
-          isSynced: true,
-          isFavorite: false,
-        );
-
-        await context.read<VocabularyController>().addVocabulary(vocab);
-        if (mounted) Navigator.pop(context);
-      },
-    );
-  }
-
-  // ==================== AFFICHAGE DES EXTRAITS ====================
+  }*/
 
   Widget _buildExcerpts(String chapterId) {
     final excerptController = context.watch<ExcerptController>();
@@ -354,7 +308,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               );
             } else {
               // Éditer
-              _editExcerptDialog(ex);
+              // _editExcerptDialog(ex);
               return false;
             }
           },
@@ -478,38 +432,114 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+
+      floatingActionButton: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          alignment: Alignment.bottomCenter,
           children: [
-            FloatingActionButton.extended(
-              heroTag: 'addChapter',
-              backgroundColor: Colors.deepPurple.shade400,
-              icon: const Icon(Icons.menu_book),
-              label: const Text("Chapitre"),
-              onPressed: _addChapterDialog,
+
+            /// ================= FAB GAUCHE =================
+            Positioned(
+              left: 40,
+              bottom: 0,
+              child: FloatingActionButton(
+                heroTag: 'leftFab',
+                backgroundColor: Colors.deepPurple,
+                onPressed: _addChapterDialog,
+                child: const Icon(Icons.menu_book),
+              ),
             ),
-            const SizedBox(width: 10),
-            FloatingActionButton.extended(
-              heroTag: 'listWords',
-              backgroundColor: Colors.deepPurple.shade700,
-              icon: const Icon(Icons.lightbulb),
-              label: const Text("Mots appris"),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        VocabularyListScreen(bookId: widget.book.id),
+
+            /// ================= FAB DROITE (MENU) =================
+            Positioned(
+              right: 16,
+              bottom: 0,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+
+                  /// EXPRESSIONS
+                  AnimatedScale(
+                    scale: _showLearningActions ? 1 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: AnimatedOpacity(
+                      opacity: _showLearningActions ? 1 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: FloatingActionButton.extended(
+                        heroTag: 'expressionsFab',
+                        backgroundColor: Colors.deepPurple.shade400,
+                        icon: const Icon(Icons.format_quote),
+                        label: const Text("Expressions"),
+                        onPressed: () {
+                          setState(() => _showLearningActions = false);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ExpressionListPage(bookId: widget.book.id),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                );
-              },
+
+                  const SizedBox(height: 12),
+
+                  /// MOTS APPRIS
+                  AnimatedScale(
+                    scale: _showLearningActions ? 1 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: AnimatedOpacity(
+                      opacity: _showLearningActions ? 1 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: FloatingActionButton.extended(
+                        heroTag: 'vocabFab',
+                        backgroundColor: Colors.deepPurple.shade600,
+                        icon: const Icon(Icons.lightbulb),
+                        label: const Text("Mots appris"),
+                        onPressed: () {
+                          setState(() => _showLearningActions = false);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  VocabularyListScreen(bookId: widget.book.id),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  /// BOUTON PRINCIPAL
+                  FloatingActionButton(
+                    heroTag: 'mainFab',
+                    backgroundColor: Colors.deepPurple,
+                    onPressed: () {
+                      setState(() =>
+                      _showLearningActions = !_showLearningActions);
+                    },
+                    child: AnimatedRotation(
+                      turns: _showLearningActions ? 0.125 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Icon(
+                        _showLearningActions ? Icons.close : Icons.add,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
+
+
       body: RefreshIndicator(
         onRefresh: _loadData,
         child: chapterController.isLoading
@@ -517,8 +547,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             : ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text("Auteur : ${widget.book.author}",
-                style: const TextStyle(fontSize: 18)),
+           /* Text("Auteur : ${widget.book.author}",
+                style: const TextStyle(fontSize: 18)),*/
             const SizedBox(height: 20),
             const Text("Chapitres 📚",
                 style:

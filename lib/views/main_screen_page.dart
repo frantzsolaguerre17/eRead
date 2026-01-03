@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../controllers/book_controller.dart';
 import '../controllers/vocabulary_controller.dart';
 import '../views/book_screen.dart';
+import '../widgets/banner_widget.dart';
 import 'about_page.dart';
 import 'favorites_book_page.dart';
 import 'login_page.dart';
@@ -53,7 +54,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     super.dispose();
   }
 
-  // ✅ DIALOG DE CONFIRMATION LOGOUT
+  // ✅ CONFIRMATION LOGOUT
   Future<void> _confirmLogout() async {
     final bool? shouldLogout = await showDialog<bool>(
       context: context,
@@ -64,9 +65,7 @@ class _DashboardScreenState extends State<DashboardScreen>
             borderRadius: BorderRadius.circular(16),
           ),
           title: const Text("Déconnexion"),
-          content: const Text(
-            "Voulez-vous vraiment vous déconnecter ?",
-          ),
+          content: const Text("Voulez-vous vraiment vous déconnecter ?"),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
@@ -106,8 +105,9 @@ class _DashboardScreenState extends State<DashboardScreen>
         opacity: _fadeAnim,
         child: CustomScrollView(
           slivers: [
+            // ================= APP BAR =================
             SliverAppBar(
-              automaticallyImplyLeading: false, // ❌ pas de back button
+              automaticallyImplyLeading: false,
               backgroundColor: Colors.deepPurple.shade700,
               expandedHeight: 190,
               pinned: true,
@@ -115,7 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               actions: [
                 IconButton(
                   icon: const Icon(Icons.logout, color: Colors.white),
-                  onPressed: _confirmLogout, // ✅ logout avec confirmation
+                  onPressed: _confirmLogout,
                 ),
               ],
               flexibleSpace: FlexibleSpaceBar(
@@ -168,7 +168,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
             ),
 
-            // CONTENU
+            // ================= CONTENU =================
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -194,8 +194,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                         FutureBuilder<int>(
                           future: bookController.getReadBooksCount(),
                           builder: (context, snapshot) {
-                            final value = snapshot.connectionState ==
-                                ConnectionState.waiting
+                            final value =
+                            snapshot.connectionState == ConnectionState.waiting
                                 ? "..."
                                 : (snapshot.data ?? 0).toString();
                             return _buildStatCard(
@@ -207,11 +207,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                           },
                         ),
                         FutureBuilder<int>(
-                          future:
-                          vocabularyController.getLearnedWordsCount(),
+                          future: vocabularyController.getLearnedWordsCount(),
                           builder: (context, snapshot) {
-                            final value = snapshot.connectionState ==
-                                ConnectionState.waiting
+                            final value =
+                            snapshot.connectionState == ConnectionState.waiting
                                 ? "..."
                                 : (snapshot.data ?? 0).toString();
                             return _buildStatCard(
@@ -228,8 +227,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                     const SizedBox(height: 40),
                     const Text(
                       "Accès rapide",
-                      style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 20),
 
@@ -240,35 +241,42 @@ class _DashboardScreenState extends State<DashboardScreen>
                           Icons.menu_book,
                           "Livres",
                               () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const BookListPage())),
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const BookListPage(),
+                            ),
+                          ),
                         ),
                         _quickAction(
                           Icons.favorite_border,
-                          "Favoris",
+                          "Livres Favoris ",
                               () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                  const FavoriteBooksPage())),
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const FavoriteBooksPage(),
+                            ),
+                          ),
                         ),
                         _quickAction(
                           Icons.star_border,
-                          "Mots",
+                          "Mots Favoris",
                               () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                  const FavoriteVocabularyScreen())),
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                              const FavoriteVocabularyScreen(),
+                            ),
+                          ),
                         ),
                         _quickAction(
                           Icons.info_outline,
                           "À propos",
                               () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const AboutPage())),
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AboutPage(),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -276,6 +284,16 @@ class _DashboardScreenState extends State<DashboardScreen>
                 ),
               ),
             ),
+
+            // ================= PUB EN BAS =================
+           /* const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Center(
+                  child: BannerAdWidget(),
+                ),
+              ),
+            ),*/
           ],
         ),
       ),
@@ -306,9 +324,10 @@ class _DashboardScreenState extends State<DashboardScreen>
             Text(
               value,
               style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: color),
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
             Text(label),
           ],

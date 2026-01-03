@@ -187,4 +187,11 @@ class BookController extends ChangeNotifier {
       return 0;
     }
   }
+
+
+  void addLocalBook(Book book) {
+    _books.insert(0, book);
+    notifyListeners();
+  }
+
 }

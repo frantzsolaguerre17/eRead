@@ -142,33 +142,58 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
-        elevation: 4,
-        centerTitle: true,
-        title: TextField(
-          controller: _searchController,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-          decoration: InputDecoration(
-            hintText: "Rechercher un mot...",
-            hintStyle: const TextStyle(color: Colors.white70),
-            prefixIcon: const Icon(Icons.search, color: Colors.white70),
-            suffixIcon: _searchQuery.isNotEmpty
-                ? IconButton(
-              icon: const Icon(Icons.close, color: Colors.white70),
-              onPressed: () {
-                setState(() {
-                  _searchQuery = '';
-                  _searchController.clear();
-                });
-              },
-            )
-                : null,
-            border: InputBorder.none,
+        appBar: AppBar(
+          backgroundColor: Colors.deepPurple,
+          centerTitle: true,
+          title: const Text("Mots favoris"),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(60),
+            child: Padding(
+              padding:
+              const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+                autocorrect: false,
+                enableSuggestions: false,
+                spellCheckConfiguration: SpellCheckConfiguration.disabled(),
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "Rechercher un mot appris...",
+                  hintStyle:
+                  const TextStyle(color: Colors.white70),
+                  prefixIcon: const Icon(Icons.search,
+                      color: Colors.white70),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                    icon: const Icon(Icons.close,
+                        color: Colors.white70),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {
+                        _searchQuery = '';
+                      });
+                    },
+                  )
+                      : null,
+                  filled: true,
+                  fillColor: Colors.deepPurple.shade600,
+                  contentPadding:
+                  const EdgeInsets.symmetric(
+                      vertical: 0, horizontal: 16),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
           ),
-          onChanged: (value) => setState(() => _searchQuery = value),
         ),
-      ),
       body: controller.isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(

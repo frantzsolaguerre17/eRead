@@ -77,6 +77,9 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
             child: TextField(
               controller: _searchController,
               onChanged: _filterFavorites,
+              autocorrect: false,
+              enableSuggestions: false,
+              spellCheckConfiguration: SpellCheckConfiguration.disabled(),
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: "Rechercher un livre favori...",

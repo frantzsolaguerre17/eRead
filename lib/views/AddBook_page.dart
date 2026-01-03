@@ -190,13 +190,14 @@ class _AddBookPageState extends State<AddBookPage> {
       );
 
       await supabase.from('book').insert(newBook.toJson());
-      await Provider.of<BookController>(context, listen: false).addBook(newBook, title: '', author: '');
+      //await Provider.of<BookController>(context, listen: false).addBook(newBook, title: '', author: '');
 
       _showSnack("📘 Livre ajouté avec succès !");
-      Navigator.pushReplacement(
+      Navigator.pop(context, true);
+      /*Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const BookListPage()),
-      );
+      );*/
     } catch (e) {
       _showSnack("Erreur : ${e.toString()}");
     } finally {

@@ -114,28 +114,92 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   void _addChapterDialog() {
     final titleController = TextEditingController();
 
-    _showStyledDialog(
-      title: "Ajouter un chapitre 📖",
-      content: TextField(
-        controller: titleController,
-        decoration: const InputDecoration(
-          labelText: "Titre du chapitre",
-          prefixIcon: Icon(Icons.menu_book),
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: const [
+                    Icon(Icons.menu_book, color: Colors.deepPurple),
+                    SizedBox(width: 8),
+                    Text(
+                      "Ajouter un chapitre",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    labelText: "Titre du chapitre",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.title),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey.shade700,
+                      ),
+                      child: const Text("Annuler"),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final title = titleController.text.trim();
+                        if (title.isEmpty) return;
+
+                        final user =
+                            Supabase.instance.client.auth.currentUser;
+                        if (user == null) return;
+
+                        await context
+                            .read<ChapterController>()
+                            .addChapter(title, widget.book.id, user.id);
+
+                        if (mounted) Navigator.pop(context);
+                      },
+                      child: const Text(
+                        "Ajouter",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      onConfirm: () async {
-        final title = titleController.text.trim();
-        if (title.isEmpty) return;
-
-        final user = Supabase.instance.client.auth.currentUser;
-        if (user == null) return;
-
-        await context
-            .read<ChapterController>()
-            .addChapter(title, widget.book.id, user.id);
-
-        if (mounted) Navigator.pop(context);
-      },
     );
   }
 
@@ -144,47 +208,118 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     final contentController = TextEditingController();
     final commentController = TextEditingController();
 
-    _showStyledDialog(
-      title: "Ajouter un extrait ✍️",
-      content: Column(
-        children: [
-          TextField(
-            controller: contentController,
-            decoration: const InputDecoration(
-              labelText: "Texte de l'extrait",
-              prefixIcon: Icon(Icons.format_quote),
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: const [
+                    Icon(Icons.format_quote, color: Colors.deepPurple),
+                    SizedBox(width: 8),
+                    Text(
+                      "Ajouter un extrait",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: contentController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: "Texte de l'extrait",
+                    alignLabelWithHint: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.text_snippet),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                TextField(
+                  controller: commentController,
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                    labelText: "Commentaire (optionnel)",
+                    alignLabelWithHint: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.comment),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey.shade700,
+                      ),
+                      child: const Text("Annuler"),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final content = contentController.text.trim();
+                        if (content.isEmpty) return;
+
+                        final user =
+                            Supabase.instance.client.auth.currentUser;
+                        if (user == null) return;
+
+                        await context.read<ExcerptController>().addExcerpt(
+                          chapterId,
+                          content,
+                          commentController.text.trim(),
+                        );
+
+                        await context
+                            .read<ExcerptController>()
+                            .fetchExcerpts(chapterId);
+
+                        if (mounted) Navigator.pop(context);
+                      },
+                      child: const Text(
+                        "Ajouter",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            maxLines: 3,
           ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: commentController,
-            decoration: const InputDecoration(
-              labelText: "Commentaire (optionnel)",
-              prefixIcon: Icon(Icons.comment),
-            ),
-            maxLines: 2,
-          ),
-        ],
+        ),
       ),
-      onConfirm: () async {
-        final content = contentController.text.trim();
-        if (content.isEmpty) return;
-
-        final user = Supabase.instance.client.auth.currentUser;
-        if (user == null) return;
-
-        await context.read<ExcerptController>().addExcerpt(
-          chapterId,
-          content,
-          commentController.text.trim(),
-        );
-
-        await context.read<ExcerptController>().fetchExcerpts(chapterId);
-        if (mounted) Navigator.pop(context);
-      },
     );
   }
+
 
 
   /*void _addChapterDialog() {
@@ -368,7 +503,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
+        preferredSize: const Size.fromHeight(80),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.deepPurple,
@@ -376,20 +511,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           centerTitle: true,
           leading: Padding(
             padding: const EdgeInsets.only(left: 10, top: 8),
-            child: Material(
-              color: Colors.white,
-              shape: const CircleBorder(),
-              elevation: 4,
-              shadowColor: Colors.black45,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(50),
-                onTap: () => Navigator.pop(context),
-                child: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Icon(Icons.arrow_back, color: Colors.deepPurple),
-                ),
+            // child: Material(
+            // color: Colors.white,
+            // shape: const CircleBorder(),
+            // elevation: 4,
+            // shadowColor: Colors.black45,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(50),
+              onTap: () => Navigator.pop(context),
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(Icons.arrow_back, color: Colors.black),
               ),
             ),
+            //  ),
           ),
           flexibleSpace: Container(
             decoration: BoxDecoration(
@@ -415,13 +550,13 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
+                    letterSpacing: 0.3,
                     color: Colors.white),
               ),
               const SizedBox(height: 4),
               const Text(
-                "Chapitres, extraits et mots appris",
-                style: TextStyle(fontSize: 13, color: Colors.white70),
+                "Chapitres, extraits",
+                style: TextStyle(fontSize: 17, color: Colors.white70),
               ),
             ],
           ),
@@ -547,7 +682,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             : ListView(
           padding: const EdgeInsets.all(16),
           children: [
-           /* Text("Auteur : ${widget.book.author}",
+            /* Text("Auteur : ${widget.book.author}",
                 style: const TextStyle(fontSize: 18)),*/
             const SizedBox(height: 20),
             const Text("Chapitres 📚",

@@ -58,7 +58,7 @@ class _FavoriteVocabularyScreenState
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
-        title: const Text("Mots favoris"),
+        title: const Text("Mes mots favoris"),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(

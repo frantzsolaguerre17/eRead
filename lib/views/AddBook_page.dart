@@ -252,7 +252,7 @@ class _AddBookPageState extends State<AddBookPage> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
+        preferredSize: const Size.fromHeight(85),
         child: AppBar(
           flexibleSpace: Container(
             decoration: BoxDecoration(
@@ -278,8 +278,8 @@ class _AddBookPageState extends State<AddBookPage> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
               ),
               Text(
-                "Ajoutez, partagez un livre avec la communauté eRead",
-                style: TextStyle(fontSize: 13, color: Colors.white),
+                "Ajoutez un livre et partagez-le avec la communauté eRead",
+                style: TextStyle(fontSize: 12, color: Colors.white),
               )
             ],
           ),

@@ -178,7 +178,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => DashboardScreen()),
+                              builder: (_) => DashboardScreen()
+                          ),
                         );
                       }
                     },

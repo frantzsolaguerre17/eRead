@@ -29,106 +29,251 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
     await context.read<VocabularyController>().fetchVocabulary(widget.bookId);
   }
 
-  /// Dialogue pour ajouter ou modifier un mot
-  void _showVocabularyDialog({Vocabulary? vocab}) {
-    final wordController = TextEditingController(text: vocab?.word ?? '');
-    final definitionController = TextEditingController(text: vocab?.definition ?? '');
-    final exampleController = TextEditingController(text: vocab?.example ?? '');
-
-    showDialog(
+  Future<void> _showStyledDialog({
+    required String title,
+    required Widget content,
+    required VoidCallback onConfirm,
+  }) async {
+    return showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(vocab == null ? "Ajouter un mot 🧠" : "Modifier le mot 📝"),
-        content: SingleChildScrollView(
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        backgroundColor: Colors.white,
+        elevation: 10,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                controller: wordController,
-                decoration: const InputDecoration(
-                    labelText: "Mot", prefixIcon: Icon(Icons.lightbulb)),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple.shade100,
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(12),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  color: Colors.deepPurple,
+                  size: 30,
+                ),
               ),
               const SizedBox(height: 10),
-              TextField(
-                controller: definitionController,
-                decoration: const InputDecoration(
-                    labelText: "Définition", prefixIcon: Icon(Icons.menu_book)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: exampleController,
-                decoration: const InputDecoration(
-                    labelText: "Exemple (optionnel)", prefixIcon: Icon(Icons.edit)),
+              const SizedBox(height: 16),
+              content,
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.deepPurple,
+                    ),
+                    child: const Text("Annuler"),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      elevation: 3,
+                    ),
+                    onPressed: onConfirm,
+                    child: const Text(
+                      "Ajouter",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Annuler", style: TextStyle(color: Colors.deepPurple)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
-            onPressed: () async {
-              final word = wordController.text.trim();
-              final definition = definitionController.text.trim();
-              if (word.isEmpty || definition.isEmpty) return;
-
-              final user = Supabase.instance.client.auth.currentUser;
-              if (user == null) return;
-
-              try {
-                final controller = context.read<VocabularyController>();
-
-                if (vocab == null) {
-                  // Ajouter
-                  final newVocab = Vocabulary(
-                    id: const Uuid().v4(),
-                    word: word,
-                    definition: definition,
-                    example: exampleController.text.trim(),
-                    createdAt: DateTime.now(),
-                    bookId: widget.bookId,
-                    userId: user.id,
-                    isSynced: true,
-                    isFavorite: false,
-                  );
-
-                  await controller.addVocabulary(newVocab);
-                } else {
-                  // Modifier
-                  final updatedVocab = Vocabulary(
-                    id: vocab.id,
-                    word: word,
-                    definition: definition,
-                    example: exampleController.text.trim(),
-                    createdAt: vocab.createdAt,
-                    bookId: vocab.bookId,
-                    userId: vocab.userId,
-                    isSynced: true,
-                    isFavorite: vocab.isFavorite,
-                  );
-
-                  await controller.updateVocabulary(updatedVocab);
-                }
-
-                if (!mounted) return;
-                Navigator.pop(context);
-              } catch (e) {
-                debugPrint('Erreur add/update vocab: $e');
-                if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Erreur lors de l'opération.")),
-                );
-              }
-            },
-            child: Text(vocab == null ? "Ajouter" : "Modifier"),
-          ),
-        ],
       ),
     );
   }
+
+
+  /// Dialogue pour ajouter ou modifier un mot (version professionnelle)
+  /// Dialogue pour ajouter ou modifier un mot (même style que Chapitre / Extrait)
+  void _showVocabularyDialog({Vocabulary? vocab}) {
+    final wordController =
+    TextEditingController(text: vocab?.word ?? '');
+    final definitionController =
+    TextEditingController(text: vocab?.definition ?? '');
+    final exampleController =
+    TextEditingController(text: vocab?.example ?? '');
+
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                /// ====== HEADER ======
+                Row(
+                  children: [
+                    const Icon(Icons.lightbulb, color: Colors.deepPurple),
+                    const SizedBox(width: 8),
+                    Text(
+                      vocab == null
+                          ? "Ajouter un mot appris"
+                          : "Modifier le mot",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                /// ====== MOT ======
+                TextField(
+                  controller: wordController,
+                  decoration: InputDecoration(
+                    labelText: "Mot",
+                    prefixIcon: const Icon(Icons.lightbulb_outline),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                /// ====== DÉFINITION ======
+                TextField(
+                  controller: definitionController,
+                  decoration: InputDecoration(
+                    labelText: "Définition",
+                    prefixIcon: const Icon(Icons.menu_book),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  maxLines: 2,
+                ),
+
+                const SizedBox(height: 12),
+
+                /// ====== EXEMPLE ======
+                TextField(
+                  controller: exampleController,
+                  decoration: InputDecoration(
+                    labelText: "Exemple (optionnel)",
+                    prefixIcon: const Icon(Icons.edit),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  maxLines: 2,
+                ),
+
+                const SizedBox(height: 20),
+
+                /// ====== ACTIONS ======
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey.shade700,
+                      ),
+                      child: const Text("Annuler"),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final word = wordController.text.trim();
+                        final definition =
+                        definitionController.text.trim();
+
+                        if (word.isEmpty || definition.isEmpty) return;
+
+                        final user =
+                            Supabase.instance.client.auth.currentUser;
+                        if (user == null) return;
+
+                        final controller =
+                        context.read<VocabularyController>();
+
+                        if (vocab == null) {
+                          final newVocab = Vocabulary(
+                            id: const Uuid().v4(),
+                            word: word,
+                            definition: definition,
+                            example: exampleController.text.trim(),
+                            createdAt: DateTime.now(),
+                            bookId: widget.bookId,
+                            userId: user.id,
+                            isSynced: true,
+                            isFavorite: false,
+                          );
+                          await controller.addVocabulary(newVocab);
+                        } else {
+                          final updatedVocab = Vocabulary(
+                            id: vocab.id,
+                            word: word,
+                            definition: definition,
+                            example: exampleController.text.trim(),
+                            createdAt: vocab.createdAt,
+                            bookId: vocab.bookId,
+                            userId: vocab.userId,
+                            isSynced: true,
+                            isFavorite: vocab.isFavorite,
+                          );
+                          await controller.updateVocabulary(updatedVocab);
+                        }
+
+                        if (mounted) Navigator.pop(context);
+                      },
+                      child: Text(
+                        vocab == null ? "Ajouter" : "Modifier",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +290,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
         appBar: AppBar(
           backgroundColor: Colors.deepPurple,
           centerTitle: true,
-          title: const Text("Mots favoris"),
+          title: const Text("Mots appris"),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(60),
             child: Padding(

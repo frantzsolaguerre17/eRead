@@ -54,7 +54,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     super.dispose();
   }
 
-  // ✅ CONFIRMATION LOGOUT
+  //CONFIRMATION LOGOUT
   Future<void> _confirmLogout() async {
     final bool? shouldLogout = await showDialog<bool>(
       context: context,
@@ -69,14 +69,17 @@ class _DashboardScreenState extends State<DashboardScreen>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text("Annuler"),
+              child: const Text("Annuler",
+                style: TextStyle(color: Colors.deepPurple)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurple,
               ),
               onPressed: () => Navigator.pop(context, true),
-              child: const Text("Se déconnecter"),
+              child: const Text("Se déconnecter",
+                  style: TextStyle(color: Colors.white)
+              ),
             ),
           ],
         );
@@ -238,7 +241,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _quickAction(
-                          Icons.menu_book,
+                          Icons.book_outlined,
                           "Livres",
                               () => Navigator.push(
                             context,

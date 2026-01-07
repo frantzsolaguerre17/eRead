@@ -49,7 +49,21 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   Future<void> _saveMarkedPage(int pageNumber) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('markedPage_${widget.book.id}', pageNumber);
+
     setState(() => _markedPage = pageNumber);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("🔖 Page $pageNumber marquée"),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  Future<void> _removeMarkedPage() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('markedPage_${widget.book.id}');
+    setState(() => _markedPage = null);
   }
 
   Future<File?> _downloadAndCachePdf() async {
@@ -70,7 +84,6 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     return null;
   }
 
-  // ✅ Calcul de progression
   Future<void> _updateProgress(int currentPage) async {
     if (_totalPages == 0) return;
 
@@ -78,9 +91,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     final user = supabase.auth.currentUser;
     if (user == null) return;
 
-    setState(() {
-      _progress = currentPage / _totalPages;
-    });
+    setState(() => _progress = currentPage / _totalPages);
 
     final payload = {
       'user_id': user.id,
@@ -107,73 +118,61 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      // ✅ APPBAR AVEC BARRE DE PROGRESSION
-      appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
-        elevation: 4,
-        automaticallyImplyLeading: true,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              "Lecture du livre 📖",
-              style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              widget.book.title,
-              style: const TextStyle(fontSize: 14, color: Colors.white70),
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            // ✅ Barre de progression DANS l’AppBar
-            /*ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: _progress,
-                minHeight: 4,
-                backgroundColor: Colors.white30,
-                color: _progress >= 0.8 ? Colors.green : Colors.white,
-              ),
-            ),*/
-            //const SizedBox(height: 2),
-            /*Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                _progress >= 0.8
-                    ? "Lu ✅"
-                    : "${(_progress * 100).round()} %",
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+      /// ✅ APPBAR LÉGÈREMENT PLUS GRAND
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: AppBar(
+          backgroundColor: Colors.deepPurple,
+          elevation: 4,
+          centerTitle: true,
+          title: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Lecture du livre 📖",
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center, // Centre le texte
                 ),
-              ),
-            ),*/
+                Text(
+                  widget.book.title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.white70,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center, // Centre le texte
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.bookmark, color: Colors.white),
+              onSelected: (value) {
+                if (value == 'mark') {
+                  _saveMarkedPage(_pdfController.pageNumber);
+                } else if (value == 'remove') {
+                  _removeMarkedPage();
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(value: 'mark', child: Text('Marquer la page')),
+                if (_markedPage != null)
+                  const PopupMenuItem(
+                    value: 'remove',
+                    child: Text('Supprimer le marque-page'),
+                  ),
+              ],
+            )
           ],
         ),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.bookmark, color: Colors.white),
-            onSelected: (value) {
-              if (value == 'mark') {
-                _saveMarkedPage(_pdfController.pageNumber);
-              } else if (value == 'remove') {
-                _removeMarkedPage();
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: 'mark', child: Text('Marquer la page')),
-              if (_markedPage != null)
-                const PopupMenuItem(
-                  value: 'remove',
-                  child: Text('Supprimer le marque-page'),
-                ),
-            ],
-          )
-        ],
       ),
 
-      // ✅ PDF
       body: SafeArea(
         child: FutureBuilder<File?>(
           future: _pdfFuture,
@@ -184,7 +183,6 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
               return SfPdfViewer.file(
                 snapshot.data!,
                 controller: _pdfController,
-                scrollDirection: PdfScrollDirection.vertical,
                 onDocumentLoaded: (details) {
                   _totalPages = details.document.pages.count;
                   _pdfController.jumpToPage(_markedPage ?? _lastPage);
@@ -201,25 +199,51 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         ),
       ),
 
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.deepPurple,
-        icon: const Icon(Icons.note_add),
-        label: const Text("Notes"),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => BookDetailScreen(book: widget.book),
+      /// ✅ FLOATING BUTTONS
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_markedPage != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: FloatingActionButton(
+                heroTag: "bookmarkFab",
+                backgroundColor: Colors.orange,
+                onPressed: () {
+                  _pdfController.jumpToPage(_markedPage!);
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.bookmark, size: 22),
+                    Text(
+                      "$_markedPage",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          );
-        },
+
+          FloatingActionButton.extended(
+            heroTag: "notesFab",
+            backgroundColor: Colors.deepPurple,
+            icon: const Icon(Icons.note_add),
+            label: const Text("Notes"),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BookDetailScreen(book: widget.book),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
-  }
-
-  Future<void> _removeMarkedPage() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('markedPage_${widget.book.id}');
-    setState(() => _markedPage = null);
   }
 }

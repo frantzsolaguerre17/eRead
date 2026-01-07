@@ -1,8 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:memo_livre/services/locale_database_service.dart';
 import 'package:memo_livre/views/login_page.dart';
-import 'package:memo_livre/views/splashscreen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'controllers/ChapterController.dart';
@@ -21,8 +19,6 @@ Future<void> main() async{
     url: 'https://ujuswyzvftkkjklktwxv.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqdXN3eXp2ZnRra2prbGt0d3h2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc3OTg5NTcsImV4cCI6MjA3MzM3NDk1N30.7QGTmDz_yaGo4B4XXHBA71PivmTElC5Zx4sjpuv_w8Y',
   );
-  //_monitorNetwork();
-  await LocalDBService().database; // Initialise la base locale
   runApp(const MyApp());
 }
 
@@ -49,39 +45,9 @@ class MyApp extends StatelessWidget {
         ),
 
         debugShowCheckedModeBanner: false,
-        home: const SplashScreen(),
+        home: const LoginPage(),
       ),
     );
   }
 
-}
-
-
-void _monitorNetwork() {
-  // Écouter les changements de connectivité
-  Connectivity().onConnectivityChanged.listen((status) async {
-    if (status != ConnectivityResult.none) {
-      print('📶 Connexion détectée, synchronisation en cours...');
-
-      try {
-        // 🔁 Synchronisation des livres
-      //  await BookController().syncLocalBooks();
-
-        // 🔁 Synchronisation des chapitres
-        //await ChapterController().syncLocalChapters();
-
-        // 🔁 Synchronisation des extraits
-      //  await ExcerptController().syncLocalExcerpts();
-
-        // 🔁 Synchronisation des vocabulaires
-        //await VocabularyController().syncVocabulary();
-
-        print('✅ Synchronisation terminée avec succès.');
-      } catch (e) {
-        print('⚠️ Erreur lors de la synchronisation : $e');
-      }
-    } else {
-      print('📴 Hors ligne — la synchronisation est en attente.');
-    }
-  });
 }

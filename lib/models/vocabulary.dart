@@ -10,7 +10,6 @@ class Vocabulary {
   String _userId;
   bool _isFavorite;
 
-  // 🧱 Constructeur
   Vocabulary({
     required String id,
     required String word,
@@ -20,7 +19,7 @@ class Vocabulary {
     required String bookId,
     required bool isSynced,
     required String userId,
-    required bool isFavorite, // Ajouter ici aussi
+    required bool isFavorite,
   })  : _id = id,
         _word = word,
         _definition = definition,
@@ -40,8 +39,7 @@ class Vocabulary {
   String get bookId => _bookId;
   bool get isSynced => _isSynced;
   String get userId => _userId;
-
-  bool get isFavorite => _isFavorite; // ⭐ Getter
+  bool get isFavorite => _isFavorite;
 
   // ✏️ Setters
   set word(String value) => _word = value;
@@ -50,8 +48,7 @@ class Vocabulary {
   set bookId(String value) => _bookId = value;
   set isSynced(bool value) => _isSynced = value;
   set userId(String value) => _userId = value;
-
-  set isFavorite(bool value) => _isFavorite = value; // ⭐ Setter
+  set isFavorite(bool value) => _isFavorite = value;
 
   // 🔁 Convertir depuis JSON (lecture depuis Supabase)
   factory Vocabulary.fromJson(Map<String, dynamic> json) {
@@ -64,7 +61,7 @@ class Vocabulary {
       bookId: json['book_id'] as String,
       isSynced: json['isSynced'] as bool,
       userId: json['user_id'] as String,
-      isFavorite: json['is_favorite'] as bool? ?? false, // ⭐ Sécurisé
+      isFavorite: json['is_favorite'] as bool? ?? false,
     );
   }
 
@@ -79,7 +76,7 @@ class Vocabulary {
       'book_id': _bookId,
       'isSynced': _isSynced,
       'user_id': _userId,
-      'is_favorite': _isFavorite, // ⭐ Export favori
+      'is_favorite': _isFavorite,
     };
   }
 }

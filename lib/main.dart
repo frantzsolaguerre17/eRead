@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:memo_livre/views/login_page.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'controllers/ChapterController.dart';
 import 'controllers/ExcerptController.dart';
 import 'controllers/book_controller.dart';
+import 'controllers/expression_controller.dart';
 import 'controllers/vocabulary_controller.dart';
 
 Future<void> main() async{
@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => VocabularyController()),
         ChangeNotifierProvider(create: (_) => ChapterController()),
         ChangeNotifierProvider(create: (_) => ExcerptController()),
+        ChangeNotifierProvider(create: (_) => ExpressionController()),
       ],
       child: MaterialApp(
         title: 'eRead Auth',

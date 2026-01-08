@@ -613,7 +613,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (_) =>
-                                  ExpressionListPage(bookId: widget.book.id),
+                                  ExpressionListScreen(bookId: widget.book.id),
                             ),
                           );
                         },

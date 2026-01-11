@@ -269,7 +269,8 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
             final exp = filteredList[index];
 
             return Dismissible(
-              key: Key(exp.id),
+              key: ValueKey(exp.id),
+              direction: DismissDirection.horizontal,
               background: Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -277,8 +278,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                   color: Colors.blueAccent,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child:
-                const Icon(Icons.edit, color: Colors.white),
+                child: const Icon(Icons.edit, color: Colors.white),
               ),
               secondaryBackground: Container(
                 alignment: Alignment.centerRight,
@@ -287,37 +287,59 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                   color: Colors.redAccent,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.delete,
-                    color: Colors.white),
+                child: const Icon(Icons.delete, color: Colors.white),
               ),
               confirmDismiss: (direction) async {
-                if (direction ==
-                    DismissDirection.startToEnd) {
+                if (direction == DismissDirection.startToEnd) {
+                  // 👉 Swipe DROITE → MODIFIER
                   _showExpressionDialog(expression: exp);
-                  return false;
+                  return false; // ❌ on ne dismiss PAS
                 }
-                return true;
+
+                if (direction == DismissDirection.endToStart) {
+                  // 👈 Swipe GAUCHE → SUPPRIMER
+                  return await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Supprimer l'expression"),
+                      content: const Text(
+                          "Voulez-vous vraiment supprimer cette expression ?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text("Annuler"),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.red,
+                          ),
+                          child: const Text("Supprimer"),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return false;
               },
               onDismissed: (_) async {
                 await controller.deleteExpression(exp.id);
               },
               child: Card(
                 elevation: 3,
-                margin:
-                const EdgeInsets.symmetric(vertical: 8),
+                margin: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.format_quote,
-                              color: Colors.deepPurple),
+                          const Icon(Icons.format_quote, color: Colors.deepPurple),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -328,13 +350,23 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                               ),
                             ),
                           ),
+                          IconButton(
+                            icon: Icon(
+                              exp.isFavorite ? Icons.star : Icons.star_border,
+                              color: Colors.amber,
+                            ),
+                            onPressed: () {
+                              context
+                                  .read<ExpressionController>()
+                                  .toggleFavorite(exp);
+                            },
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Text(
                         "Définition : ${exp.definition}",
-                        style:
-                        const TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
                       if (exp.example.isNotEmpty) ...[
                         const SizedBox(height: 6),
@@ -352,14 +384,19 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                 ),
               ),
             );
+
           },
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.deepPurple.shade700,
-        icon: const Icon(Icons.add),
-        label: const Text("Ajouter expression"),
-        onPressed: () => _showExpressionDialog(),
+        shape: const StadiumBorder(), // ✅ STYLE PILULE
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          "Expression",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: _showExpressionDialog,
       ),
     );
   }

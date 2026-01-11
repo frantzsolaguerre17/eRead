@@ -228,20 +228,24 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
               ),
             ),
 
-          FloatingActionButton.extended(
-            heroTag: "notesFab",
-            backgroundColor: Colors.deepPurple,
-            icon: const Icon(Icons.note_add),
-            label: const Text("Notes"),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => BookDetailScreen(book: widget.book),
-                ),
-              );
-            },
-          ),
+    FloatingActionButton.extended(
+    heroTag: "notesFab",
+    backgroundColor: Colors.deepPurple,
+    shape: const StadiumBorder(), // 🔥 Arrondi parfait
+    icon: const Icon(Icons.note_alt_outlined, color: Colors.white),
+    label: const Text(
+    "Notes",
+    style: TextStyle(color: Colors.white),
+    ),
+    onPressed: () {
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+    builder: (_) => BookDetailScreen(book: widget.book),
+    ),
+    );
+    },
+    ),
         ],
       ),
     );

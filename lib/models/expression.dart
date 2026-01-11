@@ -1,5 +1,4 @@
 class Expression {
-  // 🔒 Attributs privés
   String _id;
   String _expressionText;
   String _definition;
@@ -7,9 +6,8 @@ class Expression {
   DateTime _createdAt;
   String _bookId;
   String _userId;
-  bool _isFavorite;
+  bool _isFavorite; // ⭐ NOUVEAU
 
-  // 🧱 Constructeur
   Expression({
     required String id,
     required String expressionText,
@@ -18,7 +16,7 @@ class Expression {
     required DateTime createdAt,
     required String bookId,
     required String userId,
-    required bool isFavorite,
+    bool isFavorite = false,
   })  : _id = id,
         _expressionText = expressionText,
         _definition = definition,
@@ -26,9 +24,9 @@ class Expression {
         _createdAt = createdAt,
         _bookId = bookId,
         _userId = userId,
-       _isFavorite = isFavorite;
+        _isFavorite = isFavorite;
 
-  // 🧩 Getters
+  // Getters
   String get id => _id;
   String get expressionText => _expressionText;
   String get definition => _definition;
@@ -38,39 +36,35 @@ class Expression {
   String get userId => _userId;
   bool get isFavorite => _isFavorite;
 
-  // ✏️ Setters
-  set expressionText(String value) => _expressionText = value;
-  set definition(String value) => _definition = value;
-  set example(String value) => _example = value;
-  set bookId(String value) => _bookId = value;
-  set userId(String value) => _userId = value;
-  set isFavorite(bool value) => _isFavorite = value;
+  // Setters
+  set expressionText(String v) => _expressionText = v;
+  set definition(String v) => _definition = v;
+  set example(String v) => _example = v;
+  set isFavorite(bool v) => _isFavorite = v;
 
-  // 🔁 Convertir depuis JSON (lecture depuis Supabase)
   factory Expression.fromJson(Map<String, dynamic> json) {
     return Expression(
-      id: json['id'] as String,
-      expressionText: json['expression_text'] as String,
-      definition: json['definition'] as String,
-      example: json['example'] as String,
+      id: json['id'],
+      expressionText: json['expression_text'],
+      definition: json['definition'],
+      example: json['example'] ?? '',
       createdAt: DateTime.parse(json['created_at']),
-      bookId: json['book_id'] as String,
-      userId: json['user_id'] as String,
-      isFavorite: json['is_favorite'] as bool? ?? false,
+      bookId: json['book_id'],
+      userId: json['user_id'],
+      isFavorite: json['is_favorite'] ?? false, // ⭐
     );
   }
 
-  // 🔁 Convertir vers JSON (insertion dans Supabase)
   Map<String, dynamic> toJson() {
     return {
       'id': _id,
       'expression_text': _expressionText,
       'definition': _definition,
       'example': _example,
-      'created_at': _createdAt?.toIso8601String(),
+      'created_at': _createdAt.toIso8601String(),
       'book_id': _bookId,
       'user_id': _userId,
-      'is_favorite': _isFavorite, // ⭐ Export favori
+      'is_favorite': _isFavorite, // ⭐
     };
   }
 }

@@ -578,12 +578,24 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             Positioned(
               left: 40,
               bottom: 0,
-              child: FloatingActionButton(
+              child: FloatingActionButton.extended(
                 heroTag: 'leftFab',
                 backgroundColor: Colors.deepPurple,
+                shape: const StadiumBorder(), // ✅ style pilule
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                label: const Text(
+                  "Chapitre",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 onPressed: _addChapterDialog,
-                child: const Icon(Icons.menu_book),
               ),
+
             ),
 
             /// ================= FAB DROITE (MENU) =================
@@ -605,8 +617,12 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       child: FloatingActionButton.extended(
                         heroTag: 'expressionsFab',
                         backgroundColor: Colors.deepPurple.shade400,
-                        icon: const Icon(Icons.format_quote),
-                        label: const Text("Expressions"),
+                        shape: const StadiumBorder(), // ✅ ARRONDI
+                        icon: const Icon(Icons.format_quote, color: Colors.white),
+                        label: const Text(
+                          "Expressions",
+                          style: TextStyle(color: Colors.white),
+                        ),
                         onPressed: () {
                           setState(() => _showLearningActions = false);
                           Navigator.push(
@@ -633,8 +649,12 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       child: FloatingActionButton.extended(
                         heroTag: 'vocabFab',
                         backgroundColor: Colors.deepPurple.shade600,
-                        icon: const Icon(Icons.lightbulb),
-                        label: const Text("Mots appris"),
+                        shape: const StadiumBorder(), // ✅ ARRONDI
+                        icon: const Icon(Icons.lightbulb, color: Colors.white),
+                        label: const Text(
+                          "Mots appris",
+                          style: TextStyle(color: Colors.white),
+                        ),
                         onPressed: () {
                           setState(() => _showLearningActions = false);
                           Navigator.push(
@@ -651,25 +671,28 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
                   const SizedBox(height: 14),
 
-                  /// BOUTON PRINCIPAL
+                  /// BOUTON PRINCIPAL (déjà rond, OK)
                   FloatingActionButton(
                     heroTag: 'mainFab',
                     backgroundColor: Colors.deepPurple,
                     onPressed: () {
-                      setState(() =>
-                      _showLearningActions = !_showLearningActions);
+                      setState(() {
+                        _showLearningActions = !_showLearningActions;
+                      });
                     },
                     child: AnimatedRotation(
                       turns: _showLearningActions ? 0.125 : 0,
                       duration: const Duration(milliseconds: 200),
                       child: Icon(
                         _showLearningActions ? Icons.close : Icons.add,
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
+
           ],
         ),
       ),

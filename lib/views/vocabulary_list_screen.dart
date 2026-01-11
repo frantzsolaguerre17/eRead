@@ -488,10 +488,15 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'addVocabulary',
         backgroundColor: Colors.deepPurple.shade700,
-        icon: const Icon(Icons.add),
-        label: const Text("Ajouter mot"),
-        onPressed: () => _showVocabularyDialog(),
+        shape: const StadiumBorder(), // ✅ PILULE
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text(
+          "Mot",
+          style: TextStyle(color: Colors.white),
+        ),
+        onPressed: _showVocabularyDialog,
       ),
+
     );
   }
 }

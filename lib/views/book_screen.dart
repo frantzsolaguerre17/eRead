@@ -210,19 +210,32 @@ class _BookListPageState extends State<BookListPage> {
         ],
       ),
 
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.deepPurple,
-        child: const Icon(Icons.add, color: Colors.white),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),
+        ),
+        icon: Row(
+          children: const [
+            Icon(Icons.add, color: Colors.white),
+            SizedBox(width: 4),
+            Icon(Icons.menu_book, color: Colors.white),
+          ],
+        ),
+        label: const SizedBox(), // Pas de texte
         onPressed: () async {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const AddBookPage()),
           );
+
           if (result == true) {
             Provider.of<BookController>(context, listen: false).fetchBooks();
           }
         },
       ),
+
+
     );
   }
 }

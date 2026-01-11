@@ -4,10 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../controllers/book_controller.dart';
+import '../controllers/expression_controller.dart';
 import '../controllers/vocabulary_controller.dart';
 import '../views/book_screen.dart';
 import '../widgets/banner_widget.dart';
 import 'about_page.dart';
+import 'favorite_expression_page.dart';
 import 'favorites_book_page.dart';
 import 'login_page.dart';
 
@@ -224,6 +226,23 @@ class _DashboardScreenState extends State<DashboardScreen>
                             );
                           },
                         ),
+                        FutureBuilder<int>(
+                          future: context
+                              .read<ExpressionController>()
+                              .getLearnedExpressionsCount(),
+                          builder: (context, snapshot) {
+                            final value =
+                            snapshot.connectionState == ConnectionState.waiting
+                                ? "..."
+                                : (snapshot.data ?? 0).toString();
+                            return _buildStatCard(
+                              "Expr apprises",
+                              value,
+                              Icons.format_quote,
+                              Colors.deepPurple,
+                            );
+                          },
+                        ),
                       ],
                     ),
 
@@ -272,6 +291,17 @@ class _DashboardScreenState extends State<DashboardScreen>
                           ),
                         ),
                         _quickAction(
+                          Icons.format_quote,
+                          "Expr Favoris",
+                              () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                              const FavoriteExpressionScreen(),
+                            ),
+                          ),
+                        ),
+                       /* _quickAction(
                           Icons.info_outline,
                           "À propos",
                               () => Navigator.push(
@@ -280,7 +310,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                               builder: (_) => const AboutPage(),
                             ),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                   ],

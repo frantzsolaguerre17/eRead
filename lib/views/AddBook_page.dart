@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 import '../controllers/book_controller.dart';
 import '../models/book.dart';
 import 'book_screen.dart';
+import 'main_screen_page.dart';
 
 class AddBookPage extends StatefulWidget {
   const AddBookPage({super.key});
@@ -191,9 +192,20 @@ class _AddBookPageState extends State<AddBookPage> {
 
       await supabase.from('book').insert(newBook.toJson());
       //await Provider.of<BookController>(context, listen: false).addBook(newBook, title: '', author: '');
-
+      await Provider.of<BookController>(context, listen: false).fetchBooks();
       _showSnack("📘 Livre ajouté avec succès !");
-      Navigator.pop(context, true);
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const DashboardScreen()),
+            (route) => false,
+      );
+
+// Puis ouvrir BookScreen
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const BookListPage()),
+      );
+
+     // Navigator.pop(context, true);
       /*Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const BookListPage()),

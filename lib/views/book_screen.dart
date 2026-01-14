@@ -361,45 +361,91 @@ class _ModernBookCardState extends State<ModernBookCard> {
         child: SizedBox(
           height: 160,
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
-                child: Image.network(
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(20),
+                ),
+                child: widget.book.cover.startsWith('http')
+                    ? Image.network(
                   widget.book.cover,
+                  width: 120,
+                  height: 160,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Image.asset(
+                    "assets/images/default_image.png",
+                    width: 120,
+                    height: 160,
+                    fit: BoxFit.cover,
+                  ),
+                )
+                    : Image.asset(
+                  widget.book.cover.isNotEmpty
+                      ? widget.book.cover
+                      : "assets/images/default_image.png",
                   width: 120,
                   height: 160,
                   fit: BoxFit.cover,
                 ),
               ),
+
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Stack(
                     children: [
                       SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
                               widget.book.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
+
                             const SizedBox(height: 4),
-                            Text("Auteur : ${widget.book.author}"),
+
+                            Text(
+                              "Auteur : ${widget.book.author}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+
                             Text("Pages : ${widget.book.number_of_pages}"),
-                            Text("Catégorie : ${widget.book.category}"),
+
+                            Text(
+                              "Catégorie : ${widget.book.category}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+
                             const SizedBox(height: 4),
+
                             Text(
                               "Ajouté par : ${widget.book.userName}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                  fontSize: 12, fontStyle: FontStyle.italic),
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic,
+                              ),
                             ),
+
                             if (isNewBook)
                               Container(
-                                margin: const EdgeInsets.only(top: 4),
+                                margin: const EdgeInsets.only(top: 6),
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.orange,
                                   borderRadius: BorderRadius.circular(12),
@@ -407,17 +453,20 @@ class _ModernBookCardState extends State<ModernBookCard> {
                                 child: const Text(
                                   "NOUVEAU",
                                   style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold),
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                           ],
                         ),
                       ),
+
+                      // Boutons favoris + badge
                       Positioned(
                         right: 0,
-                        top: 38,
+                        top: 30,
                         child: Column(
                           children: [
                             IconButton(
@@ -429,7 +478,9 @@ class _ModernBookCardState extends State<ModernBookCard> {
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: _getBadgeColor(),
                                 borderRadius: BorderRadius.circular(20),
@@ -437,7 +488,10 @@ class _ModernBookCardState extends State<ModernBookCard> {
                               child: Text(
                                 _getBadgeText(),
                                 style: const TextStyle(
-                                    color: Colors.white, fontWeight: FontWeight.bold),
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],
@@ -446,9 +500,11 @@ class _ModernBookCardState extends State<ModernBookCard> {
                     ],
                   ),
                 ),
-              )
+              ),
+
             ],
           ),
+
         ),
       ),
     );

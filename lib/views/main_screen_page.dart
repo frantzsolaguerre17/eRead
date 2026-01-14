@@ -119,6 +119,18 @@ class _DashboardScreenState extends State<DashboardScreen>
               elevation: 2,
               actions: [
                 IconButton(
+                  icon: const Icon(Icons.info_outline, color: Colors.white),
+                  tooltip: "À propos",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AboutPage(),
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
                   icon: const Icon(Icons.logout, color: Colors.white),
                   onPressed: _confirmLogout,
                 ),
@@ -188,6 +200,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       ),
                     ),
                     const SizedBox(height: 8),
+
                     Text(
                       "Prêt à lire quelque chose d'inspirant aujourd’hui ?",
                       style: TextStyle(color: Colors.grey[600], fontSize: 16),

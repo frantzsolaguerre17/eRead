@@ -66,23 +66,34 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     setState(() => _markedPage = null);
   }
 
+
   Future<File?> _downloadAndCachePdf() async {
     try {
-      final dir = await getTemporaryDirectory();
-      final filePath =
-          '${dir.path}/${widget.book.title.replaceAll(' ', '_')}.pdf';
+      final dir = await getApplicationDocumentsDirectory(); // ✅ stockage permanent
+
+      final safeTitle =
+      widget.book.title.replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(' ', '_');
+
+      final filePath = '${dir.path}/$safeTitle.pdf';
       final file = File(filePath);
 
-      if (file.existsSync()) return file;
+      // ✅ Si le fichier existe déjà, on ne recharge PAS
+      if (await file.exists()) {
+        return file;
+      }
 
       final response = await http.get(Uri.parse(widget.book.pdf));
       if (response.statusCode == 200) {
         await file.writeAsBytes(response.bodyBytes, flush: true);
         return file;
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint("Erreur PDF cache: $e");
+    }
+
     return null;
   }
+
 
   Future<void> _updateProgress(int currentPage) async {
     if (_totalPages == 0) return;
@@ -231,7 +242,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     FloatingActionButton.extended(
     heroTag: "notesFab",
     backgroundColor: Colors.deepPurple,
-    shape: const StadiumBorder(), // 🔥 Arrondi parfait
+    shape: const StadiumBorder(), //
     icon: const Icon(Icons.note_alt_outlined, color: Colors.white),
     label: const Text(
     "Notes",

@@ -1,11 +1,11 @@
 /// ======================================================
-///  📜 AppMessages
+/// AppMessages
 ///  Fichier centralisé pour tous les messages de l'application
 /// ======================================================
 
 class AppMessages {
 
-  // 🔌 --- Connexion / Réseau ---
+  // --- Connexion / Réseau ---
   static const String noInternet =
       "Aucune connexion Internet. Veuillez vérifier votre réseau et réessayer.";
   static const String serverError =
@@ -16,7 +16,7 @@ class AppMessages {
       "Impossible de charger les données. Réessayez plus tard.";
 
 
-  // 🔑 --- Authentification / Connexion ---
+  // --- Authentification / Connexion ---
   static const String invalidCredentials =
       "Adresse e-mail ou mot de passe incorrect.";
   static const String userNotFound =
@@ -33,7 +33,7 @@ class AppMessages {
       "L’adresse e-mail n’est pas valide.";
 
 
-  // 📄 --- Fichiers / Documents ---
+  // --- Fichiers / Documents ---
   static const String fileLoadError =
       "Impossible de charger le document.";
   static const String fileDownloadError =
@@ -42,7 +42,7 @@ class AppMessages {
       "Fichier introuvable. Veuillez réessayer.";
 
 
-  // 📚 --- Données / Base de données ---
+  // --- Données / Base de données ---
   static const String noDataFound =
       "Aucun résultat trouvé.";
   static const String dataLoadError =
@@ -53,15 +53,15 @@ class AppMessages {
       "Erreur interne du système.";
 
 
-  // ✅ --- Succès ---
+  // --- Succès ---
   static const String loginSuccess =
       "Connexion réussie ✅";
   static const String registerSuccess =
-      "Enregistrement effectué avec succès 🎉";
+      "Enregistrement effectué avec succès";
   static const String passwordUpdateSuccess =
       "Mot de passe mis à jour avec succès 🔒";
   static const String profileUpdateSuccess =
-      "Profil mis à jour avec succès 🧑‍💻";
+      "Profil mis à jour avec succès ";
   static const String syncSuccess =
       "Données synchronisées avec succès ☁️";
   static const String pageMarked =
@@ -72,7 +72,7 @@ class AppMessages {
       "Téléchargement terminé ✅";
 
 
-  // ⚠️ --- Avertissements ---
+  // --- Avertissements ---
   static const String deleteConfirmation =
       "Voulez-vous vraiment supprimer cet élément ?";
   static const String irreversibleAction =
@@ -87,9 +87,9 @@ class AppMessages {
       "Format de fichier non pris en charge.";
 
 
-  // ℹ️ --- Informations ---
+  // --- Informations ---
   static const String welcome =
-      "Bienvenue dans l’application 📚";
+      "Bienvenue dans l’application";
   static const String loading =
       "Chargement en cours...";
   static const String nothingToShow =

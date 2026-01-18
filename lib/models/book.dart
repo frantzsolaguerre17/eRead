@@ -9,7 +9,7 @@ class Book {
   String _pdf;
   String _userId;
   String _category;
-  String? _userName;
+  String? _user_name;
 
   // Nouveaux champs
   int _readingProgress; // 0..100
@@ -26,7 +26,7 @@ class Book {
     required String pdf,
     required String userId,
     required String category,
-    String? userName,
+    String? user_name,
     int readingProgress = 0,
     bool isRead = false,
   })  : _id = id,
@@ -39,7 +39,7 @@ class Book {
         _pdf = pdf,
         _userId = userId,
         _category = category,
-        _userName = userName,
+        _user_name = user_name,
         _readingProgress = readingProgress,
         _isRead = isRead;
 
@@ -54,7 +54,7 @@ class Book {
   String get pdf => _pdf;
   String get userId => _userId;
   String get category => _category;
-  String? get userName => _userName;
+  String? get user_name => _user_name;
   int get readingProgress => _readingProgress;
   bool get isRead => _isRead;
 
@@ -75,7 +75,7 @@ class Book {
       pdf: json['pdf'] as String? ?? '',
       userId: json['user_id'] as String? ?? '',
       category: json['category'] as String? ?? 'Autre',
-      userName: json['user_name'] as String? ?? json['username'] as String? ?? 'Inconnu',
+      user_name: json['user_name'] as String? ?? json['username'] as String? ?? 'Inconnu',
       readingProgress: (json['reading_progress'] is int) ? json['reading_progress'] as int : int.tryParse((json['reading_progress'] ?? '0').toString()) ?? 0,
       isRead: json['is_read'] as bool? ?? false,
     );
@@ -93,7 +93,7 @@ class Book {
       'pdf': _pdf,
       'user_id': _userId,
       'category': _category,
-      'user_name': _userName,
+      'user_name': _user_name,
       'reading_progress': _readingProgress,
       'is_read': _isRead,
     };

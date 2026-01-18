@@ -176,6 +176,8 @@ class _AddBookPageState extends State<AddBookPage> {
         pdfUrl = await uploadFile(selectedPdf!, 'book_pdfs');
       }
 
+      final username = await _getUsername();
+
       final newBook = Book(
         id: const Uuid().v4(),
         title: titleController.text.trim(),
@@ -187,7 +189,7 @@ class _AddBookPageState extends State<AddBookPage> {
         pdf: pdfUrl ?? '',
         userId: user.id,
         category: selectedCategory ?? 'Non définie',
-        userName: user.userMetadata?['username'] ?? 'Inconnu',
+        user_name: username,
       );
 
       await supabase.from('book').insert(newBook.toJson());
@@ -216,6 +218,21 @@ class _AddBookPageState extends State<AddBookPage> {
       setState(() => isLoading = false);
     }
   }
+
+
+  Future<String> _getUsername() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return 'Utilisateur';
+
+    final data = await supabase
+        .from('profil')
+        .select('username')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    return data?['username'] ?? 'Utilisateur';
+  }
+
 
   // 🔹 Boîte de dialogue en cas de doublon
   void _showDuplicateDialog() {

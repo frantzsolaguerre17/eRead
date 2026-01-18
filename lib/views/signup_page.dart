@@ -43,13 +43,25 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
   Future<void> signUp() async {
     setState(() => isLoading = true);
     try {
+
       final response = await supabase.auth.signUp(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
-        data: {'full_name': displayNameController.text.trim()},
+        data: {
+          'full_name': displayNameController.text.trim(),
+        },
       );
 
-      if (response.user != null) {
+      final user = response.user;
+
+      if (user != null) {
+        // 🔹 Création du profil (UNE SEULE FOIS)
+/*        await supabase.from('profil').insert({
+          'user_id': user.id,
+          'username': displayNameController.text.trim(),
+          'email': user.email,
+        });*/
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Compte créé avec succès 🎉')),
         );
@@ -59,6 +71,23 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
           MaterialPageRoute(builder: (_) => const LoginPage()),
         );
       }
+
+      /*final response = await supabase.auth.signUp(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+       // data: {'full_name': displayNameController.text.trim()},
+      );*/
+
+     /* if (response.user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Compte créé avec succès 🎉')),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+        );
+      }*/
     } on AuthException catch (error) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(error.message)));

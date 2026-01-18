@@ -63,7 +63,7 @@ class BookController extends ChangeNotifier {
         cover: cover,
         pdf: pdf,
         userId: user.id,
-        userName: user.userMetadata?['display_name'] ?? 'Inconnu',
+        user_name: user.userMetadata?['display_name'] ?? 'Inconnu',
         category: category,
       );
 

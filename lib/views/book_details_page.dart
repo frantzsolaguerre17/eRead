@@ -321,6 +321,77 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   }
 
 
+  void _editChapterDialog(String chapterId, String currentTitle) {
+    final controller = TextEditingController(text: currentTitle);
+
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Modifier le chapitre",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepPurple,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: controller,
+                decoration: const InputDecoration(
+                  labelText: "Titre du chapitre",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Annuler"),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                    ),
+                    onPressed: () async {
+                      final newTitle = controller.text.trim();
+                      if (newTitle.isEmpty) return;
+
+                      await context
+                          .read<ChapterController>()
+                          .updateChapterTitle(chapterId, newTitle);
+
+                      await context
+                          .read<ChapterController>()
+                          .fetchChapters(widget.book.id);
+
+                      if (mounted) Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "Enregistrer",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
 
   /*void _addChapterDialog() {
     final controller = TextEditingController();
@@ -581,7 +652,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               child: FloatingActionButton.extended(
                 heroTag: 'leftFab',
                 backgroundColor: Colors.deepPurple,
-                shape: const StadiumBorder(), // ✅ style pilule
+                shape: const StadiumBorder(), // style pilule
                 icon: const Icon(
                   Icons.add,
                   color: Colors.white,
@@ -714,33 +785,120 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             const SizedBox(height: 10),
             if (chapters.isEmpty) const Text("Aucun chapitre ajouté."),
             ...chapters.map((chapter) {
-              return Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                elevation: 2,
-                margin: const EdgeInsets.symmetric(vertical: 6),
-                child: Theme(
-                  data: Theme.of(context)
-                      .copyWith(dividerColor: Colors.transparent),
-                  child: ExpansionTile(
-                    title: Text(chapter.title,
-                        style: const TextStyle(fontSize: 18)),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.add_circle,
-                          color: Colors.deepPurple),
-                      onPressed: () => _addExcerptDialog(chapter.id),
+              return Dismissible(
+                key: Key(chapter.id),
+                direction: DismissDirection.horizontal, // ⬅️➡️ les deux sens
+
+                // 👉 Swipe droite = MODIFIER
+                background: Container(
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade400,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.edit, color: Colors.white),
+                ),
+
+                // 👉 Swipe gauche = SUPPRIMER
+                secondaryBackground: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+
+                confirmDismiss: (direction) async {
+                  // ✏️ MODIFIER
+                  if (direction == DismissDirection.startToEnd) {
+                    _editChapterDialog(chapter.id, chapter.title);
+                    return false; // ❌ ne pas supprimer
+                  }
+
+                  // 🗑️ SUPPRIMER
+                  if (direction == DismissDirection.endToStart) {
+                    return await showDialog<bool>(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text("Supprimer le chapitre"),
+                        content: const Text(
+                          "Ce chapitre contient des extraits.\n"
+                              "Ils seront tous supprimés définitivement.\n\n"
+                              "Continuer ?",
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text("Annuler"),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                            ),
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text(
+                              "Supprimer",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return false;
+                },
+
+                onDismissed: (direction) async {
+                  if (direction == DismissDirection.endToStart) {
+                    await context
+                        .read<ChapterController>()
+                        .deleteChapter(chapter.id, widget.book.id);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Chapitre supprimé 🗑️"),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                },
+
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  child: Theme(
+                    data: Theme.of(context)
+                        .copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTile(
+                      title: Text(
+                        chapter.title,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.add_circle,
+                            color: Colors.deepPurple),
+                        onPressed: () => _addExcerptDialog(chapter.id),
+                      ),
+                      onExpansionChanged: (expanded) {
+                        if (expanded) {
+                          context
+                              .read<ExcerptController>()
+                              .fetchExcerpts(chapter.id);
+                        }
+                      },
+                      children: [_buildExcerpts(chapter.id)],
                     ),
-                    onExpansionChanged: (expanded) {
-                      if (expanded) {
-                        context
-                            .read<ExcerptController>()
-                            .fetchExcerpts(chapter.id);
-                      }
-                    },
-                    children: [_buildExcerpts(chapter.id)],
                   ),
                 ),
               );
+
             }),
           ],
         ),

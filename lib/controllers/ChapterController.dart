@@ -61,16 +61,29 @@ class ChapterController with ChangeNotifier {
     }
   }
 
+
   // 🔹 Supprimer un chapitre
   Future<void> deleteChapter(String chapterId, String bookId) async {
     try {
-      await _supabase.from('chapter').delete().eq('id', chapterId);
-      _chaptersByBook[bookId]?.removeWhere((c) => c.id == chapterId);
+      // 🔥 Supprimer le chapitre (cascade automatique)
+      await _supabase
+          .from('chapter')
+          .delete()
+          .eq('id', chapterId);
+
+      // 🧠 Mise à jour locale immédiate
+      _chaptersByBook[bookId]?.removeWhere(
+            (chapter) => chapter.id == chapterId,
+      );
+
       notifyListeners();
-    } catch (e) {
-      debugPrint("Erreur deleteChapter : $e");
+    } catch (e, stack) {
+      debugPrint("❌ Erreur deleteChapter: $e");
+      debugPrint("$stack");
+      rethrow; // utile si tu veux afficher un message plus haut
     }
   }
+
 
   // 🔹 Récupérer les chapitres d’un livre
   List<Chapter> getChapters(String bookId) {
@@ -82,4 +95,15 @@ class ChapterController with ChangeNotifier {
     _chaptersByBook.clear();
     notifyListeners();
   }
+
+
+  Future<void> updateChapterTitle(String chapterId, String newTitle) async {
+    await Supabase.instance.client
+        .from('chapter')
+        .update({'title': newTitle})
+        .eq('id', chapterId);
+  }
+
+
+
 }

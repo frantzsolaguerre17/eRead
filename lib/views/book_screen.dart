@@ -430,7 +430,7 @@ class _ModernBookCardState extends State<ModernBookCard> {
                             const SizedBox(height: 4),
 
                             Text(
-                              "Ajouté par : ${widget.book.userName}",
+                              "Ajouté par : ${widget.book.user_name}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(

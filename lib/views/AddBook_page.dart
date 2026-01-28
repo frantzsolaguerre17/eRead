@@ -192,9 +192,21 @@ class _AddBookPageState extends State<AddBookPage> {
         user_name: username,
       );
 
-      await supabase.from('book').insert(newBook.toJson());
+      //await supabase.from('book').insert(newBook.toJson());
       //await Provider.of<BookController>(context, listen: false).addBook(newBook, title: '', author: '');
-      await Provider.of<BookController>(context, listen: false).fetchBooks();
+      //await Provider.of<BookController>(context, listen: false).fetchBooks();
+      await Provider.of<BookController>(
+        context,
+        listen: false,
+      ).addBook(
+        newBook,
+        title: newBook.title,
+        author: newBook.author,
+        numberOfPages: newBook.number_of_pages,
+        cover: newBook.cover,
+        pdf: newBook.pdf,
+        category: newBook.category,
+      );
       _showSnack("📘 Livre ajouté avec succès !");
 
       Navigator.of(context).pushAndRemoveUntil(

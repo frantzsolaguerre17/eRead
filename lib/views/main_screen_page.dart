@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../controllers/book_controller.dart';
 import '../controllers/expression_controller.dart';
+import '../controllers/notifications_controller.dart';
 import '../controllers/vocabulary_controller.dart';
 import '../views/book_screen.dart';
 import '../widgets/banner_widget.dart';
@@ -12,6 +13,7 @@ import 'about_page.dart';
 import 'favorite_expression_page.dart';
 import 'favorites_book_page.dart';
 import 'login_page.dart';
+import 'notifications_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -33,6 +35,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void initState() {
     super.initState();
+    context.read<NotificationController>().startListening();
     _loadDisplayName();
 
     _controller = AnimationController(
@@ -71,16 +74,19 @@ class _DashboardScreenState extends State<DashboardScreen>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text("Annuler",
-                style: TextStyle(color: Colors.deepPurple)),
+              child: const Text(
+                "Annuler",
+                style: TextStyle(color: Colors.deepPurple),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurple,
               ),
               onPressed: () => Navigator.pop(context, true),
-              child: const Text("Se déconnecter",
-                  style: TextStyle(color: Colors.white)
+              child: const Text(
+                "Se déconnecter",
+                style: TextStyle(color: Colors.white),
               ),
             ),
           ],
@@ -88,17 +94,24 @@ class _DashboardScreenState extends State<DashboardScreen>
       },
     );
 
+    // 👇 ICI SE PASSE LA MAGIE
     if (shouldLogout == true) {
-      await supabase.auth.signOut();
+      // 1️⃣ RESET notifications
+      context.read<NotificationController>().reset();
 
+      // 2️⃣ Supabase logout
+      await Supabase.instance.client.auth.signOut();
+
+      // 3️⃣ Redirection vers login
       if (!mounted) return;
-
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.pushAndRemoveUntil(
+        context,
         MaterialPageRoute(builder: (_) => const LoginPage()),
-            (route) => false,
+            (_) => false,
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +131,54 @@ class _DashboardScreenState extends State<DashboardScreen>
               pinned: true,
               elevation: 2,
               actions: [
+
+                Consumer<NotificationController>(
+                  builder: (_, controller, __) {
+                    return Stack(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.notifications, color: Colors.white),
+                            onPressed: () {
+                              // Ouvrir la page immédiatement (UI fluide)
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const NotificationsScreen(),
+                                ),
+                              );
+
+                              // Ensuite seulement → logique métier
+                              context.read<NotificationController>().markAllAsRead();
+                            }
+
+                        ),
+
+                        if (controller.unreadCount > 0)
+                          Positioned(
+                            right: 8,
+                            top: 8,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                controller.unreadCount.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+
+
                 IconButton(
                   icon: const Icon(Icons.info_outline, color: Colors.white),
                   tooltip: "À propos",

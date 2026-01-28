@@ -6,6 +6,7 @@ import 'controllers/ChapterController.dart';
 import 'controllers/ExcerptController.dart';
 import 'controllers/book_controller.dart';
 import 'controllers/expression_controller.dart';
+import 'controllers/notifications_controller.dart';
 import 'controllers/vocabulary_controller.dart';
 
 Future<void> main() async{
@@ -19,6 +20,7 @@ Future<void> main() async{
     url: 'https://ujuswyzvftkkjklktwxv.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqdXN3eXp2ZnRra2prbGt0d3h2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc3OTg5NTcsImV4cCI6MjA3MzM3NDk1N30.7QGTmDz_yaGo4B4XXHBA71PivmTElC5Zx4sjpuv_w8Y',
   );
+ // await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -37,6 +39,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ChapterController()),
         ChangeNotifierProvider(create: (_) => ExcerptController()),
         ChangeNotifierProvider(create: (_) => ExpressionController()),
+        ChangeNotifierProvider(create: (_) => NotificationController()),
       ],
       child: MaterialApp(
         title: 'eRead Auth',

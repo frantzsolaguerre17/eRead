@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:memo_livre/views/favorite_expression_page.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:uuid/uuid.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -216,6 +218,20 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
         title: const Text("Expressions apprises"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.star, color: Colors.amber),
+            tooltip: "Mots favoris",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FavoriteExpressionScreen(),
+                ),
+              );
+            },
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -252,7 +268,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
         ),
       ),
       body: controller.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? _expressionShimmer()
           : RefreshIndicator(
         onRefresh: _refreshExpressions,
         child: filteredList.isEmpty
@@ -400,4 +416,27 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
       ),
     );
   }
+}
+
+Widget _expressionShimmer() {
+  return ListView.builder(
+    padding: const EdgeInsets.all(12),
+    itemCount: 6,
+    itemBuilder: (_, __) {
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey.shade300,
+          highlightColor: Colors.grey.shade100,
+          child: Container(
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }

@@ -786,88 +786,85 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             if (chapters.isEmpty) const Text("Aucun chapitre ajouté."),
             ...chapters.map((chapter) {
               return Dismissible(
-                key: Key(chapter.id),
-                direction: DismissDirection.horizontal, // ⬅️➡️ les deux sens
+                  key: Key(chapter.id),
+                  direction: DismissDirection.horizontal,
 
-                // 👉 Swipe droite = MODIFIER
-                background: Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade400,
-                    borderRadius: BorderRadius.circular(12),
+                  dismissThresholds: const {
+                    DismissDirection.startToEnd: 0.15,
+                    DismissDirection.endToStart: 0.4,
+                  },
+
+                  background: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade400,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.edit, color: Colors.white),
                   ),
-                  child: const Icon(Icons.edit, color: Colors.white),
-                ),
 
-                // 👉 Swipe gauche = SUPPRIMER
-                secondaryBackground: Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent,
-                    borderRadius: BorderRadius.circular(12),
+                  secondaryBackground: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
-                  child: const Icon(Icons.delete, color: Colors.white),
-                ),
 
-                confirmDismiss: (direction) async {
-                  // ✏️ MODIFIER
-                  if (direction == DismissDirection.startToEnd) {
-                    _editChapterDialog(chapter.id, chapter.title);
-                    return false; // ❌ ne pas supprimer
-                  }
+                  confirmDismiss: (direction) async {
+                    if (direction == DismissDirection.startToEnd) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _editChapterDialog(chapter.id, chapter.title);
+                      });
+                      return false; // ❌ on ne supprime pas
+                    }
 
-                  // 🗑️ SUPPRIMER
-                  if (direction == DismissDirection.endToStart) {
-                    return await showDialog<bool>(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text("Supprimer le chapitre"),
-                        content: const Text(
-                          "Ce chapitre contient des extraits.\n"
-                              "Ils seront tous supprimés définitivement.\n\n"
-                              "Continuer ?",
+                    if (direction == DismissDirection.endToStart) {
+                      return await showDialog<bool>(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text("Supprimer le chapitre"),
+                          content: const Text(
+                            "Ce chapitre contient des extraits.\n"
+                                "Ils seront tous supprimés définitivement.\n\n"
+                                "Continuer ?",
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text("Annuler"),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.redAccent,
+                              ),
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text("Supprimer", style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
                         ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text("Annuler"),
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
-                            ),
-                            onPressed: () => Navigator.pop(context, true),
-                            child: const Text(
-                              "Supprimer",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                      );
+                    }
 
-                  return false;
-                },
+                    return false;
+                  },
 
-                onDismissed: (direction) async {
-                  if (direction == DismissDirection.endToStart) {
-                    await context
-                        .read<ChapterController>()
-                        .deleteChapter(chapter.id, widget.book.id);
+                  onDismissed: (direction) async {
+                    if (direction == DismissDirection.endToStart) {
+                      await context
+                          .read<ChapterController>()
+                          .deleteChapter(chapter.id, widget.book.id);
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Chapitre supprimé 🗑️"),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  }
-                },
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Chapitre supprimé 🗑️")),
+                      );
+                    }
+                  },
 
-                child: Card(
+              child: Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

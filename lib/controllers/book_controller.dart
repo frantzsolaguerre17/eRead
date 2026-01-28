@@ -38,45 +38,45 @@ class BookController extends ChangeNotifier {
   }
 
   /// 🔹 Ajouter un nouveau livre
-  Future<void> addBook(Book newBook, {
-    required String title,
-    required String author,
-    String numberOfPages = '',
-    String cover = '',
-    String pdf = '',
-    String category = 'Autre',
-  }) async {
-    isLoading = true;
-    notifyListeners();
+  Future<void> addBook(
+      Book newBook, {
+        required String title,
+        required String author,
+        String numberOfPages = '',
+        String cover = '',
+        String pdf = '',
+        String category = 'Autre',
+      }) async {
+    final supabase = Supabase.instance.client;
 
     try {
-      final user = Supabase.instance.client.auth.currentUser;
-      if (user == null) return;
+      final user = supabase.auth.currentUser;
+      if (user == null) {
+        throw Exception("Utilisateur non connecté");
+      }
 
-      final book = Book(
-        id: const Uuid().v4(),
-        title: title,
-        author: author,
-        number_of_pages: numberOfPages,
-        createdAt: DateTime.now(),
-        isSynced: true,
-        cover: cover,
-        pdf: pdf,
-        userId: user.id,
-        user_name: user.userMetadata?['display_name'] ?? 'Inconnu',
-        category: category,
-      );
+      // 🔥 INSERT RÉEL EN BASE
+      await supabase.from('book').insert(newBook.toJson());
 
-      await _service.addBook(book);
-      _books.insert(0, book); // Ajouter en tête
+      // 🔔 NOTIFICATIONS
+      /*await supabase.rpc(
+        'notify_new_book',
+        params: {
+          'p_sender_id': user.id,
+          'p_sender_name': newBook.user_name,
+          'p_book_id': newBook.id,
+          'p_message': '📚 ${newBook.user_name} a ajouté le livre "${newBook.title}"',
+        },
+      );*/
 
     } catch (e) {
-      debugPrint("Erreur addBook: $e");
+      debugPrint("Erreur addBook controller: $e");
+      rethrow;
     }
-
-    isLoading = false;
-    notifyListeners();
   }
+
+
+
 
   // ============================================================
   //                     FAVORIS

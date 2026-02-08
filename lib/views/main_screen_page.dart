@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:memo_livre/views/Pending_book_page.dart';
 import 'package:memo_livre/views/favorite_vocabulary_page.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../controllers/book_controller.dart';
 import '../controllers/expression_controller.dart';
+import '../controllers/group_chat_controller.dart';
 import '../controllers/notifications_controller.dart';
 import '../controllers/vocabulary_controller.dart';
 import '../views/book_screen.dart';
@@ -12,6 +14,7 @@ import '../widgets/banner_widget.dart';
 import 'about_page.dart';
 import 'favorite_expression_page.dart';
 import 'favorites_book_page.dart';
+import 'group_chat_page.dart';
 import 'login_page.dart';
 import 'notifications_screen.dart';
 
@@ -24,7 +27,9 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
-  final supabase = Supabase.instance.client;
+    final supabase = Supabase.instance.client;
+    String? role;
+    bool isLoading = true;
 
   late AnimationController _controller;
   late Animation<double> _fadeAnim;
@@ -35,6 +40,12 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void initState() {
     super.initState();
+    _loadUserRole();
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      context.read<GroupChatController>().startListening();
+    }
+
     context.read<NotificationController>().startListening();
     _loadDisplayName();
 
@@ -59,7 +70,27 @@ class _DashboardScreenState extends State<DashboardScreen>
     super.dispose();
   }
 
-  //CONFIRMATION LOGOUT
+    Future<void> fetchUserRole() async {
+      final user = supabase.auth.currentUser;
+      if (user == null) return;
+
+      final data = await supabase
+          .from('profil')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      setState(() {
+        role = (data?['role'] ?? '').toString().trim().toLowerCase();
+        isLoading = false;
+      });
+
+      debugPrint("ROLE = $role | isLoading = $isLoading");
+    }
+
+
+
+    //CONFIRMATION LOGOUT
   Future<void> _confirmLogout() async {
     final bool? shouldLogout = await showDialog<bool>(
       context: context,
@@ -113,9 +144,53 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
 
+  Future<String> getCurrentUserRole() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return 'user'; // rôle par défaut si pas connecté
+
+    final data = await Supabase.instance.client
+        .from('profil')
+        .select('role')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    return data?['role'] ?? 'user';
+  }
+
+    Future<void> loadRole() async {
+      final r = await getCurrentUserRole();
+      setState(() {
+        role = r;
+        isLoading = false;
+      });
+    }
+
+    Future<void> _loadUserRole() async {
+      try {
+        final user = Supabase.instance.client.auth.currentUser;
+        if (user == null) return;
+
+        final data = await Supabase.instance.client
+            .from('profil')
+            .select('role')
+            .eq('user_id', user.id)
+            .single();
+
+        setState(() {
+          role = data['role'];
+          isLoading = false;
+        });
+      } catch (e) {
+        debugPrint('Erreur role: $e');
+        setState(() => isLoading = false);
+      }
+    }
+
+
   @override
   Widget build(BuildContext context) {
     final bookController = context.watch<BookController>();
+    final role = getCurrentUserRole();
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -131,7 +206,31 @@ class _DashboardScreenState extends State<DashboardScreen>
               pinned: true,
               elevation: 2,
               actions: [
-
+               /// if (!isLoading && role == 'admin')
+                  IconButton(
+                    icon: const Icon(Icons.pending_actions, color: Colors.white),
+                    tooltip: "Livres en attente",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AdminPendingBooksScreen(),
+                        ),
+                      );
+                    },
+                  ),
+      IconButton(
+                  icon: const Icon(Icons.chat, color: Colors.white),
+                  tooltip: "Chat",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const GroupChatScreen(),
+                      ),
+                    );
+                  },
+                ),
                 Consumer<NotificationController>(
                   builder: (_, controller, __) {
                     return Stack(

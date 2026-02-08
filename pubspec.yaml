@@ -48,6 +48,7 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^31.1.19
   shimmer: ^3.0.0
   diacritic: ^0.1.6
+  url_launcher: ^6.2.5
   #google_mobile_ads: ^5.0.0
 
 dev_dependencies:

@@ -281,6 +281,8 @@ class _ModernBookCardState extends State<ModernBookCard> {
   double progress = 0;
   bool isNewBook = false;
   final supabase = Supabase.instance.client;
+  bool isLiked = false;
+  int likesCount = 0;
 
   @override
   void initState() {
@@ -288,12 +290,14 @@ class _ModernBookCardState extends State<ModernBookCard> {
     _loadFavoriteStatus();
     _loadProgress();
     _checkIfNew();
+    _loadLikes();
   }
 
   Future<void> _loadFavoriteStatus() async {
     final favs = await BookService().getUserFavorites();
     setState(() => isFavorite = favs.contains(widget.book.id));
   }
+
 
   Future<void> _toggleFavorite() async {
     isFavorite
@@ -327,6 +331,98 @@ class _ModernBookCardState extends State<ModernBookCard> {
     }
   }
 
+
+  Future<void> _toggleLike() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    if (isLiked) {
+      // Unlike
+      await supabase
+          .from('book_likes')
+          .delete()
+          .eq('book_id', widget.book.id)
+          .eq('user_id', user.id);
+
+      setState(() {
+        isLiked = false;
+        likesCount--;
+      });
+    } else {
+      // Like
+      await supabase.from('book_likes').insert({
+        'book_id': widget.book.id,
+        'user_id': user.id,
+      });
+
+      setState(() {
+        isLiked = true;
+        likesCount++;
+      });
+    }
+  }
+
+
+  Future<void> _loadLikes() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    // 🔢 Compter les likes
+    final likes = await supabase
+        .from('book_likes')
+        .select('id')
+        .eq('book_id', widget.book.id);
+
+    // 👍 Est-ce que moi j’ai liké ?
+    final liked = await supabase
+        .from('book_likes')
+        .select('id')
+        .eq('book_id', widget.book.id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    setState(() {
+      likesCount = likes.length;
+      isLiked = liked != null;
+    });
+  }
+
+
+  void _showRelireDialog(BuildContext context, Book book) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Livre déjà lu"),
+        content: const Text(
+          "Tu as déjà terminé ce livre.\nVeux-tu le relire ?",
+        ),
+        actions: [
+          TextButton(
+            child: const Text("Non"),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ElevatedButton(
+            child: const Text("Oui"),
+            onPressed: () {
+              Navigator.pop(context);
+              ouvrirLivreDepuisDebut(book);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> ouvrirLivreDepuisDebut(Book book) async {
+    await context
+        .read<BookController>()
+        .updateReadingProgress(book.id, 0, isRead: false);
+
+    PdfViewerPage(book: widget.book);
+  }
+
+
+
   Color _getBadgeColor() {
     if (progress >= 0.8) return Colors.green;
     if (progress > 0) return Colors.blue;
@@ -341,12 +437,19 @@ class _ModernBookCardState extends State<ModernBookCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        if (widget.book.pdf.isNotEmpty) {
+      onTap: () async {
+        final progress = await context
+            .read<BookController>()
+            .getProgress(widget.book.id);
+
+        if(progress?.isRead == true){
+          _showRelireDialog(context, widget.book);
+        } else if (widget.book.pdf.isNotEmpty) {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) => PdfViewerPage(book: widget.book)),
+                builder: (_) => PdfViewerPage(book: widget.book)
+            ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -439,26 +542,51 @@ class _ModernBookCardState extends State<ModernBookCard> {
                               ),
                             ),
 
-                            if (isNewBook)
-                              Container(
-                                margin: const EdgeInsets.only(top: 6),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Text(
-                                  "NOUVEAU",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
+                            Row(
+                              children: [
+                                if (isNewBook)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Text(
+                                      "NOUVEAU",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+
+                                const Spacer(),
+
+                                GestureDetector(
+                                  onTap: _toggleLike,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
+                                        color: isLiked ? Colors.blue : Colors.grey,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        likesCount.toString(),
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: isLiked ? Colors.blue : Colors.grey,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
+                              ],
+                            ),
+
                           ],
                         ),
                       ),

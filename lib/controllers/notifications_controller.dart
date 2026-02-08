@@ -2,11 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../models/book.dart';
+
 class NotificationController extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
 
   List<Map<String, dynamic>> notifications = [];
   int unreadCount = 0;
+  bool isLoading = true;
 
   StreamSubscription<List<Map<String, dynamic>>>? _subscription;
 
@@ -37,16 +40,19 @@ class NotificationController extends ChangeNotifier {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
 
+    isLoading = true;
+    notifyListeners();
+
     final data = await _supabase
         .from('notifications')
         .select()
-        .eq('user_id', user.id) // 🔑 IMPORTANT
+        .eq('user_id', user.id)
         .order('created_at', ascending: false);
 
     notifications = List<Map<String, dynamic>>.from(data);
-    unreadCount =
-        notifications.where((n) => n['is_read'] == false).length;
+    unreadCount = notifications.where((n) => n['is_read'] == false).length;
 
+    isLoading = false;
     notifyListeners();
   }
 
@@ -92,6 +98,17 @@ class NotificationController extends ChangeNotifier {
 
     unreadCount = data.length;
     notifyListeners();
+  }
+
+
+  Future<Book> getBookById(String bookId) async {
+    final res = await Supabase.instance.client
+        .from('book')
+        .select()
+        .eq('id', bookId)
+        .single();
+
+    return Book.fromJson(res);
   }
 
 

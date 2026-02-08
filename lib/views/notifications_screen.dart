@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:memo_livre/views/pdf_viewer_page.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import '../controllers/notifications_controller.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -27,6 +29,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<NotificationController>();
@@ -34,37 +37,70 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB),
 
-      /// 🧠 APPBAR PREMIUM
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.deepPurple,
         centerTitle: false,
-        title: const Text(
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Text(
           "Notifications",
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
+            color: Colors.white,
+          )
+            ),
+            Text(
+              "Cliquez sur notification pour ouvrir et lire le livre ajoute",
+              style: TextStyle(fontSize: 13, color: Colors.white),
+            )
+        ]
         ),
         iconTheme: const IconThemeData(color: Colors.black87),
       ),
 
-      body: controller.notifications.isEmpty
-          ? _emptyState()
-          : ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: controller.notifications.length,
-        itemBuilder: (_, i) {
-          final notif = controller.notifications[i];
-          final isRead = notif['is_read'] == true;
+      body: Builder(
+        builder: (_) {
+          /// 1️⃣ LOADING
+          if (controller.isLoading) {
+            //return const Center(
+              return _notificationsShimmer();
+           // );
+          }
 
-          return _NotificationCard(
-            message: notif['message'],
-            date: DateTime.parse(notif['created_at']),
-            isRead: isRead,
-            onTap: () =>
-                controller.markAsRead(notif['id']),
+          /// 2️⃣ EMPTY
+          if (controller.notifications.isEmpty) {
+            return _emptyState();
+          }
+
+          /// 3️⃣ LIST
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: controller.notifications.length,
+            itemBuilder: (_, i) {
+              final notif = controller.notifications[i];
+              final isRead = notif['is_read'] == true;
+
+              return _NotificationCard(
+                message: notif['message'],
+                date: DateTime.parse(notif['created_at']),
+                isRead: isRead,
+                bookId: notif['book_id'],
+                onTap: () async {
+                  controller.markAsRead(notif['id']);
+                  final book = await controller.getBookById(notif['book_id']);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PdfViewerPage(book: book),
+                    ),
+                  );
+                },
+              );
+            },
           );
         },
       ),
@@ -97,12 +133,14 @@ class _NotificationCard extends StatelessWidget {
   final String message;
   final DateTime date;
   final bool isRead;
+  final String bookId;
   final VoidCallback onTap;
 
   const _NotificationCard({
     required this.message,
     required this.date,
     required this.isRead,
+    required this.bookId,
     required this.onTap,
   });
 
@@ -144,9 +182,9 @@ class _NotificationCard extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.book,
+                Icons.menu_book_rounded,
                 color: isRead
-                    ? Colors.grey
+                    ? Colors.deepPurple
                     : Colors.deepPurple,
               ),
             ),
@@ -164,7 +202,7 @@ class _NotificationCard extends StatelessWidget {
                       fontSize: 16,
                       fontWeight:
                       isRead ? FontWeight.w400 : FontWeight.w600,
-                      color: Colors.black87,
+                      color: Colors.deepPurple,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -205,4 +243,28 @@ class _NotificationCard extends StatelessWidget {
     if (diff.inHours < 24) return "Il y a ${diff.inHours} h";
     return "${date.day}/${date.month}/${date.year}";
   }
+}
+
+
+Widget _notificationsShimmer() {
+  return ListView.builder(
+    padding: const EdgeInsets.all(12),
+    itemCount: 6,
+    itemBuilder: (_, __) {
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey.shade300,
+          highlightColor: Colors.grey.shade100,
+          child: Container(
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }

@@ -10,6 +10,7 @@ class Book {
   String _userId;
   String _category;
   String? _user_name;
+  String _status;
 
   // Nouveaux champs
   int _readingProgress; // 0..100
@@ -29,6 +30,7 @@ class Book {
     String? user_name,
     int readingProgress = 0,
     bool isRead = false,
+    String status = 'pending',
   })  : _id = id,
         _title = title,
         _author = author,
@@ -41,7 +43,9 @@ class Book {
         _category = category,
         _user_name = user_name,
         _readingProgress = readingProgress,
-        _isRead = isRead;
+        _isRead = isRead,
+        _status = status;
+
 
   // getters
   String get id => _id;
@@ -57,6 +61,7 @@ class Book {
   String? get user_name => _user_name;
   int get readingProgress => _readingProgress;
   bool get isRead => _isRead;
+  String get status => _status;
 
   // setters si besoin
   set readingProgress(int v) => _readingProgress = v;
@@ -75,9 +80,10 @@ class Book {
       pdf: json['pdf'] as String? ?? '',
       userId: json['user_id'] as String? ?? '',
       category: json['category'] as String? ?? 'Autre',
-      user_name: json['user_name'] as String? ?? json['username'] as String? ?? 'Inconnu',
-      readingProgress: (json['reading_progress'] is int) ? json['reading_progress'] as int : int.tryParse((json['reading_progress'] ?? '0').toString()) ?? 0,
-      isRead: json['is_read'] as bool? ?? false,
+      user_name: json['user_name'] as String? ?? 'Inconnu',
+      readingProgress: json['reading_progress'] ?? 0,
+      isRead: json['is_read'] ?? false,
+      status: json['status'] ?? 'pending', //
     );
   }
 
@@ -96,6 +102,8 @@ class Book {
       'user_name': _user_name,
       'reading_progress': _readingProgress,
       'is_read': _isRead,
+      'status': _status, // 🔥
     };
   }
+
 }

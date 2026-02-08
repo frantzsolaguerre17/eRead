@@ -52,9 +52,9 @@ class _NotificationCard extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.book,
+                Icons.menu_book_rounded,
                 color: isRead
-                    ? Colors.grey
+                    ? Colors.deepPurple
                     : Colors.deepPurple,
               ),
             ),

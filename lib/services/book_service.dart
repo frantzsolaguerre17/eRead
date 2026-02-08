@@ -13,7 +13,8 @@ class BookService {
   Future<List<Book>> fetchBooks() async {
     final response = await supabase
         .from('book')
-        .select('*')                     // juste les colonnes de book
+        .select()
+        .eq('status', 'approved')
         .order('created_at', ascending: false);
 
     if (response == null) return [];

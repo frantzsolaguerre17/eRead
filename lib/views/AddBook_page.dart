@@ -177,6 +177,8 @@ class _AddBookPageState extends State<AddBookPage> {
       }
 
       final username = await _getUsername();
+      final role = await _getUserRole();
+      final bookStatus = role == 'admin' ? 'approved' : 'pending';
 
       final newBook = Book(
         id: const Uuid().v4(),
@@ -190,6 +192,7 @@ class _AddBookPageState extends State<AddBookPage> {
         userId: user.id,
         category: selectedCategory ?? 'Non définie',
         user_name: username,
+        status: bookStatus,
       );
 
       //await supabase.from('book').insert(newBook.toJson());
@@ -207,7 +210,11 @@ class _AddBookPageState extends State<AddBookPage> {
         pdf: newBook.pdf,
         category: newBook.category,
       );
-      _showSnack("📘 Livre ajouté avec succès !");
+      _showSnack(
+        bookStatus == 'approved'
+            ? "📘 Livre ajouté et publié avec succès"
+            : "📨 Livre envoyé pour validation par l’administrateur",
+      );
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const DashboardScreen()),
@@ -243,6 +250,20 @@ class _AddBookPageState extends State<AddBookPage> {
         .maybeSingle();
 
     return data?['username'] ?? 'Utilisateur';
+  }
+
+
+  Future<String> _getUserRole() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return 'user';
+
+    final data = await supabase
+        .from('profil')
+        .select('role')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    return data?['role'] ?? 'user';
   }
 
 

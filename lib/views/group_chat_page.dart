@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../controllers/group_chat_controller.dart';
 
 class GroupChatScreen extends StatefulWidget {
@@ -16,8 +17,28 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   @override
   void initState() {
     super.initState();
-   // context.read<GroupChatController>().startListening();
+    _initUser();
   }
+
+  Future<void> _initUser() async {
+    final chat = context.read<GroupChatController>();
+
+    await chat.loadCurrentUser();
+    chat.startListening();
+  }
+
+
+  String formatDateHeader(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final messageDate = DateTime(date.year, date.month, date.day);
+
+    if (messageDate == today) return "Aujourd’hui";
+    if (messageDate == today.subtract(const Duration(days: 1))) return "Hier";
+
+    return "${date.day}/${date.month}/${date.year}";
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,23 +56,75 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           /// 💬 MESSAGES
           Expanded(
             child: ListView.builder(
-              reverse: true,
+              reverse: false,
               controller: scrollController,
               padding: const EdgeInsets.all(12),
               itemCount: chat.messages.length,
               itemBuilder: (_, i) {
-                final msg = chat.messages[chat.messages.length - 1 - i];
+                final msg = chat.messages[i];
+
+                final message = msg['message'] ?? '';
+                final username = msg['username'] ?? 'Utilisateur';
+                final createdAt = msg['created_at'] ?? DateTime.now().toIso8601String();
+
+                final date = DateTime.parse(msg['created_at']).toLocal();
+
                 final isMe = msg['user_id'] == chat.currentUserId;
 
-                return _ChatBubble(
-                  message: msg['message'],
-                  username: msg['username'],
-                  date: DateTime.parse(msg['created_at']).toLocal(),
-                  isMe: isMe,
+                bool showHeader = false;
+
+                if (i == 0) {
+                  // premier élément affiché (le plus récent)
+                  showHeader = true;
+                } else {
+                  final previousMsg = chat.messages[i - 1];
+                  final previousDate =
+                  DateTime.parse(previousMsg['created_at']).toLocal();
+
+                  showHeader =
+                      date.day != previousDate.day ||
+                          date.month != previousDate.month ||
+                          date.year != previousDate.year;
+                }
+
+                return Column(
+                  children: [
+                    if (showHeader)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black12,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              formatDateHeader(date),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    _ChatBubble(
+                      message: message,
+                      username: username,
+                      date: DateTime.parse(createdAt).toLocal(),
+                      isMe: msg['user_id'] == chat.currentUserId,
+                      role: msg['role'] ?? 'user',
+                    )
+
+                  ],
                 );
               },
             ),
           ),
+
 
           /// ✍️ INPUT
           _ChatInput(
@@ -69,22 +142,25 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 }
 
 
-
 class _ChatBubble extends StatelessWidget {
   final String message;
   final String username;
   final DateTime date;
   final bool isMe;
+  final String role;
 
   const _ChatBubble({
     required this.message,
     required this.username,
     required this.date,
     required this.isMe,
+    required this.role,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isAdmin = role == 'admin';
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -92,32 +168,56 @@ class _ChatBubble extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         constraints: const BoxConstraints(maxWidth: 280),
         decoration: BoxDecoration(
-          color: isMe ? Colors.deepPurple : Colors.white,
+          color: isMe
+              ? Colors.deepPurple
+              : isAdmin
+              ? Colors.orange.shade50   // 👈 fond admin
+              : const Color(0xFFF6F6F6),
+          border: isAdmin && !isMe
+              ? Border.all(color: Colors.orange, width: 1)
+              : null,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
             bottomLeft: Radius.circular(isMe ? 16 : 4),
             bottomRight: Radius.circular(isMe ? 4 : 16),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-            ),
-          ],
         ),
         child: Column(
           crossAxisAlignment:
           isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             if (!isMe)
-              Text(
-                username,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
+              Row(
+                children: [
+                  Text(
+                    username,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isAdmin ? Colors.orange.shade50 : Colors.deepPurple,
+                    ),
+                  ),
+                  if (isAdmin) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        "ADMIN",
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ]
+                ],
               ),
             Text(
               message,
@@ -160,38 +260,53 @@ class _ChatInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: const BoxDecoration(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+        decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              blurRadius: 8,
-              color: Colors.black12,
+              blurRadius: 12,
+              color: Colors.black.withOpacity(0.08),
+              offset: const Offset(0, -2),
             )
           ],
         ),
         child: Row(
           children: [
+            /// champ texte
             Expanded(
-              child: TextField(
-                controller: controller,
-                minLines: 1,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  hintText: "Écrire un message...",
-                  border: InputBorder.none,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF1F1F1),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: TextField(
+                  controller: controller,
+                  minLines: 1,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                    hintText: "Écrire un message...",
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.send, color: Colors.deepPurple),
-                onPressed: () {
-                  if (controller.text.trim().isEmpty) return;
 
-                  context.read<GroupChatController>().sendMessage(controller.text.trim());
-                  controller.clear();
-                }
+            const SizedBox(width: 8),
 
+            /// bouton envoyer
+            GestureDetector(
+              onTap: onSend,
+              child: Container(
+                height: 46,
+                width: 46,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.deepPurple,
+                ),
+                child: const Icon(Icons.send, color: Colors.white),
+              ),
             ),
           ],
         ),

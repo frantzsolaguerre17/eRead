@@ -29,7 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
     final supabase = Supabase.instance.client;
     String? role;
-    bool isLoading = true;
+    bool isLoadingRole = true;
 
   late AnimationController _controller;
   late Animation<double> _fadeAnim;
@@ -70,25 +70,22 @@ class _DashboardScreenState extends State<DashboardScreen>
     super.dispose();
   }
 
-    Future<void> fetchUserRole() async {
-      final user = supabase.auth.currentUser;
+    Future<void> _loadUserRole() async {
+      final user = Supabase.instance.client.auth.currentUser;
+
       if (user == null) return;
 
-      final data = await supabase
+      final data = await Supabase.instance.client
           .from('profil')
           .select('role')
           .eq('user_id', user.id)
           .maybeSingle();
 
       setState(() {
-        role = (data?['role'] ?? '').toString().trim().toLowerCase();
-        isLoading = false;
+        role = data?['role'];
+        isLoadingRole = false;
       });
-
-      debugPrint("ROLE = $role | isLoading = $isLoading");
     }
-
-
 
     //CONFIRMATION LOGOUT
   Future<void> _confirmLogout() async {
@@ -157,15 +154,15 @@ class _DashboardScreenState extends State<DashboardScreen>
     return data?['role'] ?? 'user';
   }
 
-    Future<void> loadRole() async {
+    /*Future<void> loadRole() async {
       final r = await getCurrentUserRole();
       setState(() {
         role = r;
         isLoading = false;
       });
     }
-
-    Future<void> _loadUserRole() async {
+*/
+  /*  Future<void> _loadUserRole() async {
       try {
         final user = Supabase.instance.client.auth.currentUser;
         if (user == null) return;
@@ -185,12 +182,12 @@ class _DashboardScreenState extends State<DashboardScreen>
         setState(() => isLoading = false);
       }
     }
-
+*/
 
   @override
   Widget build(BuildContext context) {
     final bookController = context.watch<BookController>();
-    final role = getCurrentUserRole();
+    //final role = getCurrentUserRole();
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -202,11 +199,11 @@ class _DashboardScreenState extends State<DashboardScreen>
             SliverAppBar(
               automaticallyImplyLeading: false,
               backgroundColor: Colors.deepPurple.shade700,
-              expandedHeight: 190,
+              expandedHeight: MediaQuery.of(context).size.height * 0.28,
               pinned: true,
               elevation: 2,
               actions: [
-               /// if (!isLoading && role == 'admin')
+                if (!isLoadingRole && role?.toLowerCase() == 'admin')
                   IconButton(
                     icon: const Icon(Icons.pending_actions, color: Colors.white),
                     tooltip: "Livres en attente",
@@ -276,7 +273,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                     );
                   },
                 ),
-
 
                 IconButton(
                   icon: const Icon(Icons.info_outline, color: Colors.white),

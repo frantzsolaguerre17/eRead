@@ -77,7 +77,7 @@ class PendingBookDetailScreen extends StatelessWidget {
             Text("Catégorie : ${book.category}"),
             Text(
               "Ajouté par : ${book.user_name ?? 'Utilisateur'}",
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 16),
 
@@ -91,7 +91,7 @@ class PendingBookDetailScreen extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.check_circle_outline),
-                  label: const Text("Approuver"),
+                  label: const Text("Approuver", style: TextStyle(color: Colors.white),),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                   ),
@@ -101,10 +101,10 @@ class PendingBookDetailScreen extends StatelessWidget {
                     await onReject(book);
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.cancel_outlined),
-                  label: const Text("Refuser"),
+                  icon: const Icon(color: Colors.red, Icons.cancel_outlined),
+                  label: const Text("Refuser", style: TextStyle(color: Colors.white),),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.deepOrange,
                   ),
                 ),
               ],
@@ -122,8 +122,8 @@ class PendingBookDetailScreen extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.picture_as_pdf),
-                label: const Text("Ouvrir PDF"),
+                icon: const Icon(color: Colors.white, Icons.picture_as_pdf),
+                label: const Text("Ouvrir PDF", style: TextStyle(color: Colors.white),),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                   padding: const EdgeInsets.symmetric(vertical: 14),

@@ -45,11 +45,11 @@ class _AddBookPageState extends State<AddBookPage> {
   ];
   String? selectedCategory;
 
-  Future<bool> _checkStoragePermission() async {
+  /*Future<bool> _checkStoragePermission() async {
     final status = await Permission.storage.request();
     return status.isGranted;
   }
-
+*/
   String getSafeFileName(String originalName) {
     final extension = originalName.contains('.') ? originalName.split('.').last : '';
     final nameWithoutExt = originalName.split('.').first.replaceAll(RegExp(r'[^\w\-]'), '_');
@@ -57,11 +57,11 @@ class _AddBookPageState extends State<AddBookPage> {
   }
 
   Future<void> pickImage() async {
-    final hasPermission = await _checkStoragePermission();
+    /*final hasPermission = await _checkStoragePermission();
     if (!hasPermission) {
       _showSnack("Permission refusée pour accéder aux fichiers.");
       return;
-    }
+    }*/
 
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
     if (result != null && result.files.single.path != null) {
@@ -75,26 +75,17 @@ class _AddBookPageState extends State<AddBookPage> {
   }
 
   Future<void> pickPdf() async {
-    final hasPermission = await _checkStoragePermission();
-    if (!hasPermission) {
-      _showSnack("Permission refusée pour accéder aux fichiers.");
-      return;
-    }
-
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
     );
 
     if (result != null && result.files.single.path != null) {
-      final tempDir = await getTemporaryDirectory();
-      final fileName = result.files.single.name;
-      final tempFile = File('${tempDir.path}/$fileName');
-      await File(result.files.single.path!).copy(tempFile.path);
-
-      setState(() => selectedPdf = tempFile);
+      final file = File(result.files.single.path!);
+      setState(() => selectedPdf = file);
     }
   }
+
 
   Future<String> uploadFile(File file, String bucket) async {
     final user = supabase.auth.currentUser;

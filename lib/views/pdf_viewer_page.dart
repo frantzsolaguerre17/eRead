@@ -27,6 +27,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   int? _markedPage;
   int _totalPages = 1;
   double _progress = 0.0;
+  bool _isDarkMode = false;
 
   @override
   void initState() {
@@ -92,6 +93,19 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     }
 
     return null;
+  }
+
+  Future<void> _loadThemePreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('pdf_dark_mode') ?? false;
+    });
+  }
+
+  Future<void> _toggleDarkMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() => _isDarkMode = !_isDarkMode);
+    await prefs.setBool('pdf_dark_mode', _isDarkMode);
   }
 
 
@@ -162,6 +176,18 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
             ),
           ),
           actions: [
+            IconButton(
+              icon: Icon(
+                _isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isDarkMode = !_isDarkMode;
+                });
+              },
+            ),
+
             PopupMenuButton<String>(
               icon: const Icon(Icons.bookmark, color: Colors.white),
               onSelected: (value) {
@@ -191,19 +217,35 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasData && snapshot.data != null) {
-              return SfPdfViewer.file(
-                snapshot.data!,
-                controller: _pdfController,
-                onDocumentLoaded: (details) {
-                  _totalPages = details.document.pages.count;
-                  _pdfController.jumpToPage(_markedPage ?? _lastPage);
-                  _updateProgress(_lastPage);
-                },
-                onPageChanged: (details) {
-                  _saveLastPage(details.newPageNumber);
-                  _updateProgress(details.newPageNumber);
-                },
+              return Container(
+                color: _isDarkMode ? Colors.black : Colors.white,
+                child: ColorFiltered(
+                  colorFilter: _isDarkMode
+                      ? const ColorFilter.matrix([
+                    -1,0,0,0,255,
+                    0,-1,0,0,255,
+                    0,0,-1,0,255,
+                    0,0,0,1,0,
+                  ])
+                      : const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+                  child: SfPdfViewer.file(
+                    snapshot.data!,
+                    controller: _pdfController,
+                    canShowScrollHead: true,
+                    pageSpacing: 2,
+                    onDocumentLoaded: (details) {
+                      _totalPages = details.document.pages.count;
+                      _pdfController.jumpToPage(_markedPage ?? _lastPage);
+                      _updateProgress(_lastPage);
+                    },
+                    onPageChanged: (details) {
+                      _saveLastPage(details.newPageNumber);
+                      _updateProgress(details.newPageNumber);
+                    },
+                  ),
+                ),
               );
+
             }
             return const Center(child: Text("Impossible de charger le PDF"));
           },

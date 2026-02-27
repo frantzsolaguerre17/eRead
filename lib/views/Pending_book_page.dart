@@ -153,32 +153,47 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
 
                   /// INFOS LIVRE
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            book.title,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          book.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Text("Auteur : ${book.author}"),
-                          Text("Pages : ${book.number_of_pages}"),
-                          Text("Catégorie : ${book.category}"),
-                          Text(
-                            "Ajouté par : ${book.user_name ?? 'Utilisateur'}",
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                        ),
+
+                        Text(
+                          "Auteur : ${book.author}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        Text("Pages : ${book.number_of_pages}"),
+
+                        Text(
+                          "Catégorie : ${book.category}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        Text(
+                          "Ajouté par : ${book.user_name ?? 'Utilisateur'}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey.shade600,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
+
 
                   const SizedBox(width: 8),
 
@@ -187,49 +202,42 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       SizedBox(
-                        width: 90,
-                        child: ElevatedButton(
-                          onPressed: () => approveBook(book),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                        width: 95,
+                        child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center, // 👈 IMPORTANT
+                          children: [
+                            ElevatedButton(
+                              onPressed: () => approveBook(book),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                minimumSize: const Size.fromHeight(32), // 👈 réduit la hauteur
+                              ),
+                              child: const Text("Approuver", style: TextStyle(fontSize: 11, color: Colors.white)),
                             ),
-                            textStyle: const TextStyle(fontSize: 12),
-                          ),
-                          child: const Text("Approuver"),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 90,
-                        child: ElevatedButton(
-                          onPressed: () => rejectBook(book),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                            const SizedBox(height: 6),
+                            ElevatedButton(
+                              onPressed: () => rejectBook(book),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepOrange,
+                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                minimumSize: const Size.fromHeight(32),
+                              ),
+                              child: const Text("Refuser", style: TextStyle(fontSize: 11, color: Colors.white)),
                             ),
-                            textStyle: const TextStyle(fontSize: 12),
-                          ),
-                          child: const Text("Refuser"),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 90,
-                        child: OutlinedButton(
-                          onPressed: () => downloadPdf(book),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.deepPurple),
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                            const SizedBox(height: 6),
+                            OutlinedButton(
+                              onPressed: () => downloadPdf(book),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                minimumSize: const Size.fromHeight(32),
+                              ),
+                              child: const Text("PDF", style: TextStyle(fontSize: 11)),
                             ),
-                            textStyle: const TextStyle(fontSize: 12),
-                          ),
-                          child: const Text("PDF"),
+                          ],
                         ),
+                        )
                       ),
                     ],
                   ),

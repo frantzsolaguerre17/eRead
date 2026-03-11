@@ -620,7 +620,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 widget.book.title,
                 style: const TextStyle(
                     fontSize: 22,
-                    fontWeight: FontWeight.bold,
                     letterSpacing: 0.3,
                     color: Colors.white),
               ),

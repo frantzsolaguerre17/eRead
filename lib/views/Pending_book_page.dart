@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/views/Pending_Book_Detail_Screen.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/book.dart';
 
@@ -63,6 +64,9 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
     }
   }
 
+  // ❌ Refuser un livre
+
+
   // 📥 Télécharger le PDF
   Future<void> downloadPdf(Book book) async {
     if (book.pdf.isEmpty) {
@@ -84,11 +88,12 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text("Livres en attente"),
         backgroundColor: Colors.deepPurple,
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const FavoriteVocabularyShimmer()
           : pendingBooks.isEmpty
           ? const Center(child: Text("Aucun livre en attente"))
           : ListView.builder(
@@ -227,14 +232,14 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
                               child: const Text("Refuser", style: TextStyle(fontSize: 11, color: Colors.white)),
                             ),
                             const SizedBox(height: 6),
-                            OutlinedButton(
+                           /* OutlinedButton(
                               onPressed: () => downloadPdf(book),
                               style: OutlinedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(vertical: 6),
                                 minimumSize: const Size.fromHeight(32),
                               ),
                               child: const Text("PDF", style: TextStyle(fontSize: 11)),
-                            ),
+                            ),*/
                           ],
                         ),
                         )
@@ -249,6 +254,43 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
           );
         },
       ),
+    );
+  }
+}
+
+
+class FavoriteVocabularyShimmer extends StatelessWidget {
+  const FavoriteVocabularyShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: 6,
+      itemBuilder: (_, __) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Shimmer.fromColors(
+            baseColor: Colors.deepPurple.shade50,
+            highlightColor:
+            Colors.deepPurple.shade100,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.circular(12),
+              ),
+              child: Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple.shade50,
+                  borderRadius:
+                  BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

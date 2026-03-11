@@ -217,7 +217,8 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
-        title: const Text("Expressions apprises"),
+        title: const Text("Expressions apprises",
+          style: TextStyle(fontSize: 22, color: Colors.white),),
         actions: [
           IconButton(
             icon: const Icon(Icons.star, color: Colors.amber),

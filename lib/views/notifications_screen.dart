@@ -15,17 +15,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
-    final controller = context.read<NotificationController>();
-
-    // Charger initialement toutes les notifications depuis la DB
-    controller.fetchNotifications();
-
-    // Ensuite écouter le flux en temps réel
-    controller.startListening();
-
-    // Marquer tout comme lu (optionnel)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.markAllAsRead();
+      context.read<NotificationController>().fetchNotifications();
     });
   }
 
@@ -40,7 +31,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.deepPurple,
-        centerTitle: false,
+        centerTitle: true,
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [

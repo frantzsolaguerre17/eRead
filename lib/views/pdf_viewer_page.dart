@@ -156,11 +156,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
               children: [
                 const Text(
                   "Lecture du livre 📖",
-                  style: TextStyle(
-                    fontSize: 22,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 22, color: Colors.white),
                   textAlign: TextAlign.center, // Centre le texte
                 ),
                 Text(

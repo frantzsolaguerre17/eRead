@@ -59,7 +59,9 @@ class _FavoriteExpressionScreenState
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
-        title: const Text("Mes expressions favorites"),
+        title: const Text("Mes expressions favorites",
+          style: TextStyle(fontSize: 22, color: Colors.white),
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(

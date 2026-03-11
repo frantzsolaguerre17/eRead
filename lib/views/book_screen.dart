@@ -99,7 +99,7 @@ class _BookListPageState extends State<BookListPage> {
         elevation: 4,
         title: const Text(
           "Mes livres",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 22, color: Colors.white),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),

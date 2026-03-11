@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/views/pdf_preview_page.dart';
 import 'package:memo_livre/views/pdf_viewer_page.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/book.dart';
 

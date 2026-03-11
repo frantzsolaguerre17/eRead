@@ -204,7 +204,7 @@ class _AddBookPageState extends State<AddBookPage> {
       _showSnack(
         bookStatus == 'approved'
             ? "📘 Livre ajouté et publié avec succès"
-            : "📨 Livre envoyé pour validation par l’administrateur",
+            : "📨 Livre envoyé a l'équipe eRead pour verification",
       );
 
       Navigator.of(context).pushAndRemoveUntil(
@@ -323,12 +323,13 @@ class _AddBookPageState extends State<AddBookPage> {
               ],
             ),
           ),
+          centerTitle: true,
           title: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
               Text(
                 "Ajouter un livre",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(fontSize: 22, color: Colors.white),
               ),
               Text(
                 "Ajoutez un livre et partagez-le avec la communauté eRead",

@@ -293,7 +293,8 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
-        title: const Text("Mots appris"),
+        title: const Text("Mots appris",
+          style: TextStyle(fontSize: 22, color: Colors.white),),
         actions: [
           IconButton(
             icon: const Icon(Icons.star, color: Colors.amber),

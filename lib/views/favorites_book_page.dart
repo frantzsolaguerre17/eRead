@@ -69,7 +69,9 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
-        title: const Text("Mes livres favoris"),
+        title: const Text("Mes livres favoris",
+          style: TextStyle(fontSize: 22, color: Colors.white),
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(

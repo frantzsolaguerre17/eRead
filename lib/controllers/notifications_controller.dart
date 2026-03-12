@@ -46,7 +46,7 @@ class NotificationController extends ChangeNotifier {
     final data = await _supabase
         .from('notifications')
         .select()
-        .eq('user_id', user.id)
+        .eq('type', 'book_added')
         .order('created_at', ascending: false);
 
     notifications = List<Map<String, dynamic>>.from(data);

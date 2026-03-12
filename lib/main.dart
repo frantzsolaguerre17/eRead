@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memo_livre/controllers/MessageController.dart';
 import 'package:memo_livre/views/login_page.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ExcerptController()),
         ChangeNotifierProvider(create: (_) => ExpressionController()),
         ChangeNotifierProvider(create: (_) => NotificationController()),
+        ChangeNotifierProvider(create: (_) => Messagecontroller(),),
        /* ChangeNotifierProvider(create: (_) {
             final controller = GroupChatController();
             controller.startListening();

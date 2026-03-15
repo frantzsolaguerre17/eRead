@@ -5,6 +5,7 @@ import 'package:memo_livre/views/favorite_vocabulary_page.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../controllers/MessageController.dart';
 import '../controllers/book_controller.dart';
 import '../controllers/expression_controller.dart';
 import '../controllers/group_chat_controller.dart';
@@ -56,6 +57,13 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
     _fadeAnim = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
+
+    Future.microtask(() {
+
+      context.read<NotificationController>().loadUnreadCount();
+      context.read<Messagecontroller>().loadUnreadCount();
+
+    });
   }
 
   void _loadDisplayName() {
@@ -217,18 +225,53 @@ class _DashboardScreenState extends State<DashboardScreen>
                       );
                     },
                   ),
-                IconButton(
-                  icon: const Icon(Icons.email_outlined, color: Colors.white),
-                  tooltip: "Chat",
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const PrivateNotificationsScreen(),
+
+                Stack(
+                  children: [
+
+                    /// Bouton navigation (ne rebuild jamais)
+                    IconButton(
+                      icon: const Icon(Icons.mail, color: Colors.white),
+                        onPressed: () async {
+
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const PrivateNotificationsScreen(),
+                            ),
+                          );
+
+                          Future.microtask(() {
+                            context.read<Messagecontroller>().loadUnreadCount();
+                          });
+                        }
+                    ),
+
+                    /// Badge qui rebuild seul
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Selector<Messagecontroller, int>(
+                        selector: (_, controller) => controller.unreadCount,
+                        builder: (_, unreadCount, __) {
+
+                          if (unreadCount == 0) {
+                            return const SizedBox();
+                          }
+
+                          return Badge(
+                            label: Text(
+                              unreadCount > 99 ? "99+" : unreadCount.toString(),
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ),
+
+                  ],
                 ),
+
       IconButton(
                   icon: const Icon(Icons.chat, color: Colors.white),
                   tooltip: "Chat",
@@ -241,33 +284,35 @@ class _DashboardScreenState extends State<DashboardScreen>
                     );
                   },
                 ),
-                Consumer<NotificationController>(
+
+
+               /* Consumer<NotificationController>(
                   builder: (_, controller, __) {
+
                     return Stack(
                       children: [
+
                         IconButton(
-                          icon: const Icon(Icons.notifications, color: Colors.white),
-                            onPressed: () {
-                              // Ouvrir la page immédiatement (UI fluide)
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const NotificationsScreen(),
-                                ),
-                              );
+                          icon: const Icon(Icons.notifications,  color: Colors.white),
+                          onPressed: () {
 
-                              // Ensuite seulement → logique métier
-                              context.read<NotificationController>().markAllAsRead();
-                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const NotificationsScreen(),
+                              ),
+                            );
 
+                            controller.markAllAsRead();
+                          },
                         ),
 
                         if (controller.unreadCount > 0)
                           Positioned(
-                            right: 8,
-                            top: 8,
+                            right: 6,
+                            top: 6,
                             child: Container(
-                              padding: const EdgeInsets.all(6),
+                              padding: const EdgeInsets.all(5),
                               decoration: const BoxDecoration(
                                 color: Colors.red,
                                 shape: BoxShape.circle,
@@ -276,16 +321,61 @@ class _DashboardScreenState extends State<DashboardScreen>
                                 controller.unreadCount.toString(),
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
                                 ),
                               ),
                             ),
-                          ),
+                          )
+
                       ],
                     );
                   },
+                ),*/
+
+                Stack(
+                  children: [
+                IconButton(
+                    icon: const Icon(Icons.notifications, color: Colors.white),
+                    onPressed: () async {
+
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsScreen(),
+                        ),
+                      );
+
+                      Future.microtask(() {
+                        context.read<NotificationController>().loadUnreadCount();
+                      });
+                    }
                 ),
+
+                /// Badge qui rebuild seul
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: Selector<NotificationController, int>(
+                    selector: (_, controller) => controller.unreadCount,
+                    builder: (_, unreadCount, __) {
+
+                      if (unreadCount == 0) {
+                        return const SizedBox();
+                      }
+
+                      return Badge(
+                        label: Text(
+                          unreadCount > 99 ? "99+" : unreadCount.toString(),
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+              ],
+            ),
+
 
                 IconButton(
                   icon: const Icon(Icons.info_outline, color: Colors.white),

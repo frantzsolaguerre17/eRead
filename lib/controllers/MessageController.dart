@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/NotificationModel.dart';
 import '../services/MessageService.dart';
@@ -6,10 +7,12 @@ import '../services/MessageService.dart';
 class Messagecontroller extends ChangeNotifier {
 
   final NotificationService _service = NotificationService();
+  final _supabase = Supabase.instance.client;
 
   List<NotificationModel> notifications = [];
 
   bool isLoading = false;
+  int unreadCount = 0;
 
   Future<void> fetchNotifications() async {
 
@@ -41,6 +44,39 @@ class Messagecontroller extends ChangeNotifier {
         createdAt: notifications[index].createdAt,
       );
     }
+
+    notifyListeners();
+  }
+
+
+  Future<void> loadUnreadCount() async {
+
+    final user = _supabase.auth.currentUser;
+
+    final data = await _supabase
+        .from('notifications')
+        .select()
+        .eq('type', 'private_message')
+        .eq('user_id', user!.id)
+        .eq('is_read', false);
+
+    unreadCount = data.length;
+
+    notifyListeners();
+  }
+
+
+  Future<void> markAllAsRead() async {
+
+    final user = _supabase.auth.currentUser;
+
+    await _supabase
+        .from('notifications')
+        .update({'is_read': true})
+        .eq('type', 'private_message')
+        .eq('user_id', user!.id);
+
+    unreadCount = 0;
 
     notifyListeners();
   }

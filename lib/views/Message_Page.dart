@@ -17,8 +17,14 @@ class _PrivateNotificationsScreenState
   void initState() {
     super.initState();
 
-    Future.microtask(() =>
-        context.read<Messagecontroller>().fetchNotifications());
+    Future.microtask(() {
+      //context.read<Messagecontroller>().fetchNotifications());
+
+      final controller = context.read<Messagecontroller>();
+
+      controller.markAllAsRead(); // ✔ ici
+      controller.fetchNotifications();
+    });
   }
 
   @override

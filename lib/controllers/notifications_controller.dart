@@ -71,32 +71,67 @@ class NotificationController extends ChangeNotifier {
 
 
   /// Tout marquer comme lu
-  Future<void> markAllAsRead() async {
+  /*Future<void> markAllAsRead(String type) async {
+
     final user = _supabase.auth.currentUser;
-    if (user == null) return;
 
     await _supabase
         .from('notifications')
         .update({'is_read': true})
-        .eq('user_id', user.id)
-        .eq('is_read', false);
+        .eq('type', type)
+        .eq('user_id', user!.id);
 
     unreadCount = 0;
+    notifyListeners();
+
+  }*/
+
+
+  Future<void> markAllAsRead() async {
+
+    final user = _supabase.auth.currentUser;
+
+    await _supabase
+        .from('notifications')
+        .update({'is_read': true})
+        .eq('type', 'book_added')
+        .neq('user_id', user!.id);
+
+    unreadCount = 0;
+
     notifyListeners();
   }
 
 
-  Future<void> fetchUnreadCount() async {
+  Future<int> getUnreadCount(String type) async {
+
     final user = _supabase.auth.currentUser;
-    if (user == null) return;
 
     final data = await _supabase
         .from('notifications')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('is_read', false);
+        .select()
+        .eq('type', type)
+        .eq('is_read', false)
+        .eq('user_id', user!.id);
+
+    return data.length;
+
+  }
+
+
+  Future<void> loadUnreadCount() async {
+
+    final user = _supabase.auth.currentUser;
+
+    final data = await _supabase
+        .from('notifications')
+        .select()
+        .eq('type', 'book_added')
+        .eq('is_read', false)
+        .neq('user_id', user!.id);
 
     unreadCount = data.length;
+
     notifyListeners();
   }
 

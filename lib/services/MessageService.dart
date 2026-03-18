@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class NotificationService {
+class MessageService {
 
   final SupabaseClient supabase = Supabase.instance.client;
 

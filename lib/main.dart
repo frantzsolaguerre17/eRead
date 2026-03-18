@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ExcerptController()),
         ChangeNotifierProvider(create: (_) => ExpressionController()),
         ChangeNotifierProvider(create: (_) => NotificationController()),
-        ChangeNotifierProvider(create: (_) => Messagecontroller(),),
+        ChangeNotifierProvider(create: (_) => MessageController(),),
        /* ChangeNotifierProvider(create: (_) {
             final controller = GroupChatController();
             controller.startListening();

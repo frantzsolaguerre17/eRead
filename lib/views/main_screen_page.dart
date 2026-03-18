@@ -60,10 +60,15 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     Future.microtask(() {
 
-      context.read<NotificationController>().loadUnreadCount();
-      context.read<Messagecontroller>().loadUnreadCount();
+     // context.read<NotificationController>().loadUnreadCount();
+      context.read<MessageController>().loadUnreadCount();
 
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationController>().loadUnreadCount();
+    });
+
   }
 
   void _loadDisplayName() {
@@ -242,7 +247,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           );
 
                           Future.microtask(() {
-                            context.read<Messagecontroller>().loadUnreadCount();
+                            context.read<MessageController>().loadUnreadCount();
                           });
                         }
                     ),
@@ -251,7 +256,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                     Positioned(
                       right: 4,
                       top: 4,
-                      child: Selector<Messagecontroller, int>(
+                      child: Selector<MessageController, int>(
                         selector: (_, controller) => controller.unreadCount,
                         builder: (_, unreadCount, __) {
 
@@ -345,9 +350,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                         ),
                       );
 
-                      Future.microtask(() {
+                     // Future.microtask(() {
                         context.read<NotificationController>().loadUnreadCount();
-                      });
+                     // });
                     }
                 ),
 
@@ -355,17 +360,17 @@ class _DashboardScreenState extends State<DashboardScreen>
                 Positioned(
                   right: 4,
                   top: 4,
-                  child: Selector<NotificationController, int>(
-                    selector: (_, controller) => controller.unreadCount,
-                    builder: (_, unreadCount, __) {
+                  child: Consumer<NotificationController>(
+                   // selector: (_, controller) => controller.unreadCount,
+                    builder: (_, controller, __) {
 
-                      if (unreadCount == 0) {
+                      if (controller.unreadCount == 0) {
                         return const SizedBox();
                       }
 
                       return Badge(
                         label: Text(
-                          unreadCount > 99 ? "99+" : unreadCount.toString(),
+                          controller.unreadCount > 99 ? "99+" : controller.unreadCount.toString(),
                           style: const TextStyle(fontSize: 10),
                         ),
                       );

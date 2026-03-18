@@ -15,8 +15,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<NotificationController>().fetchNotifications();
+    Future.microtask(() async {
+      final controller = context.read<NotificationController>();
+
+      /// 🔥 1. MARQUER TOUT COMME LU D’ABORD
+      await controller.markAllPublicAsRead();
+
+      /// 🔥 2. ENSUITE FETCH (UI propre)
+      await controller.fetchNotifications();
     });
   }
 
@@ -79,17 +85,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 date: DateTime.parse(notif['created_at']),
                 isRead: isRead,
                 bookId: notif['book_id'],
-                onTap: () async {
-                  controller.markAsRead(notif['id']);
-                  final book = await controller.getBookById(notif['book_id']);
+                  onTap: () async {
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PdfViewerPage(book: book),
-                    ),
-                  );
-                },
+                    await controller.markAsRead(notif['id']);
+
+                    final book = await controller.getBookById(notif['book_id']);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PdfViewerPage(book: book),
+                      ),
+                    );
+                  }
               );
             },
           );

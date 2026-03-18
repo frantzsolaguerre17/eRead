@@ -20,7 +20,7 @@ class _PrivateNotificationsScreenState
     Future.microtask(() {
       //context.read<Messagecontroller>().fetchNotifications());
 
-      final controller = context.read<Messagecontroller>();
+      final controller = context.read<MessageController>();
 
       controller.markAllAsRead(); // ✔ ici
       controller.fetchNotifications();
@@ -62,7 +62,7 @@ class _PrivateNotificationsScreenState
         ),
       ),
 
-      body: Consumer<Messagecontroller>(
+      body: Consumer<MessageController>(
         builder: (_, controller, __) {
 
           if (controller.isLoading) {
@@ -153,7 +153,7 @@ class _PrivateNotificationsScreenState
 
                     if (!notif.isRead) {
                       context
-                          .read<Messagecontroller>()
+                          .read<MessageController>()
                           .markAsRead(notif.id);
                     }
 

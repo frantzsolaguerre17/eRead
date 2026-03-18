@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/book.dart';
+import '../services/notification_service.dart';
 
 class NotificationController extends ChangeNotifier {
+
   final _supabase = Supabase.instance.client;
 
+  final PublicNotificationService _service =
+  PublicNotificationService();
+
   List<Map<String, dynamic>> notifications = [];
+
   int unreadCount = 0;
   bool isLoading = true;
 
@@ -43,22 +49,21 @@ class NotificationController extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final data = await _supabase
-        .from('notifications')
-        .select()
-        .eq('type', 'book_added')
-        .order('created_at', ascending: false);
+    final data = await _supabase.rpc('get_public_notifications', params: {
+      'user_uuid': user.id,
+    });
 
     notifications = List<Map<String, dynamic>>.from(data);
-    unreadCount = notifications.where((n) => n['is_read'] == false).length;
+
+    unreadCount =
+        notifications.where((n) => n['is_read'] == false).length;
 
     isLoading = false;
     notifyListeners();
   }
 
-
   /// 👁️ Marquer comme lu
-  Future<void> markAsRead(String id) async {
+  /*Future<void> markAsRead(String id) async {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
 
@@ -67,70 +72,61 @@ class NotificationController extends ChangeNotifier {
         .update({'is_read': true})
         .eq('id', id)
         .eq('user_id', user.id); // 🔐 sécurité
-  }
-
-
-  /// Tout marquer comme lu
-  /*Future<void> markAllAsRead(String type) async {
-
-    final user = _supabase.auth.currentUser;
-
-    await _supabase
-        .from('notifications')
-        .update({'is_read': true})
-        .eq('type', type)
-        .eq('user_id', user!.id);
-
-    unreadCount = 0;
-    notifyListeners();
-
   }*/
 
 
-  Future<void> markAllAsRead() async {
+  Future<void> markAsRead(String notificationId) async {
 
     final user = _supabase.auth.currentUser;
 
     await _supabase
-        .from('notifications')
-        .update({'is_read': true})
-        .eq('type', 'book_added')
-        .neq('user_id', user!.id);
+        .from('notification_reads')
+        .insert({
+      'notification_id': notificationId,
+      'user_id': user!.id
+    });
 
-    unreadCount = 0;
+    await loadUnreadCount();
+  }
+
+
+  Future<bool> isRead(String notificationId) async {
+
+    final user = _supabase.auth.currentUser;
+
+    final data = await _supabase
+        .from('notification_reads')
+        .select()
+        .eq('notification_id', notificationId)
+        .eq('user_id', user!.id)
+        .maybeSingle();
+
+    return data != null;
+  }
+
+
+
+  Future<void> loadUnreadCount() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
+
+    final data = await _supabase.rpc(
+      'get_public_notifications',
+      params: {'user_uuid': user.id},
+    );
+
+    final list = List<Map<String, dynamic>>.from(data);
+
+    unreadCount = list.where((n) => n['is_read'] == false).length;
 
     notifyListeners();
   }
 
+  Future<void> markAllAsRead() async {
 
-  Future<int> getUnreadCount(String type) async {
+    await _service.markAllAsRead();
 
-    final user = _supabase.auth.currentUser;
-
-    final data = await _supabase
-        .from('notifications')
-        .select()
-        .eq('type', type)
-        .eq('is_read', false)
-        .eq('user_id', user!.id);
-
-    return data.length;
-
-  }
-
-
-  Future<void> loadUnreadCount() async {
-
-    final user = _supabase.auth.currentUser;
-
-    final data = await _supabase
-        .from('notifications')
-        .select()
-        .eq('type', 'book_added')
-        .eq('is_read', false)
-        .neq('user_id', user!.id);
-
-    unreadCount = data.length;
+    unreadCount = 0;
 
     notifyListeners();
   }
@@ -144,6 +140,36 @@ class NotificationController extends ChangeNotifier {
         .single();
 
     return Book.fromJson(res);
+  }
+
+
+
+  Future<void> markAllPublicAsRead() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
+
+    final notifs = await _supabase
+        .from('notifications')
+        .select('id')
+        .eq('type', 'book_added');
+
+    if (notifs.isEmpty) return;
+
+    final reads = notifs.map((n) => {
+      'notification_id': n['id'],
+      'user_id': user.id,
+    }).toList();
+
+    /// 🔥 ICI LA CORRECTION
+    await _supabase.from('notification_reads').upsert(
+      reads,
+      onConflict: 'notification_id,user_id',
+    );
+
+    /// 🔥 IMPORTANT → recalcul réel
+    await loadUnreadCount();
+
+    notifyListeners();
   }
 
 
@@ -161,4 +187,5 @@ class NotificationController extends ChangeNotifier {
     _subscription?.cancel();
     super.dispose();
   }
+
 }

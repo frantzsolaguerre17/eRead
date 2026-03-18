@@ -4,15 +4,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/NotificationModel.dart';
 import '../services/MessageService.dart';
 
-class Messagecontroller extends ChangeNotifier {
+class MessageController extends ChangeNotifier {
 
-  final NotificationService _service = NotificationService();
+  final MessageService _service = MessageService();
   final _supabase = Supabase.instance.client;
 
   List<NotificationModel> notifications = [];
 
   bool isLoading = false;
   int unreadCount = 0;
+
 
   Future<void> fetchNotifications() async {
 
@@ -24,7 +25,6 @@ class Messagecontroller extends ChangeNotifier {
     notifications = data
         .map((e) => NotificationModel.fromMap(e))
         .toList();
-
     isLoading = false;
     notifyListeners();
   }

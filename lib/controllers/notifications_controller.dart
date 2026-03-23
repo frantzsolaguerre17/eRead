@@ -1,149 +1,97 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../models/book.dart';
 import '../services/notification_service.dart';
 
 class NotificationController extends ChangeNotifier {
-
   final _supabase = Supabase.instance.client;
+  final PublicNotificationService _service = PublicNotificationService();
 
-  final PublicNotificationService _service =
-  PublicNotificationService();
+  /// 🔹 Séparation public / privé
+  List<Map<String, dynamic>> publicNotifications = [];
+  List<Map<String, dynamic>> privateNotifications = [];
 
-  List<Map<String, dynamic>> notifications = [];
+  int unreadCount = 0; // badge public
+  bool isLoadingPublic = true;
 
-  int unreadCount = 0;
-  bool isLoading = true;
+  StreamSubscription<List<Map<String, dynamic>>>? _privateSubscription;
 
-  StreamSubscription<List<Map<String, dynamic>>>? _subscription;
-
-  /// 🔥 REALTIME
-  void startListening() {
+  /// 🔹 REALTIME : notifications privées uniquement
+  void startListeningPrivate() {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
 
-    _subscription = _supabase
+    _privateSubscription = _supabase
         .from('notifications')
         .stream(primaryKey: ['id'])
         .eq('user_id', user.id)
         .listen((data) {
-      notifications = List<Map<String, dynamic>>.from(data);
-
-      // 🔥 recalcul propre
-      unreadCount =
-          notifications.where((n) => n['is_read'] == false).length;
-
+      privateNotifications = List<Map<String, dynamic>>.from(data);
       notifyListeners();
     });
-
   }
 
-
-  /// 📥 Chargement initial
-  Future<void> fetchNotifications() async {
+  /// 🔹 Fetch notifications publiques
+  Future<void> fetchPublicNotifications() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
 
-    isLoading = true;
+    isLoadingPublic = true;
     notifyListeners();
-
-    final data = await _supabase.rpc('get_public_notifications', params: {
-      'user_uuid': user.id,
-    });
-
-    notifications = List<Map<String, dynamic>>.from(data);
-
-    unreadCount =
-        notifications.where((n) => n['is_read'] == false).length;
-
-    isLoading = false;
-    notifyListeners();
-  }
-
-  /// 👁️ Marquer comme lu
-  /*Future<void> markAsRead(String id) async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) return;
-
-    await _supabase
-        .from('notifications')
-        .update({'is_read': true})
-        .eq('id', id)
-        .eq('user_id', user.id); // 🔐 sécurité
-  }*/
-
-
-  Future<void> markAsRead(String notificationId) async {
-
-    final user = _supabase.auth.currentUser;
-
-    await _supabase
-        .from('notification_reads')
-        .insert({
-      'notification_id': notificationId,
-      'user_id': user!.id
-    });
-
-    await loadUnreadCount();
-  }
-
-
-  Future<bool> isRead(String notificationId) async {
-
-    final user = _supabase.auth.currentUser;
-
-    final data = await _supabase
-        .from('notification_reads')
-        .select()
-        .eq('notification_id', notificationId)
-        .eq('user_id', user!.id)
-        .maybeSingle();
-
-    return data != null;
-  }
-
-
-
-  Future<void> loadUnreadCount() async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) return;
 
     final data = await _supabase.rpc(
       'get_public_notifications',
       params: {'user_uuid': user.id},
     );
 
-    final list = List<Map<String, dynamic>>.from(data);
-
-    unreadCount = list.where((n) => n['is_read'] == false).length;
-
+    publicNotifications = List<Map<String, dynamic>>.from(data);
+    isLoadingPublic = false;
     notifyListeners();
   }
 
-  Future<void> markAllAsRead() async {
+  /// 🔹 Mark single notification as read (public)
+  Future<void> markAsRead(String notificationId) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
 
-    await _service.markAllAsRead();
+    await _supabase
+        .from('notification_reads')
+        .insert({'notification_id': notificationId, 'user_id': user.id});
 
-    unreadCount = 0;
-
-    notifyListeners();
+    await loadUnreadCount();
   }
 
+  /// 🔹 Check if notification is read
+  Future<bool> isRead(String notificationId) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return false;
 
-  Future<Book> getBookById(String bookId) async {
-    final res = await Supabase.instance.client
-        .from('book')
+    final data = await _supabase
+        .from('notification_reads')
         .select()
-        .eq('id', bookId)
-        .single();
+        .eq('notification_id', notificationId)
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    return Book.fromJson(res);
+    return data != null;
   }
 
+  /// 🔹 Charger compteur badge public
+  Future<void> loadUnreadCount() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
 
+    final count = await _supabase.rpc(
+      'get_unread_public_count',
+      params: {'user_uuid': user.id},
+    );
 
+    unreadCount = count ?? 0;
+    notifyListeners();
+  }
+
+  /// 🔹 Marquer toutes les notifications publiques comme lues
   Future<void> markAllPublicAsRead() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
@@ -160,32 +108,62 @@ class NotificationController extends ChangeNotifier {
       'user_id': user.id,
     }).toList();
 
-    /// 🔥 ICI LA CORRECTION
     await _supabase.from('notification_reads').upsert(
       reads,
       onConflict: 'notification_id,user_id',
     );
 
-    /// 🔥 IMPORTANT → recalcul réel
     await loadUnreadCount();
-
-    notifyListeners();
   }
 
+  /// 🔹 Marquer toutes les notifications privées comme lues (optionnel)
+  Future<void> markAllPrivateAsRead() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
 
+    final notifs = await _supabase
+        .from('notifications')
+        .select('id')
+        .eq('user_id', user.id)
+        .neq('type', 'book_added'); // exclure public
+
+    if (notifs.isEmpty) return;
+
+    final reads = notifs.map((n) => {
+      'notification_id': n['id'],
+      'user_id': user.id,
+    }).toList();
+
+    await _supabase.from('notification_reads').upsert(
+      reads,
+      onConflict: 'notification_id,user_id',
+    );
+  }
+
+  /// 🔹 Obtenir un livre par id
+  Future<Book> getBookById(String bookId) async {
+    final res = await _supabase
+        .from('book')
+        .select()
+        .eq('id', bookId)
+        .single();
+
+    return Book.fromJson(res);
+  }
+
+  /// 🔹 Reset controller
   void reset() {
-    notifications.clear();
+    publicNotifications.clear();
+    privateNotifications.clear();
     unreadCount = 0;
-    //_subscription?.unsubscribe();
-    _subscription = null;
+    _privateSubscription = null;
+    isLoadingPublic = true;
     notifyListeners();
   }
-
 
   @override
   void dispose() {
-    _subscription?.cancel();
+    _privateSubscription?.cancel();
     super.dispose();
   }
-
 }

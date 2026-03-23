@@ -32,7 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     final supabase = Supabase.instance.client;
     String? role;
     bool isLoadingRole = true;
-
+    int pendingCount = 0;
   late AnimationController _controller;
   late Animation<double> _fadeAnim;
 
@@ -48,7 +48,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       context.read<GroupChatController>().startListening();
     }
 
-    context.read<NotificationController>().startListening();
+    //context.read<NotificationController>().startListening();
     _loadDisplayName();
 
     _controller = AnimationController(
@@ -65,9 +65,15 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    /*WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationController>().loadUnreadCount();
+    });*/
+
+    Future.microtask(() {
       context.read<NotificationController>().loadUnreadCount();
     });
+
+    loadPendingCount();
 
   }
 
@@ -77,6 +83,13 @@ class _DashboardScreenState extends State<DashboardScreen>
       displayName = user.userMetadata?['full_name'] ?? 'Utilisateur';
     }
   }
+
+    Future<void> loadPendingCount() async {
+      final count = await Supabase.instance.client.rpc('get_pending_books_count');
+      setState(() {
+        pendingCount = count ?? 0;
+      });
+    }
 
   @override
   void dispose() {
@@ -217,7 +230,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               pinned: true,
               elevation: 2,
               actions: [
-                if (!isLoadingRole && role?.toLowerCase() == 'admin')
+              /*  if (!isLoadingRole && role?.toLowerCase() == 'admin')
                   IconButton(
                     icon: const Icon(Icons.pending_actions, color: Colors.white),
                     tooltip: "Livres en attente",
@@ -229,7 +242,49 @@ class _DashboardScreenState extends State<DashboardScreen>
                         ),
                       );
                     },
-                  ),
+                  ),*/
+
+
+                Stack(
+                  children: [
+                    if (!isLoadingRole && role?.toLowerCase() == 'admin')
+                    IconButton(
+                      icon: const Icon(Icons.pending_actions, color: Colors.white),
+                      tooltip: "Livres en attente",
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminPendingBooksScreen(),
+                          ),
+                        );
+
+                        // 🔥 Refresh badge quand tu reviens
+                        loadPendingCount();
+                      },
+                    ),
+
+                    if (pendingCount > 0)
+                      Positioned(
+                        right: 4,
+                        top: 4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            pendingCount > 99 ? "99+" : pendingCount.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
 
                 Stack(
                   children: [

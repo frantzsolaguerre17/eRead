@@ -11,21 +11,39 @@ class NotificationsScreen extends StatefulWidget {
   State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
 
-class _NotificationsScreenState extends State<NotificationsScreen> {
+class _NotificationsScreenState extends State<NotificationsScreen>
+    with WidgetsBindingObserver {
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
+    // 🔹 1. Fetch public notifications avant mark as read
     Future.microtask(() async {
       final controller = context.read<NotificationController>();
 
-      /// 🔥 1. MARQUER TOUT COMME LU D’ABORD
-      await controller.markAllPublicAsRead();
-
-      /// 🔥 2. ENSUITE FETCH (UI propre)
-      await controller.fetchNotifications();
+      await controller.fetchPublicNotifications(); // fetch d'abord
+      await controller.markAllPublicAsRead(); // ensuite mark as read
+      await controller.loadUnreadCount(); // badge
     });
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // 🔹 Re-fetch si l'app revient
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      final controller = context.read<NotificationController>();
+      controller.fetchPublicNotifications();
+      controller.loadUnreadCount();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +51,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB),
-
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.deepPurple,
@@ -42,42 +59,43 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
             Text(
-          "Notifications",
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          )
+              "Notifications",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
             Text(
-              "Cliquez sur notification pour ouvrir et lire le livre ajoute",
+              "Cliquez sur notification pour ouvrir et lire le livre ajouté",
               style: TextStyle(fontSize: 13, color: Colors.white),
             )
-        ]
+          ],
         ),
         iconTheme: const IconThemeData(color: Colors.black87),
       ),
-
       body: Builder(
         builder: (_) {
-          /// 1️⃣ LOADING
-          if (controller.isLoading) {
-            //return const Center(
-              return _notificationsShimmer();
-           // );
+          // 🔹 Loading
+          if (controller.isLoadingPublic) {
+            return _notificationsShimmer();
           }
 
-          /// 2️⃣ EMPTY
-          if (controller.notifications.isEmpty) {
+          // 🔹 Empty state
+          if (controller.publicNotifications.isEmpty) {
             return _emptyState();
           }
 
-          /// 3️⃣ LIST
+          // 🔹 ListView publique
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: controller.notifications.length,
+            itemCount: controller.publicNotifications.length,
             itemBuilder: (_, i) {
-              final notif = controller.notifications[i];
+              final notif = controller.publicNotifications[i];
+
+              // Sécurisation : n'affiche que type public
+              if (notif['type'] != 'book_added') return const SizedBox();
+
               final isRead = notif['is_read'] == true;
 
               return _NotificationCard(
@@ -85,19 +103,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 date: DateTime.parse(notif['created_at']),
                 isRead: isRead,
                 bookId: notif['book_id'],
-                  onTap: () async {
-
-                    await controller.markAsRead(notif['id']);
-
-                    final book = await controller.getBookById(notif['book_id']);
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => PdfViewerPage(book: book),
-                      ),
-                    );
-                  }
+                onTap: () async {
+                  await controller.markAsRead(notif['id']);
+                  final book = await controller.getBookById(notif['book_id']);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => PdfViewerPage(book: book)),
+                  );
+                },
               );
             },
           );
@@ -106,7 +120,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  /// 📭 EMPTY STATE
   Widget _emptyState() {
     return Center(
       child: Column(
@@ -116,17 +129,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           SizedBox(height: 16),
           Text(
             "Aucune notification",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.black54,
-            ),
+            style: TextStyle(fontSize: 18, color: Colors.black54),
           ),
         ],
       ),
     );
   }
 }
-
 
 class _NotificationCard extends StatelessWidget {
   final String message;
@@ -171,7 +180,7 @@ class _NotificationCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 🔔 ICON
+            // 🔔 Icon
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -180,17 +189,9 @@ class _NotificationCard extends StatelessWidget {
                     : Colors.deepPurple.shade100,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.menu_book_rounded,
-                color: isRead
-                    ? Colors.deepPurple
-                    : Colors.deepPurple,
-              ),
+              child: const Icon(Icons.menu_book_rounded, color: Colors.deepPurple),
             ),
-
             const SizedBox(width: 14),
-
-            /// 📝 CONTENT
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,8 +216,7 @@ class _NotificationCard extends StatelessWidget {
                 ],
               ),
             ),
-
-            /// 🔵 DOT (NON LU)
+            // 🔵 Dot non lu
             if (!isRead)
               Container(
                 margin: const EdgeInsets.only(left: 8, top: 6),
@@ -233,17 +233,14 @@ class _NotificationCard extends StatelessWidget {
     );
   }
 
-  /// ⏱️ DATE FORMAT SIMPLE
   static String _formatDate(DateTime date) {
     final diff = DateTime.now().difference(date);
-
     if (diff.inMinutes < 1) return "À l'instant";
     if (diff.inMinutes < 60) return "Il y a ${diff.inMinutes} min";
     if (diff.inHours < 24) return "Il y a ${diff.inHours} h";
     return "${date.day}/${date.month}/${date.year}";
   }
 }
-
 
 Widget _notificationsShimmer() {
   return ListView.builder(

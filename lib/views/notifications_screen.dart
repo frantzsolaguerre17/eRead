@@ -94,7 +94,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               final notif = controller.publicNotifications[i];
 
               // Sécurisation : n'affiche que type public
-              if (notif['type'] != 'book_added') return const SizedBox();
+             // if (notif['type'] != 'book_added') return const SizedBox();
 
               final isRead = notif['is_read'] == true;
 
@@ -104,12 +104,22 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 isRead: isRead,
                 bookId: notif['book_id'],
                 onTap: () async {
-                  await controller.markAsRead(notif['id']);
+                 // await controller.markAsRead(notif['id']);
+
                   final book = await controller.getBookById(notif['book_id']);
+
+                  if (book == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Livre introuvable")),
+                    );
+                    return;
+                  }
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => PdfViewerPage(book: book)),
+                      builder: (_) => PdfViewerPage(book: book),
+                    ),
                   );
                 },
               );

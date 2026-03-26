@@ -42,28 +42,56 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
 
   Future<void> signUp() async {
     setState(() => isLoading = true);
-    try {
 
+    try {
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
+      final name = displayNameController.text.trim();
+
+      // ✅ VALIDATION
+      if (name.isEmpty || email.isEmpty || password.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Veuillez remplir tous les champs"),
+          ),
+        );
+        return;
+      }
+
+      if (password.length < 7) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Le mot de passe doit contenir au moins 7 caractères"),
+          ),
+        );
+        return;
+      }
+
+      if (!email.contains('@')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Veuillez entrer un email valide"),
+          ),
+        );
+        return;
+      }
+
+      // 🔥 SIGN UP SUPABASE
       final response = await supabase.auth.signUp(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+        email: email,
+        password: password,
         data: {
-          'full_name': displayNameController.text.trim(),
+          'full_name': name,
         },
       );
 
       final user = response.user;
 
       if (user != null) {
-        // 🔹 Création du profil (UNE SEULE FOIS)
-/*        await supabase.from('profil').insert({
-          'user_id': user.id,
-          'username': displayNameController.text.trim(),
-          'email': user.email,
-        });*/
-
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Compte créé avec succès 🎉')),
+          const SnackBar(
+            content: Text("Compte créé avec succès 🎉 Vérifiez votre email."),
+          ),
         );
 
         Navigator.pushReplacement(
@@ -72,28 +100,29 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
         );
       }
 
-      /*final response = await supabase.auth.signUp(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-       // data: {'full_name': displayNameController.text.trim()},
-      );*/
-
-     /* if (response.user != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Compte créé avec succès 🎉')),
-        );
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginPage()),
-        );
-      }*/
     } on AuthException catch (error) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error.message)));
+
+      String message = "Une erreur est survenue";
+
+      if (error.message.toLowerCase().contains("user already registered")) {
+        message = "Cet email est déjà utilisé";
+      }
+      else if (error.message.toLowerCase().contains("invalid email")) {
+        message = "Email invalide";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+
     } catch (error) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Erreur : $error')));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Une erreur inattendue s'est produite"),
+        ),
+      );
+
     } finally {
       setState(() => isLoading = false);
     }

@@ -1,83 +1,90 @@
 import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 class GroupChatController extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
 
   List<Map<String, dynamic>> messages = [];
-  StreamSubscription? _subscription;
-  //String? get currentUserId => _supabase.auth.currentUser?.id;
-  bool _isListening = false;
-
   String? currentUserId;
-  String? currentUsername;
+  String? currentUserName;
   String? currentUserRole;
 
+  StreamSubscription<List<Map<String, dynamic>>>? _subscription;
 
+  /// Charger l'utilisateur courant
+  Future<void> loadCurrentUser() async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) return;
+    currentUserId = user.id;
+
+    // On peut récupérer username et role depuis la table users si tu as ces champs
+    final data = await _supabase
+        .from('users_profile') // table custom avec username/role
+        .select()
+        .eq('id', user.id)
+        .maybeSingle();
+
+    currentUserName = data?['username'] ?? 'Utilisateur';
+    currentUserRole = data?['role'] ?? 'user';
+
+    notifyListeners();
+  }
+
+  /// Stream temps réel
   void startListening() {
-    if (_subscription != null) return;
-
     _subscription = _supabase
         .from('group_messages')
         .stream(primaryKey: ['id'])
-        .order('created_at')
-        .listen((data) {
-      messages = data.map((e) => Map<String, dynamic>.from(e)).toList();
+        .listen((updates) {
+      // ⚡ updates = List<Map<String,dynamic>> contenant les changements
+      for (var change in updates) {
+        final index = messages.indexWhere((m) => m['id'] == change['id']);
+        if (index != -1) {
+          messages[index] = change; // update existant
+        } else {
+          messages.add(change); // nouveau message
+        }
+      }
+      messages.sort((a, b) =>
+          DateTime.parse(a['created_at'])
+              .compareTo(DateTime.parse(b['created_at'])));
+
       notifyListeners();
     });
   }
 
-
+  /// Envoyer un message
   Future<void> sendMessage(String text) async {
     if (currentUserId == null) return;
 
     final newMessage = {
-      'id': DateTime.now().millisecondsSinceEpoch, // temporaire
-      'message': text,
+      'id': const Uuid().v4(), // temporaire
       'user_id': currentUserId,
-      'username': currentUsername,
-      'role': currentUserRole,
+      'username': currentUserName,
+      'role': currentUserRole ?? 'user',
+      'message': text,
       'created_at': DateTime.now().toIso8601String(),
     };
 
-    /// ✅ 1. ajouter immédiatement à l'écran
     messages.add(newMessage);
-    notifyListeners();
+    notifyListeners(); // affichage instantané
 
-    /// ✅ 2. envoyer au serveur
+    // envoi au serveur
     await _supabase.from('group_messages').insert({
-      'message': text,
       'user_id': currentUserId,
-      'username': currentUsername,
-      'role': currentUserRole,
+      'username': currentUserName,
+      'role': currentUserRole ?? 'user',
+      'message': text,
     });
   }
 
-
-  Future<void> loadCurrentUser() async {
-    final user = Supabase.instance.client.auth.currentUser;
-
-    if (user == null) return;
-
-    currentUserId = user.id;
-
-    final data = await Supabase.instance.client
-        .from('profil')
-        .select('username, role')
-        .eq('user_id', user.id)
-        .single();
-
-    currentUsername = data['username'] ?? 'Utilisateur';
-    currentUserRole = data['role'] ?? 'user';
-  }
-
-
-  void reset() {
-    messages.clear();
+  @override
+  void dispose() {
     _subscription?.cancel();
-    _subscription = null;
-    notifyListeners();
+    //controller.dispose();
+    //scrollController.dispose();
+    super.dispose();
   }
 }

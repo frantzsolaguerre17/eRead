@@ -16,6 +16,7 @@ class AppMessages {
       "Impossible de charger les données. Réessayez plus tard.";
 
 
+
   // --- Authentification / Connexion ---
   static const String invalidCredentials =
       "Adresse e-mail ou mot de passe incorrect.";
@@ -33,6 +34,7 @@ class AppMessages {
       "L’adresse e-mail n’est pas valide.";
 
 
+
   // --- Fichiers / Documents ---
   static const String fileLoadError =
       "Impossible de charger le document.";
@@ -40,6 +42,7 @@ class AppMessages {
       "Erreur lors du téléchargement du fichier.";
   static const String fileNotFound =
       "Fichier introuvable. Veuillez réessayer.";
+
 
 
   // --- Données / Base de données ---
@@ -51,6 +54,7 @@ class AppMessages {
       "Impossible d’enregistrer les modifications.";
   static const String systemError =
       "Erreur interne du système.";
+
 
 
   // --- Succès ---
@@ -72,6 +76,7 @@ class AppMessages {
       "Téléchargement terminé ✅";
 
 
+
   // --- Avertissements ---
   static const String deleteConfirmation =
       "Voulez-vous vraiment supprimer cet élément ?";
@@ -85,6 +90,7 @@ class AppMessages {
       "Veuillez patienter pendant le chargement...";
   static const String unsupportedFile =
       "Format de fichier non pris en charge.";
+
 
 
   // --- Informations ---

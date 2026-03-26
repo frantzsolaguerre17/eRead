@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:ui';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -44,6 +46,28 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   Future<bool> signIn() async {
     try {
+      // 🔍 Vérifier connexion internet
+      final connectivityResult = await Connectivity().checkConnectivity();
+
+      if (connectivityResult == ConnectivityResult.none) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Aucune connexion Internet. Veuillez vérifier votre réseau et réessayer.",
+            ),
+          ),
+        );
+        return false;
+      }
+
+      // 🔍 validation
+      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Veuillez remplir tous les champs")),
+        );
+        return false;
+      }
+
       final response = await supabase.auth.signInWithPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
@@ -52,11 +76,45 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       if (response.session != null && response.user != null) {
         return true;
       }
+
       return false;
-    } catch (e) {
+
+    } on AuthException catch (e) {
+
+      String message = "Une erreur est survenue";
+
+      if (e.message.toLowerCase().contains('invalid login credentials')) {
+        message = "Email ou mot de passe incorrect";
+      }
+      else if (e.message.toLowerCase().contains('email not confirmed')) {
+        message = "Veuillez confirmer votre email";
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur : $e")),
+        SnackBar(content: Text(message)),
       );
+
+      return false;
+
+    } catch (e) {
+
+      // 🔥 fallback sécurité (si supabase bug)
+      if (e.toString().toLowerCase().contains('socket')) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Aucune connexion Internet. Veuillez vérifier votre réseau et réessayer.",
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Une erreur est survenue. Veuillez réessayer."),
+          ),
+        );
+      }
+
       return false;
     }
   }

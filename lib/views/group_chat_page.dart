@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../controllers/group_chat_controller.dart';
 
 class GroupChatScreen extends StatefulWidget {
@@ -17,17 +16,14 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   @override
   void initState() {
     super.initState();
-    _initUser();
+    Future.microtask(() async {
+      final chat = context.read<GroupChatController>();
+      await chat.loadCurrentUser();
+      chat.startListening();
+    });
   }
 
-  Future<void> _initUser() async {
-    final chat = context.read<GroupChatController>();
-
-    await chat.loadCurrentUser();
-    chat.startListening();
-  }
-
-
+  /// Format date pour le header
   String formatDateHeader(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -35,63 +31,53 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
 
     if (messageDate == today) return "Aujourd’hui";
     if (messageDate == today.subtract(const Duration(days: 1))) return "Hier";
-
     return "${date.day}/${date.month}/${date.year}";
   }
-
 
   @override
   Widget build(BuildContext context) {
     final chat = context.watch<GroupChatController>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7),
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
-        title: const Text("Communauté", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),),
+        title: const Text("Communauté"),
         centerTitle: true,
       ),
       body: Column(
         children: [
-          /// 💬 MESSAGES
+          /// Messages
           Expanded(
             child: ListView.builder(
-              reverse: false,
               controller: scrollController,
               padding: const EdgeInsets.all(12),
               itemCount: chat.messages.length,
               itemBuilder: (_, i) {
                 final msg = chat.messages[i];
-
-                final message = msg['message'] ?? '';
-                final username = msg['username'] ?? 'Utilisateur';
-                final createdAt = msg['created_at'] ?? DateTime.now().toIso8601String();
-
                 final date = DateTime.parse(msg['created_at']).toLocal();
-
                 final isMe = msg['user_id'] == chat.currentUserId;
+                final role = msg['role'] ?? 'user';
 
+                // Vérifier si header de date à afficher
                 bool showHeader = false;
-
                 if (i == 0) {
-                  // premier élément affiché (le plus récent)
                   showHeader = true;
                 } else {
-                  final previousMsg = chat.messages[i - 1];
-                  final previousDate =
-                  DateTime.parse(previousMsg['created_at']).toLocal();
-
+                  final prevDate =
+                  DateTime.parse(chat.messages[i - 1]['created_at']).toLocal();
                   showHeader =
-                      date.day != previousDate.day ||
-                          date.month != previousDate.month ||
-                          date.year != previousDate.year;
+                      prevDate.day != date.day ||
+                          prevDate.month != date.month ||
+                          prevDate.year != date.year;
                 }
 
                 return Column(
+                  crossAxisAlignment:
+                  isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     if (showHeader)
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                         child: Center(
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -103,45 +89,84 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
                             child: Text(
                               formatDateHeader(date),
                               style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontWeight: FontWeight.bold, fontSize: 12),
                             ),
                           ),
                         ),
                       ),
-
                     _ChatBubble(
-                      message: message,
-                      username: username,
-                      date: DateTime.parse(createdAt).toLocal(),
-                      isMe: msg['user_id'] == chat.currentUserId,
-                      role: msg['role'] ?? 'user',
+                      message: msg['message'],
+                      username: msg['username'],
+                      date: date,
+                      isMe: isMe,
+                      role: role,
                     )
-
                   ],
                 );
               },
             ),
           ),
 
-
-          /// ✍️ INPUT
-          _ChatInput(
-            controller: controller,
-            onSend: () {
-              if (controller.text.trim().isEmpty) return;
-              chat.sendMessage(controller.text.trim());
-              controller.clear();
-            },
-          ),
+          /// Input
+          SafeArea(
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: controller,
+                      minLines: 1,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        hintText: "Écrire un message...",
+                        filled: true,
+                        fillColor: Colors.grey.shade200,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () {
+                      if (controller.text.trim().isEmpty) return;
+                      chat.sendMessage(controller.text.trim());
+                      controller.clear();
+                      // Scroll vers le bas
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        scrollController.animateTo(
+                          scrollController.position.maxScrollExtent,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut,
+                        );
+                      });
+                    },
+                    child: Container(
+                      height: 46,
+                      width: 46,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.deepPurple,
+                      ),
+                      child: const Icon(Icons.send, color: Colors.white),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
   }
 }
 
-
+/// Widget pour afficher chaque message
 class _ChatBubble extends StatelessWidget {
   final String message;
   final String username;
@@ -164,15 +189,15 @@ class _ChatBubble extends StatelessWidget {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
+        margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.all(12),
         constraints: const BoxConstraints(maxWidth: 280),
         decoration: BoxDecoration(
           color: isMe
               ? Colors.deepPurple
               : isAdmin
-              ? Colors.orange.shade50   // 👈 fond admin
-              : const Color(0xFFF6F6F6),
+              ? Colors.orange.shade50
+              : Colors.white,
           border: isAdmin && !isMe
               ? Border.all(color: Colors.orange, width: 1)
               : null,
@@ -188,124 +213,27 @@ class _ChatBubble extends StatelessWidget {
           isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             if (!isMe)
-              Row(
-                children: [
-                  Text(
-                    username,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: isAdmin ? Colors.orange.shade50 : Colors.deepPurple,
-                    ),
-                  ),
-                  if (isAdmin) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        "ADMIN",
-                        style: TextStyle(
-                          fontSize: 9,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ]
-                ],
+              Text(
+                username + (isAdmin ? " (ADMIN)" : ""),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: isAdmin ? Colors.orange : Colors.deepPurple,
+                ),
               ),
             Text(
               message,
               style: TextStyle(
-                color: isMe ? Colors.white : Colors.black87,
                 fontSize: 15,
+                color: isMe ? Colors.white : Colors.black87,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              _formatTime(date),
+              "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}",
               style: TextStyle(
                 fontSize: 11,
                 color: isMe ? Colors.white70 : Colors.black45,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  static String _formatTime(DateTime date) {
-    return "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
-  }
-}
-
-
-
-class _ChatInput extends StatelessWidget {
-  final TextEditingController controller;
-  final VoidCallback onSend;
-
-  const _ChatInput({
-    required this.controller,
-    required this.onSend,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 12,
-              color: Colors.black.withOpacity(0.08),
-              offset: const Offset(0, -2),
-            )
-          ],
-        ),
-        child: Row(
-          children: [
-            /// champ texte
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F1F1),
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: TextField(
-                  controller: controller,
-                  minLines: 1,
-                  maxLines: 4,
-                  decoration: const InputDecoration(
-                    hintText: "Écrire un message...",
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 8),
-
-            /// bouton envoyer
-            GestureDetector(
-              onTap: onSend,
-              child: Container(
-                height: 46,
-                width: 46,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.deepPurple,
-                ),
-                child: const Icon(Icons.send, color: Colors.white),
               ),
             ),
           ],

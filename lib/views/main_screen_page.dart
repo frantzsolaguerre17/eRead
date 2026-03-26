@@ -332,7 +332,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                   ],
                 ),
 
-      IconButton(
+      /*IconButton(
                   icon: const Icon(Icons.chat, color: Colors.white),
                   tooltip: "Chat",
                   onPressed: () {
@@ -344,7 +344,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                     );
                   },
                 ),
-
+*/
 
                /* Consumer<NotificationController>(
                   builder: (_, controller, __) {

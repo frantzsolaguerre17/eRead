@@ -146,7 +146,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                 TextField(
                   controller: titleController,
                   decoration: InputDecoration(
-                    labelText: "Titre du chapitre",
+                    labelText: "Saisir le titre du chapitre que vous lisez",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

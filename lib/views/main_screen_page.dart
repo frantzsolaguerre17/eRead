@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:memo_livre/views/Message_Page.dart';
 import 'package:memo_livre/views/Pending_book_page.dart';
 import 'package:memo_livre/views/favorite_vocabulary_page.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/MessageController.dart';
 import '../controllers/book_controller.dart';
@@ -181,6 +183,19 @@ class _DashboardScreenState extends State<DashboardScreen>
     return data?['role'] ?? 'user';
   }
 
+
+    Future<void> openWhatsApp() async {
+      final url = Uri.parse(
+        "https://wa.me/50937405233?text=Bonjour, je viens de votre application 📚",
+      );
+
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        throw "Impossible d'ouvrir WhatsApp";
+      }
+    }
+
     /*Future<void> loadRole() async {
       final r = await getCurrentUserRole();
       setState(() {
@@ -217,7 +232,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     //final role = getCurrentUserRole();
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: FadeTransition(
         opacity: _fadeAnim,
         child: CustomScrollView(
@@ -225,7 +240,7 @@ class _DashboardScreenState extends State<DashboardScreen>
             // ================= APP BAR =================
             SliverAppBar(
               automaticallyImplyLeading: false,
-              backgroundColor: Colors.deepPurple.shade700,
+              backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
               expandedHeight: MediaQuery.of(context).size.height * 0.28,
               pinned: true,
               elevation: 2,
@@ -244,6 +259,17 @@ class _DashboardScreenState extends State<DashboardScreen>
                     },
                   ),*/
 
+                IconButton(
+                  icon: const Icon(Icons.account_circle, color: Colors.white),
+                  tooltip: "Account profil",
+                  onPressed: () async{
+                    await Navigator.push(context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfilePage()
+                        )
+                    );
+                  }
+                ),
 
                 Stack(
                   children: [
@@ -449,10 +475,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                     );
                   },
                 ),
-                IconButton(
+                /*IconButton(
                   icon: const Icon(Icons.logout, color: Colors.white),
                   onPressed: _confirmLogout,
-                ),
+                ),*/
               ],
               flexibleSpace: FlexibleSpaceBar(
                 centerTitle: true,
@@ -522,7 +548,8 @@ class _DashboardScreenState extends State<DashboardScreen>
 
                     Text(
                       "Prêt à lire quelque chose d'inspirant aujourd’hui ?",
-                      style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                      style: TextStyle( color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                        fontSize: 16),
                     ),
                     const SizedBox(height: 25),
 
@@ -672,7 +699,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         margin: const EdgeInsets.symmetric(horizontal: 6),
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -709,9 +736,8 @@ class _DashboardScreenState extends State<DashboardScreen>
         children: [
           CircleAvatar(
             radius: 32,
-            backgroundColor: Colors.deepPurple.withOpacity(0.1),
-            child: Icon(icon, color: Colors.deepPurple),
-          ),
+            backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            child: Icon(icon, color: Theme.of(context).colorScheme.primary),          ),
           const SizedBox(height: 6),
           Text(label),
         ],

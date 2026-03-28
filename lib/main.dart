@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/controllers/MessageController.dart';
 import 'package:memo_livre/views/login_page.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'controllers/ChapterController.dart';
@@ -9,6 +10,7 @@ import 'controllers/book_controller.dart';
 import 'controllers/expression_controller.dart';
 import 'controllers/group_chat_controller.dart';
 import 'controllers/notifications_controller.dart';
+import 'controllers/theme_controller.dart';
 import 'controllers/vocabulary_controller.dart';
 
 Future<void> main() async{
@@ -27,6 +29,7 @@ Future<void> main() async{
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => GroupChatController()),
+         ChangeNotifierProvider (create: (_) => ThemeController()),
         ],
         child: const MyApp(),
       ),
@@ -40,8 +43,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      /* Partages de plusieurs contrôleurs dans l'app Flutter pour
-       accéder facilement à leurs données et méthodes depuis n’importe quel écran. */
       providers: [
         ChangeNotifierProvider(create: (_) => BookController()),
         ChangeNotifierProvider(create: (_) => VocabularyController()),
@@ -49,25 +50,47 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ExcerptController()),
         ChangeNotifierProvider(create: (_) => ExpressionController()),
         ChangeNotifierProvider(create: (_) => NotificationController()),
-        ChangeNotifierProvider(create: (_) => MessageController(),),
-       /* ChangeNotifierProvider(create: (_) {
-            final controller = GroupChatController();
-            controller.startListening();
-            return controller;
-          },
-        ),*/
+        ChangeNotifierProvider(create: (_) => MessageController()),
+        ChangeNotifierProvider(create: (_) => ThemeController()), // ⚡ important
       ],
-      child: MaterialApp(
-        title: 'eRead Auth',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        ),
-
-        debugShowCheckedModeBanner: false,
-        home: const LoginPage(),
+      child: Consumer<ThemeController>(
+        builder: (context, themeController, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'eRead',
+            theme: ThemeData(
+              brightness: Brightness.light,
+              primaryColor: Colors.deepPurple,
+              scaffoldBackgroundColor: Colors.white,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.deepPurple,
+                elevation: 0,
+              ),
+              cardColor: Colors.white,
+              textTheme: const TextTheme(
+                bodyMedium: TextStyle(color: Colors.black),
+              ),
+            ),
+            darkTheme: ThemeData(
+              brightness: Brightness.dark,
+              primaryColor: Colors.deepPurple[700],
+              scaffoldBackgroundColor: Colors.black,
+              appBarTheme: AppBarTheme(
+                backgroundColor: Colors.deepPurple[900],
+                elevation: 0,
+              ),
+              cardColor: Colors.grey[850],
+              textTheme: const TextTheme(
+                bodyMedium: TextStyle(color: Colors.white),
+              ),
+            ),
+            themeMode: themeController.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light, // ⚡ ThemeMode change en temps réel
+            home: const LoginPage(),
+          );
+        },
       ),
     );
   }
-
 }

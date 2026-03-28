@@ -122,12 +122,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   InputDecoration inputStyle(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.deepPurple.shade700),
+      prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: Theme.of(context).cardColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.deepPurple.shade200),
+        borderSide: BorderSide(
+          color: Theme.of(context).dividerColor,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
@@ -137,7 +139,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(color: Colors.deepPurple.shade200),
       ),
-      labelStyle: const TextStyle(color: Colors.black54),
+      labelStyle: TextStyle(
+        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+      ),
     );
   }
 
@@ -147,18 +151,18 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.deepPurple.shade700,
+      backgroundColor: Theme.of(context).colorScheme.primary,
       body: Center(
         child: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 28),
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black26,
+                  color: Theme.of(context).shadowColor.withOpacity(0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),
@@ -170,7 +174,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.shade50,
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(60),
                   ),
                   child: ClipRRect(
@@ -200,7 +204,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   style: GoogleFonts.poppins(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple.shade700,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -242,7 +246,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -274,7 +278,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   child: Text(
                     "Créer un compte",
                     style: GoogleFonts.poppins(
-                      color: Colors.deepPurple.shade700,
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

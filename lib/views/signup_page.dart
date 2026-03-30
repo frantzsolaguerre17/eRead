@@ -12,12 +12,19 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateMixin {
+class _SignupPageState extends State<SignupPage>
+    with SingleTickerProviderStateMixin {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   final displayNameController = TextEditingController();
   final supabase = Supabase.instance.client;
+
   bool isLoading = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
+  String? passwordError;
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -26,11 +33,19 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _animController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
-    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeInOut);
-    _slideAnim = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _animController, curve: Curves.easeOut));
+    _animController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 900));
+
+    _fadeAnim =
+        CurvedAnimation(parent: _animController, curve: Curves.easeInOut);
+
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, 0.2),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOut),
+    );
+
     _animController.forward();
   }
 
@@ -46,6 +61,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
     try {
       final email = emailController.text.trim();
       final password = passwordController.text.trim();
+      final confirmPassword = confirmPasswordController.text.trim();
       final name = displayNameController.text.trim();
 
       // ✅ VALIDATION
@@ -55,15 +71,28 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
             content: Text("Veuillez remplir tous les champs"),
           ),
         );
+        setState(() => isLoading = false);
         return;
+      }
+
+      if (password != confirmPassword) {
+        setState(() {
+          passwordError = "Les mots de passe ne correspondent pas";
+          isLoading = false;
+        });
+        return;
+      } else {
+        setState(() => passwordError = null);
       }
 
       if (password.length < 7) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Le mot de passe doit contenir au moins 7 caractères"),
+            content:
+            Text("Le mot de passe doit contenir au moins 7 caractères"),
           ),
         );
+        setState(() => isLoading = false);
         return;
       }
 
@@ -73,6 +102,7 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
             content: Text("Veuillez entrer un email valide"),
           ),
         );
+        setState(() => isLoading = false);
         return;
       }
 
@@ -90,7 +120,8 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
       if (user != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Compte créé avec succès 🎉 Vérifiez votre email."),
+            content:
+            Text("Compte créé avec succès 🎉 Vérifiez votre email."),
           ),
         );
 
@@ -99,30 +130,24 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
           MaterialPageRoute(builder: (_) => const LoginPage()),
         );
       }
-
     } on AuthException catch (error) {
-
       String message = "Une erreur est survenue";
 
       if (error.message.toLowerCase().contains("user already registered")) {
         message = "Cet email est déjà utilisé";
-      }
-      else if (error.message.toLowerCase().contains("invalid email")) {
+      } else if (error.message.toLowerCase().contains("invalid email")) {
         message = "Email invalide";
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message)),
       );
-
     } catch (error) {
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Une erreur inattendue s'est produite"),
         ),
       );
-
     } finally {
       setState(() => isLoading = false);
     }
@@ -131,30 +156,43 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
   InputDecoration inputStyle(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.deepPurple.shade700),
+      prefixIcon: Icon(
+        icon,
+        color: Theme.of(context).colorScheme.primary,
+      ),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: Theme.of(context).colorScheme.surface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.deepPurple.shade200),
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.outline,
+        ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.deepPurple.shade200),
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.outline,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.deepPurple.shade700, width: 2),
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
+          width: 2,
+        ),
       ),
-      labelStyle: const TextStyle(color: Colors.black54),
+      labelStyle: TextStyle(
+        color: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.color
+            ?.withOpacity(0.7),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: Colors.deepPurple.shade700,
       body: Center(
@@ -163,11 +201,11 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
             margin: const EdgeInsets.symmetric(horizontal: 28),
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black26,
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),
@@ -175,11 +213,13 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
             ),
             child: Column(
               children: [
-                // Logo en haut
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple.shade50,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withOpacity(0.1),
                     borderRadius: BorderRadius.circular(60),
                   ),
                   child: ClipRRect(
@@ -192,8 +232,6 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     ),
                   ),
                 ),
-
-                // Ligne jaune décorative
                 Container(
                   height: 4,
                   width: 80,
@@ -203,40 +241,90 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-
                 Text(
                   "Créer un compte",
                   style: GoogleFonts.poppins(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple.shade700,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const SizedBox(height: 30),
 
-                // Display Name
                 TextField(
                   controller: displayNameController,
-                  decoration: inputStyle("Nom Utilisateur", Icons.person_outline),
+                  decoration:
+                  inputStyle("Nom Utilisateur", Icons.person_outline),
                 ),
                 const SizedBox(height: 16),
 
-                // Email
                 TextField(
                   controller: emailController,
                   decoration: inputStyle("Email", Icons.email_outlined),
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 16),
 
-                // Password
                 TextField(
                   controller: passwordController,
-                  obscureText: true,
-                  decoration: inputStyle("Mot de passe", Icons.lock_outline),
+                  obscureText: !_isPasswordVisible,
+                  decoration: inputStyle(
+                    "Mot de passe",
+                    Icons.lock_outline,
+                  ).copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: confirmPasswordController,
+                  obscureText: !_isConfirmPasswordVisible,
+                  onChanged: (value) {
+                    if (value != passwordController.text) {
+                      setState(() {
+                        passwordError =
+                        "Les mots de passe ne correspondent pas";
+                      });
+                    } else {
+                      setState(() {
+                        passwordError = null;
+                      });
+                    }
+                  },
+                  decoration: inputStyle(
+                    "Confirmer mot de passe",
+                    Icons.lock_outline,
+                  ).copyWith(
+                    errorText: passwordError,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isConfirmPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isConfirmPasswordVisible =
+                          !_isConfirmPasswordVisible;
+                        });
+                      },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 28),
 
-                // Bouton signup
                 SizedBox(
                   width: double.infinity,
                   height: 52,
@@ -250,7 +338,8 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
                       elevation: 6,
                     ),
                     child: isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const CircularProgressIndicator(
+                        color: Colors.white)
                         : Text(
                       "Créer un compte",
                       style: GoogleFonts.poppins(
@@ -264,18 +353,19 @@ class _SignupPageState extends State<SignupPage> with SingleTickerProviderStateM
 
                 const SizedBox(height: 18),
 
-                // Lien login
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (_) => const LoginPage()),
+                      MaterialPageRoute(
+                          builder: (_) => const LoginPage()),
                     );
                   },
                   child: Text(
                     "Déjà un compte ? Se connecter",
                     style: GoogleFonts.poppins(
-                      color: Colors.deepPurple.shade700,
+                      color:
+                      Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

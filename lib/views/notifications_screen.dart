@@ -50,7 +50,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     final controller = context.watch<NotificationController>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.deepPurple,
@@ -72,13 +72,15 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             )
           ],
         ),
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).iconTheme.color,
+        ),
       ),
       body: Builder(
         builder: (_) {
           // 🔹 Loading
           if (controller.isLoadingPublic) {
-            return _notificationsShimmer();
+            return _notificationsShimmer(context);
           }
 
           // 🔹 Empty state
@@ -134,12 +136,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.notifications_none, size: 80, color: Colors.grey),
+        children: [
+          Icon(Icons.notifications_none, size: 80, color: Theme.of(context).disabledColor),
           SizedBox(height: 16),
           Text(
             "Aucune notification",
-            style: TextStyle(fontSize: 18, color: Colors.black54),
+            style: TextStyle(fontSize: 18,
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6)),
           ),
         ],
       ),
@@ -171,11 +174,11 @@ class _NotificationCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 14),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Theme.of(context).shadowColor.withOpacity(0.2),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -183,7 +186,7 @@ class _NotificationCard extends StatelessWidget {
           border: Border.all(
             color: isRead
                 ? Colors.transparent
-                : Colors.deepPurple.withOpacity(0.4),
+                : Theme.of(context).colorScheme.primary.withOpacity(0.4),
             width: 1.2,
           ),
         ),
@@ -195,11 +198,11 @@ class _NotificationCard extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isRead
-                    ? Colors.grey.shade200
-                    : Colors.deepPurple.shade100,
+                    ? Theme.of(context).dividerColor
+                    : Theme.of(context).colorScheme.primary.withOpacity(0.15),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.menu_book_rounded, color: Colors.deepPurple),
+              child: Icon(Icons.menu_book_rounded, color: Theme.of(context).colorScheme.primary),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -212,15 +215,15 @@ class _NotificationCard extends StatelessWidget {
                       fontSize: 16,
                       fontWeight:
                       isRead ? FontWeight.w400 : FontWeight.w600,
-                      color: Colors.deepPurple,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     _formatDate(date),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: Colors.black45,
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
                   ),
                 ],
@@ -232,8 +235,8 @@ class _NotificationCard extends StatelessWidget {
                 margin: const EdgeInsets.only(left: 8, top: 6),
                 width: 10,
                 height: 10,
-                decoration: const BoxDecoration(
-                  color: Colors.deepPurple,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -252,7 +255,7 @@ class _NotificationCard extends StatelessWidget {
   }
 }
 
-Widget _notificationsShimmer() {
+Widget _notificationsShimmer(BuildContext context) {
   return ListView.builder(
     padding: const EdgeInsets.all(12),
     itemCount: 6,
@@ -260,12 +263,12 @@ Widget _notificationsShimmer() {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Shimmer.fromColors(
-          baseColor: Colors.grey.shade300,
-          highlightColor: Colors.grey.shade100,
+          baseColor: Theme.of(context).dividerColor,
+          highlightColor: Theme.of(context).highlightColor,
           child: Container(
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
             ),
           ),

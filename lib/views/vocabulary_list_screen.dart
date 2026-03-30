@@ -42,7 +42,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
       builder: (_) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 10,
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -175,6 +175,9 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                     prefixIcon: const Icon(Icons.menu_book),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                     ),
                   ),
                   maxLines: 2,
@@ -293,8 +296,13 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
-        title: const Text("Mots appris",
-          style: TextStyle(fontSize: 22, color: Colors.white),),
+        title: Text(
+          "Mots appris",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
+            fontSize: 22,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.star, color: Colors.amber),
@@ -333,7 +341,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                 )
                     : null,
                 filled: true,
-                fillColor: Colors.deepPurple.shade600,
+                fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
@@ -345,7 +353,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
       ),
 
       body: controller.isLoading
-          ? _vocabularyShimmer()
+          ? _vocabularyShimmer(context)
           : RefreshIndicator(
         onRefresh: _refreshVocabulary,
         child: filteredList.isEmpty
@@ -395,7 +403,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent),
+                            backgroundColor: Theme.of(context).colorScheme.error),
                           onPressed: () => Navigator.of(ctx).pop(true),
                           child: const Text("Supprimer"),
                         ),
@@ -476,10 +484,14 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                           const SizedBox(height: 6),
                           Text(
                             "Exemple : ${vocab.example}",
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 15,
                                 fontStyle: FontStyle.italic,
-                                color: Colors.grey),
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withOpacity(0.6),),
                           ),
                         ],
                     ],
@@ -495,9 +507,11 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
         backgroundColor: Colors.deepPurple.shade700,
         shape: const StadiumBorder(), // ✅ PILULE
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
+        label: Text(
           "Mot",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
         onPressed: _showVocabularyDialog,
       ),
@@ -506,7 +520,9 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
   }
 }
 
-Widget _vocabularyShimmer() {
+Widget _vocabularyShimmer(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
   return ListView.builder(
     padding: const EdgeInsets.all(12),
     itemCount: 6,
@@ -514,16 +530,16 @@ Widget _vocabularyShimmer() {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Shimmer.fromColors(
-          baseColor: Colors.grey.shade300,
-          highlightColor: Colors.grey.shade100,
+          baseColor: isDark ? Colors.grey[800]! : Colors.grey[300]!,
+          highlightColor: isDark ? Colors.grey[700]! : Colors.grey[100]!,
           child: Container(
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-        ),
+        )
       );
     },
   );

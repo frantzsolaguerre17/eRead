@@ -63,14 +63,16 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       // ================= APPBAR AVEC RECHERCHE =================
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
-        title: const Text("Mes livres favoris",
-          style: TextStyle(fontSize: 22, color: Colors.white),
+        title: Text("Mes livres favoris",
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
@@ -82,12 +84,19 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
               autocorrect: false,
               enableSuggestions: false,
               spellCheckConfiguration: SpellCheckConfiguration.disabled(),
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
               decoration: InputDecoration(
                 hintText: "Rechercher un livre favori...",
-                hintStyle: const TextStyle(color: Colors.white70),
+                hintStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                ),
                 prefixIcon:
-                const Icon(Icons.search, color: Colors.white70),
+                 Icon(
+                  Icons.search,
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                ),
                 suffixIcon: searchQuery.isNotEmpty
                     ? IconButton(
                   icon: const Icon(Icons.close,
@@ -99,7 +108,7 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
                 )
                     : null,
                 filled: true,
-                fillColor: Colors.deepPurple.shade600,
+                fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.8),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
@@ -114,11 +123,15 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
       body: isLoading
           ? const FavoriteShimmer()
           : filteredFavorites.isEmpty
-          ? const Center(
+          ? Center(
         child: Text(
           "Aucun livre favori trouvé.",
           style:
-          TextStyle(fontSize: 16, color: Colors.grey),
+          TextStyle(fontSize: 16, color: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.color
+              ?.withOpacity(0.6),),
         ),
       )
           : ListView.builder(
@@ -144,6 +157,7 @@ class FavoriteShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: 6,
@@ -151,15 +165,17 @@ class FavoriteShimmer extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: Shimmer.fromColors(
-            baseColor: Colors.deepPurple.shade50,
-            highlightColor: Colors.deepPurple.shade100,
+
+          baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+          highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
             child: Card(
+              color: Theme.of(context).cardColor,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
               child: Container(
                 height: 160,
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.shade50,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
@@ -223,8 +239,8 @@ class _FavoriteModernBookCardState
 
   Color _badgeColor() {
     if (progress >= 0.8) return Colors.green;
-    if (progress > 0) return Colors.blue;
-    return Colors.grey.shade400;
+    if (progress > 0) return Theme.of(context).colorScheme.primary;
+    return Theme.of(context).colorScheme.outline;
   }
 
   String _badgeText() {
@@ -247,6 +263,7 @@ class _FavoriteModernBookCardState
         }
       },
       child: Card(
+        color: Theme.of(context).cardColor,
         margin: const EdgeInsets.only(bottom: 16),
         elevation: 6,
         shape: RoundedRectangleBorder(
@@ -288,17 +305,19 @@ class _FavoriteModernBookCardState
                             maxLines: 2,
                             overflow:
                             TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight:
-                                FontWeight.bold),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            )
                           ),
                           const SizedBox(height: 4),
                           Text(
                               "Auteur : ${widget.book.author}",
                               style: TextStyle(
-                                  color: Colors
-                                      .grey.shade700)),
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color
+                                    ?.withOpacity(0.7),)),
                           Text(
                               "Pages : ${widget.book.number_of_pages}",
                               style: TextStyle(
@@ -361,7 +380,7 @@ class _FavoriteModernBookCardState
     return Container(
       width: 120,
       height: cardHeight,
-      color: Colors.grey.shade300,
+      color: Theme.of(context).colorScheme.surfaceVariant,
       child: const Icon(Icons.book, size: 50),
     );
   }

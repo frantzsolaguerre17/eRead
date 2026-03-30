@@ -70,7 +70,7 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       /// ✅ APPBAR LÉGÈREMENT PLUS GRAND
       appBar: PreferredSize(
@@ -83,20 +83,17 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   "Consultation du livre 📖",
-                  style: TextStyle(
-                    fontSize: 22,
-                    color: Colors.white,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontWeight: FontWeight.bold,
                   ),
-                  textAlign: TextAlign.center, // Centre le texte
                 ),
                 Text(
                   widget.book.title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.white70,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
                   ),
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center, // Centre le texte
@@ -112,18 +109,22 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
           future: _pdfFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ));
             } else if (snapshot.hasData && snapshot.data != null) {
               return SfPdfViewer.file(
                 snapshot.data!,
                 controller: _pdfController,
-                onDocumentLoaded: (details) {
-                },
-                onPageChanged: (details) {
-                },
+                canShowScrollHead: true,
+                canShowScrollStatus: true,
+                pageLayoutMode: PdfPageLayoutMode.continuous,
               );
             }
-            return const Center(child: Text("Impossible de charger le PDF"));
+            return Center(child: Text(
+              "Impossible de charger le PDF",
+              style: Theme.of(context).textTheme.bodyMedium,
+            ));
           },
         ),
       ),

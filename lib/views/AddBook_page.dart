@@ -284,16 +284,27 @@ class _AddBookPageState extends State<AddBookPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  InputDecoration _inputDecoration(String label, IconData icon) {
+  InputDecoration _inputDecoration(BuildContext context, String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.deepPurple.shade700),
+      labelStyle: TextStyle(
+        color: Theme.of(context).textTheme.bodyMedium?.color,
+      ),
+      prefixIcon: Icon(
+        icon,
+        color: Theme.of(context).colorScheme.primary,
+      ),
       filled: true,
-      fillColor: Colors.grey.shade100,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+      fillColor: Theme.of(context).cardColor,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.deepPurple.shade700, width: 2),
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.primary,
+          width: 2,
+        ),
       ),
     );
   }
@@ -303,7 +314,7 @@ class _AddBookPageState extends State<AddBookPage> {
     final textStyle = const TextStyle(fontSize: 16);
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(85),
         child: AppBar(
@@ -346,6 +357,7 @@ class _AddBookPageState extends State<AddBookPage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(18),
           child: Card(
+            color: Theme.of(context).cardColor,
             elevation: 6,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
             child: Padding(
@@ -353,23 +365,32 @@ class _AddBookPageState extends State<AddBookPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("📘 Nouveau livre",
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                   Text(
+                    "📘 Nouveau livre",
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 20),
-                  TextField(controller: titleController, decoration: _inputDecoration("Titre du livre", Icons.book), style: textStyle),
+                  TextField(controller: titleController, decoration: _inputDecoration(context, "Titre du livre", Icons.book), style: textStyle),
                   const SizedBox(height: 16),
-                  TextField(controller: authorController, decoration: _inputDecoration("Auteur", Icons.person_outline), style: textStyle),
+                  TextField(controller: authorController, decoration: _inputDecoration(context, "Auteur", Icons.person_outline), style: textStyle),
                   const SizedBox(height: 16),
-                  TextField(controller: pagesController, keyboardType: TextInputType.number, decoration: _inputDecoration("Nombre de pages", Icons.numbers), style: textStyle),
+                  TextField(controller: pagesController, keyboardType: TextInputType.number, decoration: _inputDecoration(context, "Nombre de pages", Icons.numbers), style: textStyle),
                   const SizedBox(height: 16),
 
                   InputDecorator(
-                    decoration: _inputDecoration("Catégorie", Icons.category),
+                    decoration: _inputDecoration(context, "Catégorie", Icons.category),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: selectedCategory,
                         isExpanded: true,
-                        hint: const Text("Sélectionnez une catégorie"),
+                        hint: Text(
+                          "Sélectionnez une catégorie",
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
+                        ),
                         items: categories.map((cat) {
                           return DropdownMenuItem(
                             value: cat,
@@ -391,16 +412,18 @@ class _AddBookPageState extends State<AddBookPage> {
                     child: Container(
                       height: 170,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.deepPurple.shade200),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                        ),
                       ),
                       child: selectedImage == null
                           ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(Icons.image_outlined, size: 40, color: Colors.deepPurple),
+                          children: [
+                            Icon(Icons.image_outlined, size: 40, color: Theme.of(context).colorScheme.primary),
                             SizedBox(height: 8),
                             Text("Appuyez pour choisir une image"),
                           ],

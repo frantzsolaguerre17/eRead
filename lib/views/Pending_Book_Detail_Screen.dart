@@ -32,6 +32,7 @@ class PendingBookDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("Détails du livre"),
         backgroundColor: Colors.deepPurple,
@@ -65,12 +66,26 @@ class PendingBookDetailScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             /// INFOS LIVRE
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor.withOpacity(0.2),
+              blurRadius: 10,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Text(
               book.title,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
             ),
             const SizedBox(height: 8),
             Text("Auteur : ${book.author}"),
@@ -78,8 +93,10 @@ class PendingBookDetailScreen extends StatelessWidget {
             Text("Catégorie : ${book.category}"),
             Text(
               "Ajouté par : ${book.user_name ?? 'Utilisateur'}",
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              style: TextStyle(fontSize: 13, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6)),
             ),
+    ],
+        )),
             const SizedBox(height: 16),
 
             /// BOUTONS
@@ -91,7 +108,7 @@ class PendingBookDetailScreen extends StatelessWidget {
                     await onApprove(book);
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.check_circle_outline),
+                  icon: const Icon(Icons.check_circle_outline, color: Colors.white),
                   label: const Text("Approuver", style: TextStyle(color: Colors.white),),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
@@ -102,7 +119,7 @@ class PendingBookDetailScreen extends StatelessWidget {
                     await onReject(book);
                     Navigator.pop(context);
                   },
-                  icon: const Icon(color: Colors.red, Icons.cancel_outlined),
+                  icon: const Icon(Icons.cancel_outlined, color: Colors.white),
                   label: const Text("Refuser", style: TextStyle(color: Colors.white),),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepOrange,
@@ -123,7 +140,7 @@ class PendingBookDetailScreen extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(color: Colors.white, Icons.picture_as_pdf),
+                icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
                 label: const Text("Ouvrir PDF", style: TextStyle(color: Colors.white),),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,

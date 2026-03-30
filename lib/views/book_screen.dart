@@ -90,7 +90,7 @@ class _BookListPageState extends State<BookListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       // ===================== APPBAR =====================
       appBar: AppBar(
@@ -111,12 +111,18 @@ class _BookListPageState extends State<BookListPage> {
               autocorrect: false,
               enableSuggestions: false,
               spellCheckConfiguration: SpellCheckConfiguration.disabled(),
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
               decoration: InputDecoration(
                 hintText: "Rechercher un livre...",
-                hintStyle: const TextStyle(color: Colors.white70),
-                prefixIcon:
-                const Icon(Icons.search, color: Colors.white70),
+                hintStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                ),
                 suffixIcon: searchQuery.isNotEmpty
                     ? IconButton(
                   icon: const Icon(Icons.close,
@@ -131,7 +137,7 @@ class _BookListPageState extends State<BookListPage> {
                 )
                     : null,
                 filled: true,
-                fillColor: Colors.deepPurple.shade600,
+                fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.8),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
@@ -166,17 +172,18 @@ class _BookListPageState extends State<BookListPage> {
               padding:
               const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: Colors.deepPurple.shade50,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                    color: Colors.deepPurple.shade200),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: DropdownButton<String>(
                 value: selectedCategory,
                 isExpanded: true,
                 underline: const SizedBox(),
-                icon: const Icon(Icons.arrow_drop_down,
-                    color: Colors.deepPurple),
+                icon: Icon(
+                  Icons.arrow_drop_down,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 items: categories
                     .map(
                       (c) => DropdownMenuItem(
@@ -193,10 +200,12 @@ class _BookListPageState extends State<BookListPage> {
           ),
           Expanded(
             child: filteredBooks.isEmpty
-                ? const Center(
+                ? Center(
                 child: Text(
                   "Aucun livre trouvé.",
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                  ),
                 ))
                 : ListView.builder(
               padding: const EdgeInsets.all(12),
@@ -252,8 +261,12 @@ class BookListShimmer extends StatelessWidget {
       itemBuilder: (_, __) => Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: Shimmer.fromColors(
-          baseColor: Colors.deepPurple.shade50,
-          highlightColor: Colors.deepPurple.shade100,
+          baseColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey.shade800
+              : Colors.grey.shade300,
+          highlightColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey.shade700
+              : Colors.grey.shade100,
           child: Container(
             height: 160,
             decoration: BoxDecoration(
@@ -392,7 +405,10 @@ class _ModernBookCardState extends State<ModernBookCard> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Livre déjà lu"),
+        title: Text(
+          "Livre déjà lu",
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         content: const Text(
           "Tu as déjà terminé ce livre.\nVeux-tu le relire ?",
         ),
@@ -420,8 +436,6 @@ class _ModernBookCardState extends State<ModernBookCard> {
 
     PdfViewerPage(book: widget.book);
   }
-
-
 
   Color _getBadgeColor() {
     if (progress >= 0.8) return Colors.green;
@@ -458,6 +472,7 @@ class _ModernBookCardState extends State<ModernBookCard> {
         }
       },
       child: Card(
+        //color: Theme.of(context).cardColor,
         margin: const EdgeInsets.only(bottom: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 6,
@@ -508,8 +523,11 @@ class _ModernBookCardState extends State<ModernBookCard> {
                               widget.book.title,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              /*style: const TextStyle(
                                 fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),*/
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -520,6 +538,7 @@ class _ModernBookCardState extends State<ModernBookCard> {
                               "Auteur : ${widget.book.author}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
 
                             Text("Pages : ${widget.book.number_of_pages}"),
@@ -536,8 +555,7 @@ class _ModernBookCardState extends State<ModernBookCard> {
                               "Ajouté par : ${widget.book.user_name}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 12,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
@@ -577,7 +595,9 @@ class _ModernBookCardState extends State<ModernBookCard> {
                                         likesCount.toString(),
                                         style: TextStyle(
                                           fontSize: 13,
-                                          color: isLiked ? Colors.blue : Colors.grey,
+                                          color: isLiked
+                                              ? Theme.of(context).colorScheme.primary
+                                              : Theme.of(context).disabledColor,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),

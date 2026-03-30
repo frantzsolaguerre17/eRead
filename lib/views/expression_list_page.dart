@@ -73,10 +73,8 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                       expression == null
                           ? "Ajouter une expression"
                           : "Modifier l’expression",
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
                       ),
                     ),
                   ],
@@ -217,8 +215,11 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
-        title: const Text("Expressions apprises",
-          style: TextStyle(fontSize: 22, color: Colors.white),),
+        title: Text("Expressions apprises",
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+      color: Theme.of(context).colorScheme.onPrimary,
+    )
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.star, color: Colors.amber),
@@ -241,12 +242,19 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
               controller: _searchController,
               onChanged: (value) =>
                   setState(() => _searchQuery = value),
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
               decoration: InputDecoration(
                 hintText: "Rechercher une expression...",
-                hintStyle: const TextStyle(color: Colors.white70),
+                hintStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                ),
                 prefixIcon:
-                const Icon(Icons.search, color: Colors.white70),
+                 Icon(
+                  Icons.search,
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                ),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
                   icon: const Icon(Icons.close,
@@ -258,7 +266,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                 )
                     : null,
                 filled: true,
-                fillColor: Colors.deepPurple.shade600,
+                fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.8),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
@@ -269,14 +277,20 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
         ),
       ),
       body: controller.isLoading
-          ? _expressionShimmer()
+          ? _expressionShimmer(context)
           : RefreshIndicator(
         onRefresh: _refreshExpressions,
         child: filteredList.isEmpty
-            ? const Center(
+            ? Center(
           child: Text(
             "Aucune expression trouvée.",
-            style: TextStyle(fontSize: 16),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.color
+                  ?.withOpacity(0.6),
+            ),
           ),
         )
             : ListView.builder(
@@ -292,7 +306,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
-                  color: Colors.blueAccent,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.edit, color: Colors.white),
@@ -344,6 +358,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                 await controller.deleteExpression(exp.id);
               },
               child: Card(
+                color: Theme.of(context).cardColor,
                 elevation: 3,
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
@@ -356,14 +371,17 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.format_quote, color: Colors.deepPurple),
+                          Icon(
+                            Icons.format_quote,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               exp.expressionText,
-                              style: const TextStyle(
-                                fontSize: 18,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
                           ),
@@ -383,16 +401,20 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                       const SizedBox(height: 8),
                       Text(
                         "Définition : ${exp.definition}",
-                        style: const TextStyle(fontSize: 16),
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       if (exp.example.isNotEmpty) ...[
                         const SizedBox(height: 6),
                         Text(
                           "Exemple : ${exp.example}",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontStyle: FontStyle.italic,
-                            color: Colors.grey,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.color
+                                ?.withOpacity(0.7),
                           ),
                         ),
                       ],
@@ -419,7 +441,9 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
   }
 }
 
-Widget _expressionShimmer() {
+Widget _expressionShimmer(BuildContext context) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
   return ListView.builder(
     padding: const EdgeInsets.all(12),
     itemCount: 6,
@@ -427,12 +451,12 @@ Widget _expressionShimmer() {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Shimmer.fromColors(
-          baseColor: Colors.grey.shade300,
-          highlightColor: Colors.grey.shade100,
+          baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+          highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
           child: Container(
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
             ),
           ),

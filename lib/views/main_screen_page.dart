@@ -259,18 +259,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                     },
                   ),*/
 
-                IconButton(
-                  icon: const Icon(Icons.account_circle, color: Colors.white),
-                  tooltip: "Account profil",
-                  onPressed: () async{
-                    await Navigator.push(context,
-                        MaterialPageRoute(
-                            builder: (context) => const ProfilePage()
-                        )
-                    );
-                  }
-                ),
-
                 Stack(
                   children: [
                     if (!isLoadingRole && role?.toLowerCase() == 'admin')
@@ -475,6 +463,19 @@ class _DashboardScreenState extends State<DashboardScreen>
                     );
                   },
                 ),
+
+                IconButton(
+                    icon: const Icon(Icons.account_circle, color: Colors.white),
+                    tooltip: "Account profil",
+                    onPressed: () async{
+                      await Navigator.push(context,
+                          MaterialPageRoute(
+                              builder: (context) => const ProfilePage()
+                          )
+                      );
+                    }
+                ),
+
                 /*IconButton(
                   icon: const Icon(Icons.logout, color: Colors.white),
                   onPressed: _confirmLogout,

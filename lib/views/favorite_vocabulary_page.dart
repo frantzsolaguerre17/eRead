@@ -52,14 +52,16 @@ class _FavoriteVocabularyScreenState
         .toList();
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       // ================= APPBAR IDENTIQUE À FAVORIS LIVRES =================
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
-        title: const Text("Mes mots favoris",
-          style: TextStyle(fontSize: 22, color: Colors.white),
+        title: Text("Mes mots favoris",
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
@@ -77,13 +79,18 @@ class _FavoriteVocabularyScreenState
               enableSuggestions: false,
               spellCheckConfiguration: SpellCheckConfiguration.disabled(),
 
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
               decoration: InputDecoration(
                 hintText: "Rechercher un mot favori...",
-                hintStyle:
-                const TextStyle(color: Colors.white70),
-                prefixIcon: const Icon(Icons.search,
-                    color: Colors.white70),
+                hintStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                ),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
                   icon: const Icon(Icons.close,
@@ -97,7 +104,7 @@ class _FavoriteVocabularyScreenState
                 )
                     : null,
                 filled: true,
-                fillColor: Colors.deepPurple.shade600,
+                fillColor: Theme.of(context).colorScheme.primary.withOpacity(0.8),
                 contentPadding:
                 const EdgeInsets.symmetric(
                     vertical: 0, horizontal: 16),
@@ -117,12 +124,16 @@ class _FavoriteVocabularyScreenState
           : RefreshIndicator(
         onRefresh: _refreshFavorites,
         child: favoriteList.isEmpty
-            ? const Center(
+            ? Center(
           child: Text(
             "Aucun mot favori trouvé.",
             style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey),
+              color: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.color
+                  ?.withOpacity(0.6),),
           ),
         )
             : ListView.builder(
@@ -132,6 +143,7 @@ class _FavoriteVocabularyScreenState
             final vocab = favoriteList[index];
 
             return Card(
+              color: Theme.of(context).cardColor,
               elevation: 3,
               margin: const EdgeInsets.symmetric(
                   vertical: 8),
@@ -148,22 +160,18 @@ class _FavoriteVocabularyScreenState
                   children: [
                     Row(
                       children: [
-                        const Icon(
+                         Icon(
                           Icons
                               .lightbulb_outline,
-                          color:
-                          Colors.deepPurple,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             vocab.word,
                             style:
-                            const TextStyle(
-                              fontSize: 18,
-                              fontWeight:
-                              FontWeight
-                                  .bold,
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -215,8 +223,7 @@ class _FavoriteVocabularyScreenState
                     const SizedBox(height: 8),
                     Text(
                       "Définition : ${vocab.definition}",
-                      style: const TextStyle(
-                          fontSize: 16),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     if (vocab.example != null &&
                         vocab.example!
@@ -225,11 +232,15 @@ class _FavoriteVocabularyScreenState
                       const SizedBox(height: 6),
                       Text(
                         "Exemple : ${vocab.example}",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontStyle:
                           FontStyle.italic,
-                          color: Colors.grey,
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.color
+                              ?.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -250,6 +261,8 @@ class FavoriteVocabularyShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: 6,
@@ -257,10 +270,10 @@ class FavoriteVocabularyShimmer extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: Shimmer.fromColors(
-            baseColor: Colors.deepPurple.shade50,
-            highlightColor:
-            Colors.deepPurple.shade100,
+          baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+          highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
             child: Card(
+              color: Theme.of(context).cardColor,
               shape: RoundedRectangleBorder(
                 borderRadius:
                 BorderRadius.circular(12),
@@ -268,7 +281,7 @@ class FavoriteVocabularyShimmer extends StatelessWidget {
               child: Container(
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.shade50,
+                  color: Theme.of(context).cardColor,
                   borderRadius:
                   BorderRadius.circular(12),
                 ),

@@ -18,7 +18,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final supabase = Supabase.instance.client;
-
+  bool _isPasswordVisible = false;
   bool isLoading = false;
 
   late AnimationController _animController;
@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       labelText: label,
       prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
       filled: true,
-      fillColor: Theme.of(context).cardColor,
+      fillColor: Theme.of(context).colorScheme.surface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(
@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Colors.deepPurple.shade700,
       body: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -219,8 +219,24 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 // Mot de passe
                 TextField(
                   controller: passwordController,
-                  obscureText: true,
-                  decoration: inputStyle("Mot de passe", Icons.lock_outline),
+                  obscureText: !_isPasswordVisible,
+                  decoration: inputStyle(
+                    "Mot de passe",
+                    Icons.lock_outline,
+                  ).copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 28),
 
@@ -246,7 +262,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor: Colors.deepPurple.shade700,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),

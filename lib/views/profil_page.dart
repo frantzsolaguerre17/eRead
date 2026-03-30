@@ -185,11 +185,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profil"),
+        backgroundColor: Colors.deepPurple,
+        title: const Text("Profil", style: TextStyle(color: Colors.white),),
         centerTitle: true,
         elevation: 2,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+          //borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
       ),
       body: SingleChildScrollView(
@@ -228,8 +229,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 20),
 
-            // Options
-            buildCard(Icons.description, "Termes & Conditions", showTerms),
+            // Support
+            buildCard(Icons.chat, "WhatsApp", openWhatsApp),
+            buildCard(Icons.email, "Email", sendEmail),
 
             // Dark mode
             SwitchListTile(
@@ -237,11 +239,8 @@ class _ProfilePageState extends State<ProfilePage> {
               title: const Text("Mode sombre"),
               onChanged: (val) => theme.toggleTheme(val),
             ),
-
-            // Support
-            buildCard(Icons.chat, "WhatsApp", openWhatsApp),
-            buildCard(Icons.email, "Email", sendEmail),
-
+            // Options
+            buildCard(Icons.description, "Termes & Conditions", showTerms),
             const SizedBox(height: 20),
 
             // Logout

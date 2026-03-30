@@ -87,6 +87,7 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Livres en attente"),
@@ -95,7 +96,14 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
       body: isLoading
           ? const FavoriteVocabularyShimmer()
           : pendingBooks.isEmpty
-          ? const Center(child: Text("Aucun livre en attente"))
+          ? Center(
+        child: Text(
+          "Aucun livre en attente",
+          style: TextStyle(
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+          ),
+        ),
+      )
           : ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: pendingBooks.length,
@@ -117,7 +125,9 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
               );
             },
             child: Card(
+            color: Theme.of(context).cardColor,
             elevation: 6,
+            shadowColor: Theme.of(context).shadowColor,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             margin: const EdgeInsets.symmetric(vertical: 12),
             child: SizedBox(
@@ -192,7 +202,7 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.grey.shade600,
+                            color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
                           ),
                         ),
                       ],
@@ -271,9 +281,8 @@ class FavoriteVocabularyShimmer extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: Shimmer.fromColors(
-            baseColor: Colors.deepPurple.shade50,
-            highlightColor:
-            Colors.deepPurple.shade100,
+            baseColor: Theme.of(context).dividerColor,
+            highlightColor: Theme.of(context).highlightColor,
             child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius:
@@ -282,7 +291,7 @@ class FavoriteVocabularyShimmer extends StatelessWidget {
               child: Container(
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.shade50,
+                  color: Theme.of(context).cardColor,
                   borderRadius:
                   BorderRadius.circular(12),
                 ),

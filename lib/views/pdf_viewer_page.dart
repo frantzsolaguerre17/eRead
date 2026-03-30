@@ -33,6 +33,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   void initState() {
     super.initState();
     _loadSavedPages();
+    _loadThemePreference();
     _pdfFuture = _downloadAndCachePdf();
   }
 
@@ -141,7 +142,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       /// ✅ APPBAR LÉGÈREMENT PLUS GRAND
       appBar: PreferredSize(
@@ -154,16 +155,17 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                 Text(
                   "Lecture du livre 📖",
-                  style: TextStyle(fontSize: 22, color: Colors.white),
-                  textAlign: TextAlign.center, // Centre le texte
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
                 Text(
                   widget.book.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
-                    color: Colors.white70,
+                    color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
                   ),
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center, // Centre le texte
@@ -175,7 +177,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
             IconButton(
               icon: Icon(
                 _isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
               onPressed: () {
                 setState(() {
@@ -211,39 +213,67 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
           future: _pdfFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ));
             } else if (snapshot.hasData && snapshot.data != null) {
-              return Container(
-                color: _isDarkMode ? Colors.black : Colors.white,
-                child: ColorFiltered(
-                  colorFilter: _isDarkMode
-                      ? const ColorFilter.matrix([
-                    -1,0,0,0,255,
-                    0,-1,0,0,255,
-                    0,0,-1,0,255,
-                    0,0,0,1,0,
-                  ])
-                      : const ColorFilter.mode(Colors.transparent, BlendMode.dst),
-                  child: SfPdfViewer.file(
-                    snapshot.data!,
-                    controller: _pdfController,
-                    canShowScrollHead: true,
-                    pageSpacing: 2,
-                    onDocumentLoaded: (details) {
-                      _totalPages = details.document.pages.count;
-                      _pdfController.jumpToPage(_markedPage ?? _lastPage);
-                      _updateProgress(_lastPage);
-                    },
-                    onPageChanged: (details) {
-                      _saveLastPage(details.newPageNumber);
-                      _updateProgress(details.newPageNumber);
-                    },
+              return Column(
+                children: [
+
+                  /// 🔥 BARRE DE PROGRESSION
+                  LinearProgressIndicator(
+                    value: _progress,
+                    minHeight: 4,
+                    color: Theme.of(context).colorScheme.primary,
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .surfaceVariant,
                   ),
-                ),
+
+                  /// 📖 PDF
+                  Expanded(
+                    child: Container(
+                      color: _isDarkMode
+                          ? Colors.black
+                          : Theme.of(context).scaffoldBackgroundColor,
+                      child: ColorFiltered(
+                        colorFilter: _isDarkMode
+                            ? const ColorFilter.matrix([
+                          -0.9,0,0,0,255,
+                          0,-0.9,0,0,255,
+                          0,0,-0.9,0,255,
+                          0,0,0,1,0,
+                        ])
+                            : const ColorFilter.mode(
+                          Colors.transparent,
+                          BlendMode.dst,
+                        ),
+                        child: SfPdfViewer.file(
+                          snapshot.data!,
+                          controller: _pdfController,
+                          canShowScrollHead: true,
+                          pageSpacing: 2,
+                          onDocumentLoaded: (details) {
+                            _totalPages = details.document.pages.count;
+                            _pdfController.jumpToPage(_markedPage ?? _lastPage);
+                            _updateProgress(_lastPage);
+                          },
+                          onPageChanged: (details) {
+                            _saveLastPage(details.newPageNumber);
+                            _updateProgress(details.newPageNumber);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               );
 
             }
-            return const Center(child: Text("Impossible de charger le PDF"));
+            return Center(child: Text(
+              "Impossible de charger le PDF",
+              style: Theme.of(context).textTheme.bodyMedium,
+            ));
           },
         ),
       ),
@@ -257,7 +287,8 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
               padding: const EdgeInsets.only(bottom: 12),
               child: FloatingActionButton(
                 heroTag: "bookmarkFab",
-                backgroundColor: Colors.orange,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                //backgroundColor: Colors.orange,
                 onPressed: () {
                   _pdfController.jumpToPage(_markedPage!);
                 },

@@ -13,6 +13,7 @@ import '../controllers/expression_controller.dart';
 import '../controllers/group_chat_controller.dart';
 import '../controllers/notifications_controller.dart';
 import '../controllers/vocabulary_controller.dart';
+import '../services/update_service.dart';
 import '../views/book_screen.dart';
 import '../widgets/banner_widget.dart';
 import 'about_page.dart';
@@ -77,7 +78,12 @@ class _DashboardScreenState extends State<DashboardScreen>
 
     loadPendingCount();
 
+    Future.delayed(Duration(milliseconds: 500), () {
+      UpdateService.checkForUpdate(context);
+    });
   }
+
+
 
   void _loadDisplayName() {
     final user = supabase.auth.currentUser;
@@ -259,45 +265,52 @@ class _DashboardScreenState extends State<DashboardScreen>
                     },
                   ),*/
 
-                Stack(
-                  children: [
-                    if (!isLoadingRole && role?.toLowerCase() == 'admin')
-                    IconButton(
-                      icon: const Icon(Icons.pending_actions, color: Colors.white),
-                      tooltip: "Livres en attente",
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AdminPendingBooksScreen(),
-                          ),
-                        );
+                SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Stack(
+                    children: [
+                      if (!isLoadingRole && role?.toLowerCase() == 'admin') ...[
 
-                        // 🔥 Refresh badge quand tu reviens
-                        loadPendingCount();
-                      },
-                    ),
+                        // 🔹 ICON
+                        IconButton(
+                          icon: const Icon(Icons.pending_actions, color: Colors.white),
+                          tooltip: "Livres en attente",
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AdminPendingBooksScreen(),
+                              ),
+                            );
 
-                    if (pendingCount > 0)
-                      Positioned(
-                        right: 4,
-                        top: 4,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Text(
-                            pendingCount > 99 ? "99+" : pendingCount.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
+                            loadPendingCount();
+                          },
+                        ),
+
+                        // 🔹 BADGE (lié à admin aussi)
+                        if (pendingCount > 0)
+                          Positioned(
+                            right: 4,
+                            top: 4,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                pendingCount > 99 ? "99+" : pendingCount.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                  ],
+                      ],
+                    ],
+                  ),
                 ),
 
                 Stack(
@@ -704,9 +717,14 @@ class _DashboardScreenState extends State<DashboardScreen>
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.15),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+            BoxShadow(
+              color: Colors.deepPurple.withOpacity(0.2),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
             ),
           ],
         ),

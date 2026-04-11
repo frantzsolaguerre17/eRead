@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controllers/notifications_controller.dart';
@@ -179,6 +184,27 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Future<void> shareApk() async {
+    try {
+      // 1️⃣ Chemin pour stocker temporairement l'APK à partager
+      final dir = await getTemporaryDirectory();
+      final filePath = '${dir.path}/app.apk';
+
+      // 2️⃣ Charger le fichier APK depuis assets ou storage
+      // Ici je suppose que tu l'as mis dans assets : assets/app.apk
+      final byteData = await rootBundle.load('assets/app.apk');
+      final buffer = byteData.buffer;
+      await File(filePath).writeAsBytes(buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+
+      // 3️⃣ Partage via toutes les apps disponibles (y compris Bluetooth)
+      await Share.shareXFiles([XFile(filePath)], text: "Voici mon APK eRead 📚");
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur partage APK: $e")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeController>(context);
@@ -241,6 +267,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             // Options
             buildCard(Icons.description, "Termes & Conditions", showTerms),
+            buildCard(Icons.share, "Partager l'APK", shareApk),
             const SizedBox(height: 20),
 
             // Logout

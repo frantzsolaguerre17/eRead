@@ -32,54 +32,160 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 10),
 
             Text(
-              "eRead (i-rid) est une application de lecture intelligente qui vous permet de lire, apprendre, mémoriser et partager vos connaissances avec la communauté.",
-              style: TextStyle(fontSize: 16, color: Theme.of(context).textTheme.bodyMedium?.color),
+              "eRead (i-rid) est une application de lecture intelligente conçue pour vous aider à lire, apprendre, mémoriser et partager vos connaissances avec une communauté active de lecteurs.\n\n"
+                  "Que vous soyez étudiant, passionné de lecture ou curieux d’apprendre chaque jour, eRead transforme votre lecture en une expérience interactive et enrichissante.",
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+              ),
             ),
 
             const SizedBox(height: 25),
 
             /// 📘 Lire & partager des livres
             _buildSectionTitle(context, "📘 1. Lire et partager des livres"),
-            _buildCard(context,
-              "Accédez à une large sélection de livres numériques. "
-                  "Vous pouvez également ajouter vos propres livres PDF et les partager avec la communauté eRead afin d’enrichir la bibliothèque collective.",
+            _buildCard(
+              context,
+              "Accédez à une large sélection de livres numériques disponibles dans la bibliothèque.\n\n"
+                  "Vous pouvez également :\n"
+                  "• Importer vos propres fichiers PDF\n"
+                  "• Partager vos livres avec la communauté\n"
+                  "• Découvrir de nouveaux contenus ajoutés par d’autres utilisateurs\n\n"
+                  "L’objectif est de créer une bibliothèque collaborative riche et accessible à tous.",
             ),
 
             const SizedBox(height: 20),
 
             /// ❤️ Favoris
             _buildSectionTitle(context, "❤️ 2. Gérer vos favoris"),
-            _buildCard(context,
-              "Ajoutez des livres, des mots et des expressions en favoris. "
-                  "Retrouvez-les facilement dans les sections dédiées pour un accès rapide.",
+            _buildCard(
+              context,
+              "Gardez une trace de ce qui est important pour vous.\n\n"
+                  "Vous pouvez ajouter en favoris :\n"
+                  "• Des livres\n"
+                  "• Des mots\n"
+                  "• Des expressions\n"
+                  "• Des extraits\n\n"
+                  "Vos favoris sont centralisés pour un accès rapide et une révision efficace.",
             ),
 
             const SizedBox(height: 20),
 
             /// 📖 Mots & expressions
             _buildSectionTitle(context, "📖 3. Suivi des mots et expressions appris"),
-            _buildCard(context,
-              "Pendant votre lecture, vous pouvez enregistrer les mots et expressions que vous apprenez. "
-                  "Ajoutez une définition, un exemple et marquez-les comme favoris pour mieux les mémoriser.",
+            _buildCard(
+              context,
+              "Améliorez votre vocabulaire pendant votre lecture.\n\n"
+                  "Vous pouvez :\n"
+                  "• Enregistrer de nouveaux mots et expressions\n"
+                  "• Ajouter des définitions personnalisées\n"
+                  "• Écrire des exemples d’utilisation\n"
+                  "• Marquer comme appris ou favori\n\n"
+                  "Cette fonctionnalité transforme chaque lecture en opportunité d’apprentissage.",
             ),
 
             const SizedBox(height: 20),
 
-            /// 📚 Lecture intelligente
+            /// 📚 Lecture interactive
             _buildSectionTitle(context, "📚 4. Lecture interactive"),
-            _buildCard(context,
-              "Pendant la lecture d’un livre, vous pouvez marquer une page, "
-                  "ajouter le chapitre que vous lisez et sauvegarder les extraits qui vous ont marqué.",
+            _buildCard(
+              context,
+              "Profitez d’une expérience de lecture avancée et personnalisée.\n\n"
+                  "Pendant la lecture, vous pouvez :\n"
+                  "• Marquer votre page actuelle\n"
+                  "• Suivre votre progression dans le livre\n"
+                  "• Ajouter le chapitre en cours\n"
+                  "• Sauvegarder des passages importants\n\n"
+                  "Votre progression est automatiquement enregistrée pour reprendre là où vous vous êtes arrêté.",
             ),
 
             const SizedBox(height: 20),
 
             /// ✍️ Extraits & avis
             _buildSectionTitle(context, "✍️ 5. Extraits, avis et commentaires"),
-            _buildCard(context,
-              "Ajoutez vos propres avis et commentaires sur un passage précis. "
-                  "Vous pouvez modifier ou supprimer un extrait, une expression ou un mot appris "
-                  "grâce à un simple swipe vers la droite ou la gauche.",
+            _buildCard(
+              context,
+              "Exprimez vos idées et retenez l’essentiel.\n\n"
+                  "Vous pouvez :\n"
+                  "• Sauvegarder des extraits de texte\n"
+                  "• Ajouter vos réflexions et commentaires\n"
+                  "• Partager vos impressions\n\n"
+                  "Astuce : utilisez le swipe (glisser) à droite ou à gauche pour modifier ou supprimer rapidement vos contenus.",
+            ),
+
+            const SizedBox(height: 20),
+
+            /// 🔐 Compte & synchronisation
+            _buildSectionTitle(context, "🔐 6. Compte & synchronisation"),
+            _buildCard(
+              context,
+              "Votre compte vous permet de sauvegarder et synchroniser toutes vos données.\n\n"
+                  "• Vos livres, favoris et notes sont sécurisés\n"
+                  "• Vos données sont accessibles sur plusieurs appareils\n"
+                  "• Votre progression est sauvegardée automatiquement\n\n"
+                  "Assurez-vous d’être connecté pour ne rien perdre.",
+            ),
+
+            const SizedBox(height: 20),
+
+            /// 🚀 Conseils
+            _buildSectionTitle(context, "🚀 7. Conseils pour bien utiliser eRead"),
+            _buildCard(
+              context,
+              "Pour une meilleure expérience :\n\n"
+                  "• Lisez régulièrement pour améliorer votre apprentissage\n"
+                  "• Ajoutez des mots et expressions dès que vous apprenez quelque chose de nouveau\n"
+                  "• Utilisez les favoris pour réviser facilement\n"
+                  "• Interagissez avec la communauté en partageant vos livres et idées\n\n"
+                  "eRead est plus puissant lorsque vous l’utilisez activement.",
+            ),
+
+            const SizedBox(height: 20),
+
+            /// 🔔 Notifications
+            _buildSectionTitle(context, "🔔 8. Notifications"),
+            _buildCard(
+              context,
+              "Restez informé en temps réel grâce aux notifications.\n\n"
+                  "Types de notifications :\n"
+                  "• Notifications publiques : nouvelles publications, livres ajoutés, activités de la communauté\n"
+                  "• Notifications privées : interactions sur vos contenus (commentaires, réactions, mises à jour personnelles)\n\n"
+                  "Les notifications vous permettent de rester connecté à la communauté eRead et de ne rien manquer.",
+            ),
+
+            const SizedBox(height: 20),
+
+            /// 👤 Profil
+            _buildSectionTitle(context, "👤 9. Votre profil"),
+            _buildCard(
+              context,
+              "Votre profil est votre espace personnel dans eRead.\n\n"
+                  "Vous pouvez :\n"
+                  "• Voir vos livres ajoutés\n"
+                  "• Accéder à vos favoris\n"
+                  "• Consulter vos mots et expressions enregistrés\n"
+                  "• Voir votre progression de lecture\n"
+                  "• Gérer vos informations personnelles\n\n"
+                  "Votre profil reflète votre activité et votre évolution dans l’application.",
+            ),
+
+            const SizedBox(height: 20),
+
+            /// 🌐 Connexion
+            _buildSectionTitle(context, "🌐 10. Connexion Internet"),
+            _buildCard(
+              context,
+              "eRead nécessite une connexion Internet stable pour fonctionner correctement.\n\n"
+                  "Pour une meilleure expérience :\n"
+                  "• Utilisez une connexion Wi-Fi ou mobile stable\n"
+                  "• Évitez les réseaux lents ou instables\n\n"
+                  "Certaines fonctionnalités comme :\n"
+                  "• Le chargement des livres\n"
+                  "• La synchronisation des données\n"
+                  "• Les notifications\n"
+                  "• Les interactions avec la communauté\n"
+                  "nécessitent une connexion active.\n\n"
+                  "Une bonne connexion garantit une utilisation fluide et sans interruption.",
             ),
 
             const SizedBox(height: 30),
@@ -102,7 +208,10 @@ class AboutPage extends StatelessWidget {
                     "frantzsolaguerre17@gmail.com",
                     style: TextStyle(
                       fontSize: 13,
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.6),
                     ),
                     textAlign: TextAlign.center,
                   ),

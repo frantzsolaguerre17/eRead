@@ -28,6 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int booksAdded = 0;
   int wordsLearned = 0;
   int expressionsLearned = 0;
+  bool isStatsLoading = true;
 
   @override
   void initState() {
@@ -49,8 +50,12 @@ class _ProfilePageState extends State<ProfilePage> {
     final user = supabase.auth.currentUser;
     if (user == null) return;
 
+    setState(() {
+      isStatsLoading = true;
+    });
+
     final books = await supabase.from('book').select('id').eq('user_id', user.id);
-    final read = await supabase.from('user_book_progress').select('id').eq('user_id', user.id);
+    final read = await supabase.from('user_book_progress').select('id').eq('user_id', user.id).eq('is_read', true);
     final words = await supabase.from('vocabulary').select('id').eq('user_id', user.id);
     final expressions = await supabase.from('expression').select('id').eq('user_id', user.id);
 
@@ -59,6 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
       booksRead = read.length;
       wordsLearned = words.length;
       expressionsLearned = expressions.length;
+      isStatsLoading = false;
     });
   }
 
@@ -131,6 +137,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
 
+
+
+
   Widget buildCard(IconData icon, String title, VoidCallback onTap) {
     final cardColor = Theme.of(context).cardColor;
     return Card(
@@ -153,9 +162,16 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget statItem(String title, int value) {
     return Column(
       children: [
-        Text(
+        isStatsLoading
+            ? const SizedBox(
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        )
+            : Text(
           value.toString(),
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 18),
         ),
         Text(title, style: const TextStyle(color: Colors.grey)),
       ],
@@ -184,23 +200,30 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> shareApk() async {
+  Future<void> shareApk(BuildContext context) async {
     try {
-      // 1️⃣ Chemin pour stocker temporairement l'APK à partager
       final dir = await getTemporaryDirectory();
-      final filePath = '${dir.path}/app.apk';
+      final filePath = '${dir.path}/eread.apk';
 
-      // 2️⃣ Charger le fichier APK depuis assets ou storage
-      // Ici je suppose que tu l'as mis dans assets : assets/app.apk
-      final byteData = await rootBundle.load('assets/app.apk');
-      final buffer = byteData.buffer;
-      await File(filePath).writeAsBytes(buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+      // Charger depuis assets
+      final byteData = await rootBundle.load('assets/app_apk/eread.apk');
 
-      // 3️⃣ Partage via toutes les apps disponibles (y compris Bluetooth)
-      await Share.shareXFiles([XFile(filePath)], text: "Voici mon APK eRead 📚");
+      final file = File(filePath);
+
+      // Copier vers stockage temporaire
+      await file.writeAsBytes(
+        byteData.buffer.asUint8List(),
+      );
+
+      // Partage
+      await Share.shareXFiles(
+        [XFile(filePath)],
+        text: "📚 Installe eRead",
+      );
+
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erreur partage APK: $e")),
+        SnackBar(content: Text("Erreur: $e")),
       );
     }
   }
@@ -267,23 +290,26 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             // Options
             buildCard(Icons.description, "Termes & Conditions", showTerms),
-            buildCard(Icons.share, "Partager l'APK", shareApk),
-            const SizedBox(height: 20),
+            buildCard(Icons.share, "Partager l'APK", () {
+              shareApk(context);
+            }),
 
-            // Logout
-            ElevatedButton.icon(
-              onPressed: _confirmLogout,
-              icon: const Icon(Icons.logout),
-              label: const Text("Se déconnecter"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                minimumSize: const Size(double.infinity, 55),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              ),
-            ),
-          ],
-        ),
-      ),
+    const SizedBox(height: 20),
+
+    // Logout
+    ElevatedButton.icon(
+    onPressed: _confirmLogout,
+    icon: const Icon(Icons.logout),
+    label: const Text("Se déconnecter"),
+    style: ElevatedButton.styleFrom(
+    backgroundColor: Colors.red,
+    minimumSize: const Size(double.infinity, 55),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
+    ),
+    ],
+    ),
+    ),
     );
+    }
   }
-}

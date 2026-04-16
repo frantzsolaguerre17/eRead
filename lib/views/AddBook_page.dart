@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -25,6 +27,7 @@ class _AddBookPageState extends State<AddBookPage> {
   final pagesController = TextEditingController();
   final supabase = Supabase.instance.client;
   bool isLoading = false;
+  bool showMessage = false;
 
   File? selectedImage;
   File? selectedPdf;
@@ -44,6 +47,12 @@ class _AddBookPageState extends State<AddBookPage> {
     'Autre'
   ];
   String? selectedCategory;
+
+  @override
+  void initState() {
+    super.initState();
+    checkShowMessage();
+  }
 
   /*Future<bool> _checkStoragePermission() async {
     final status = await Permission.storage.request();
@@ -95,6 +104,20 @@ class _AddBookPageState extends State<AddBookPage> {
     await supabase.storage.from(bucket).upload(fileName, file);
 
     return supabase.storage.from(bucket).getPublicUrl(fileName);
+  }
+
+  Future<void> checkShowMessage() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    int count = prefs.getInt('add_book_message_count') ?? 0;
+
+    if (count < 3) {
+      setState(() {
+        showMessage = true;
+      });
+
+      await prefs.setInt('add_book_message_count', count + 1);
+    }
   }
 
   // 🔹 Alerte de confirmation avant l'ajout
@@ -351,6 +374,20 @@ class _AddBookPageState extends State<AddBookPage> {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
           ),
+
+          actions: [
+            IconButton(
+                icon: const Icon(Icons.account_circle, color: Colors.white),
+                tooltip: "Account profil",
+                onPressed: () async{
+                  await Navigator.push(context,
+                      MaterialPageRoute(
+                          builder: (context) => const ProfilePage()
+                      )
+                  );
+                }
+            ),
+          ],
         ),
       ),
       body: Center(
@@ -365,6 +402,66 @@ class _AddBookPageState extends State<AddBookPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (showMessage)
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.orange.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: const [
+                              Icon(Icons.info_outline, color: Colors.orange),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  "Important",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.orange,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                              "Veuillez bien remplir toutes les informations du livre :\n\n"
+                                  "• Bien écrire le nom du livre\n"
+                                  "• Bien écrire le nom de l’auteur\n"
+                                  "• Bien indiquer le nombre de pages\n"
+                                  "• Bien choisir la catégorie\n"
+                                  "• Choisir une image claire, de bonne qualité, correspondant à la couverture officielle du livre (pas une image quelconque)\n\n"
+                                  "⚠️ Toute petite erreur peut entraîner le refus du livre.\n\n"
+                                  "Si le livre est approuvé, il sera ajouté à la liste des livres de l’application et visible par tous les utilisateurs.\n\n"
+                                  "Vous recevrez un message si votre livre est approuvé ou refusé.\n"
+                                  "Allez dans 📩 pour vérifier.",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          const SizedBox(height: 10),
+
+                          // ✅ Bouton Compris
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  showMessage = false;
+                                });
+                              },
+                              child: const Text("Compris"),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+
                    Text(
                     "📘 Nouveau livre",
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(

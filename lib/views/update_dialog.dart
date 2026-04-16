@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,24 +16,24 @@ class UpdateDialog {
       ) {
     showDialog(
       context: context,
-      barrierDismissible: !forceUpdate,
-      builder: (_) => AlertDialog(
-        title: const Text("Mise à jour disponible 🚀"),
-        content: const Text("Une nouvelle version est disponible"),
-        actions: [
-          if (!forceUpdate)
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Plus tard"),
+      barrierDismissible: false, // 🔒 empêche clic extérieur
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false, // 🔒 empêche bouton retour Android
+        child: AlertDialog(
+          title: const Text("Mise à jour disponible 🚀"),
+          content: const Text("Une nouvelle version est disponible"),
+          actions: [
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  showDownloadingDialog(context, apkUrl, forceUpdate);
+                },
+                child: const Text("TELECHARGER"),
+              ),
             ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              showDownloadingDialog(context, apkUrl, forceUpdate);
-            },
-            child: const Text("TELECHARGER"),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -81,7 +82,7 @@ class UpdateDialog {
       },
     );
 
-    _downloadApk(
+    downloadApk(
       apkUrl,
       onProgress: (p) {
         progress = p;
@@ -97,53 +98,46 @@ class UpdateDialog {
   }
 
   /// 📥 3. Téléchargement APK
-  static Future<void> _downloadApk(
+  static Future<void> downloadApk(
       String url, {
         required Function(double) onProgress,
         required Function(String) onComplete,
       }) async {
     try {
-      // 🔐 Permission stockage
-      if (Platform.isAndroid) {
-        if (!await Permission.storage.isGranted) {
-          await Permission.storage.request();
-        }
-      }
-
-      // 📁 Chemin public (VISIBLE)
-      final dir = Directory('/storage/emulated/0/Download');
-      if (!dir.existsSync()) {
-        dir.createSync(recursive: true);
-      }
-
-      final path = '${dir.path}/eRead_update.apk';
-
-      print("DOWNLOAD PATH: $path"); // debug
-
       final dio = Dio();
+
+      // 📥 1. Télécharger en temporaire
+      final tempDir = Directory.systemTemp;
+      final tempPath = "${tempDir.path}/eRead_temp.apk";
 
       await dio.download(
         url,
-        path,
+        tempPath,
         onReceiveProgress: (received, total) {
           if (total != -1) {
-            final progress = received / total;
-            print("PROGRESS: $received / $total");
-            onProgress(progress);
+            onProgress(received / total);
           }
         },
       );
 
-      // ✅ Vérification
-      if (File(path).existsSync()) {
-        print("APK téléchargé !");
-        onComplete(path);
-      } else {
-        print("ERREUR: fichier non trouvé");
-      }
+      // 📁 2. Sauvegarder dans Download (VISIBLE)
+      final mediaStore = MediaStore();
+
+      await mediaStore.saveFile(
+        tempFilePath: tempPath,
+        dirType: DirType.download,
+        dirName: DirName.download,
+      );
+
+      // 📍 3. Chemin final (FIABLE)
+      final finalPath = "/storage/emulated/0/Download/eRead_update.apk";
+
+      // ✅ Callback
+      onComplete(finalPath);
+      OpenFilex.open(finalPath);
 
     } catch (e) {
-      print("ERREUR DOWNLOAD: $e");
+      print("❌ ERREUR DOWNLOAD: $e");
     }
   }
 

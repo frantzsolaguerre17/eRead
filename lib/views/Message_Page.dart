@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/controllers/MessageController.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PrivateNotificationsScreen extends StatefulWidget {
   const PrivateNotificationsScreen({super.key});
@@ -60,15 +62,27 @@ class _PrivateNotificationsScreenState
 
           ],
         ),
+
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.account_circle, color: Colors.white),
+              tooltip: "Account profil",
+              onPressed: () async{
+                await Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfilePage()
+                    )
+                );
+              }
+          ),
+        ],
       ),
 
       body: Consumer<MessageController>(
         builder: (_, controller, __) {
 
           if (controller.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return _messagesShimmer(context);
           }
 
           if (controller.notifications.isEmpty) {
@@ -166,4 +180,28 @@ class _PrivateNotificationsScreenState
       ),
     );
   }
+}
+
+
+Widget _messagesShimmer(BuildContext context) {
+  return ListView.builder(
+    padding: const EdgeInsets.all(12),
+    itemCount: 6,
+    itemBuilder: (_, __) {
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: Shimmer.fromColors(
+          baseColor: Theme.of(context).dividerColor,
+          highlightColor: Theme.of(context).highlightColor,
+          child: Container(
+            height: 100,
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }

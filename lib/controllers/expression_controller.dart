@@ -52,7 +52,7 @@ class ExpressionController extends ChangeNotifier {
   }
 
 
-  Future<void> fetchFavoriteVocabulary() async {
+  Future<void> fetchFavoriteExpression() async {
     try {
       isLoading = true;
       notifyListeners();
@@ -64,7 +64,7 @@ class ExpressionController extends ChangeNotifier {
       }
 
       final response = await supabase
-          .from('vocabulary')
+          .from('expression')
           .select()
           .eq('user_id', user.id)
           .eq('is_favorite', true)

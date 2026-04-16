@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -203,8 +204,20 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                     child: Text('Supprimer le marque-page'),
                   ),
               ],
-            )
-          ],
+            ),
+
+              IconButton(
+                  icon: const Icon(Icons.account_circle, color: Colors.white),
+                  tooltip: "Account profil",
+                  onPressed: () async{
+                    await Navigator.push(context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfilePage()
+                        )
+                    );
+                  }
+              ),
+            ],
         ),
       ),
 

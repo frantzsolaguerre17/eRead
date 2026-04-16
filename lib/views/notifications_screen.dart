@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/views/pdf_viewer_page.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../controllers/notifications_controller.dart';
@@ -75,6 +76,20 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         iconTheme: IconThemeData(
           color: Theme.of(context).iconTheme.color,
         ),
+
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.account_circle, color: Colors.white),
+              tooltip: "Account profil",
+              onPressed: () async{
+                await Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfilePage()
+                    )
+                );
+              }
+          ),
+        ],
       ),
       body: Builder(
         builder: (_) {

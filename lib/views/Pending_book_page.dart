@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/views/Pending_Book_Detail_Screen.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/book.dart';
@@ -92,6 +93,19 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
         centerTitle: true,
         title: const Text("Livres en attente"),
         backgroundColor: Colors.deepPurple,
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.account_circle, color: Colors.white),
+              tooltip: "Account profil",
+              onPressed: () async{
+                await Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfilePage()
+                    )
+                );
+              }
+          ),
+        ],
       ),
       body: isLoading
           ? const FavoriteVocabularyShimmer()

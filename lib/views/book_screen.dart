@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../controllers/book_controller.dart';
@@ -156,8 +157,19 @@ class _BookListPageState extends State<BookListPage> {
                     builder: (_) => const FavoriteBooksPage()),
               );
             },
-          )
-        ],
+          ),
+            IconButton(
+                icon: const Icon(Icons.account_circle, color: Colors.white),
+                tooltip: "Account profil",
+                onPressed: () async{
+                  await Navigator.push(context,
+                      MaterialPageRoute(
+                          builder: (context) => const ProfilePage()
+                      )
+                  );
+                }
+            ),
+          ],
       ),
       // =================================================
 

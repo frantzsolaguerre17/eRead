@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/views/pdf_preview_page.dart';
 import 'package:memo_livre/views/pdf_viewer_page.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/book.dart';
@@ -36,6 +37,20 @@ class PendingBookDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Détails du livre"),
         backgroundColor: Colors.deepPurple,
+        centerTitle: true,
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.account_circle, color: Colors.white),
+              tooltip: "Account profil",
+              onPressed: () async{
+                await Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfilePage()
+                    )
+                );
+              }
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

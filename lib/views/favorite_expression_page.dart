@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -25,14 +26,14 @@ class _FavoriteExpressionScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context
           .read<ExpressionController>()
-          .fetchFavoriteVocabulary();
+          .fetchFavoriteExpression();
     });
   }
 
   Future<void> _refreshFavorites() async {
     await context
         .read<ExpressionController>()
-        .fetchFavoriteVocabulary();
+        .fetchFavoriteExpression();
   }
 
   @override
@@ -114,6 +115,20 @@ class _FavoriteExpressionScreenState
             ),
           ),
         ),
+
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.account_circle, color: Colors.white),
+              tooltip: "Account profil",
+              onPressed: () async{
+                await Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfilePage()
+                    )
+                );
+              }
+          ),
+        ],
       ),
 
       // ================= BODY =================
@@ -189,7 +204,7 @@ class _FavoriteExpressionScreenState
                             await context
                                 .read<
                                 ExpressionController>()
-                                .fetchFavoriteVocabulary();
+                                .fetchFavoriteExpression();
                           },
                         ),
                       ],

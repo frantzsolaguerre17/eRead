@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/views/favorite_expression_page.dart';
+import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:uuid/uuid.dart';
@@ -48,152 +49,192 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
     final exampleController =
     TextEditingController(text: expression?.example ?? '');
 
+    bool isSaving = false;
+
     showDialog(
       context: context,
-      builder: (_) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        insetPadding:
-        const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                /// HEADER
-                Row(
-                  children: [
-                    const Icon(Icons.format_quote,
-                        color: Colors.deepPurple),
-                    const SizedBox(width: 8),
-                    Text(
-                      expression == null
-                          ? "Ajouter une expression"
-                          : "Modifier l’expression",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      /// HEADER
+                      Row(
+                        children: [
+                          const Icon(Icons.format_quote,
+                              color: Colors.deepPurple),
+                          const SizedBox(width: 8),
+                          Text(
+                            expression == null
+                                ? "Ajouter une expression"
+                                : "Modifier l’expression",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
 
-                const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                /// EXPRESSION
-                TextField(
-                  controller: textController,
-                  decoration: InputDecoration(
-                    labelText: "Expression",
-                    prefixIcon: const Icon(Icons.format_quote),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                /// DÉFINITION
-                TextField(
-                  controller: definitionController,
-                  decoration: InputDecoration(
-                    labelText: "Définition",
-                    prefixIcon: const Icon(Icons.menu_book),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  maxLines: 2,
-                ),
-
-                const SizedBox(height: 12),
-
-                /// EXEMPLE
-                TextField(
-                  controller: exampleController,
-                  decoration: InputDecoration(
-                    labelText: "Exemple (optionnel)",
-                    prefixIcon: const Icon(Icons.edit),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  maxLines: 2,
-                ),
-
-                const SizedBox(height: 20),
-
-                /// ACTIONS
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.grey.shade700,
-                      ),
-                      child: const Text("Annuler"),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      /// EXPRESSION
+                      TextField(
+                        controller: textController,
+                        decoration: InputDecoration(
+                          labelText: "Expression",
+                          prefixIcon: const Icon(Icons.format_quote),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
-                      onPressed: () async {
-                        final text = textController.text.trim();
-                        final definition =
-                        definitionController.text.trim();
 
-                        if (text.isEmpty || definition.isEmpty) return;
+                      const SizedBox(height: 12),
 
-                        final user =
-                            Supabase.instance.client.auth.currentUser;
-                        if (user == null) return;
-
-                        final controller =
-                        context.read<ExpressionController>();
-
-                        if (expression == null) {
-                          final newExpression = Expression(
-                            id: const Uuid().v4(),
-                            expressionText: text,
-                            definition: definition,
-                            example: exampleController.text.trim(),
-                            createdAt: DateTime.now(),
-                            bookId: widget.bookId,
-                            userId: user.id,
-                            isFavorite: false,
-                          );
-                          await controller.addExpression(newExpression);
-                        } else {
-                          expression.expressionText = text;
-                          expression.definition = definition;
-                          expression.example =
-                              exampleController.text.trim();
-
-                          await controller.updateExpression(expression);
-                        }
-
-                        if (mounted) Navigator.pop(context);
-                      },
-                      child: Text(
-                        expression == null ? "Ajouter" : "Modifier",
-                        style: const TextStyle(color: Colors.white),
+                      /// DÉFINITION
+                      TextField(
+                        controller: definitionController,
+                        decoration: InputDecoration(
+                          labelText: "Définition",
+                          prefixIcon: const Icon(Icons.menu_book),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        maxLines: 2,
                       ),
-                    ),
-                  ],
+
+                      const SizedBox(height: 12),
+
+                      /// EXEMPLE
+                      TextField(
+                        controller: exampleController,
+                        decoration: InputDecoration(
+                          labelText: "Exemple (optionnel)",
+                          prefixIcon: const Icon(Icons.edit),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        maxLines: 2,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      /// ACTIONS
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("Annuler"),
+                          ),
+                          const SizedBox(width: 8),
+
+                          /// 🔥 BOUTON AVEC LOADING
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.deepPurple,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: isSaving
+                                ? null
+                                : () async {
+                              final text =
+                              textController.text.trim();
+                              final definition =
+                              definitionController.text.trim();
+
+                              if (text.isEmpty ||
+                                  definition.isEmpty) return;
+
+                              final user = Supabase
+                                  .instance.client.auth.currentUser;
+                              if (user == null) return;
+
+                              setStateDialog(
+                                      () => isSaving = true);
+
+                              try {
+                                final controller = context
+                                    .read<ExpressionController>();
+
+                                if (expression == null) {
+                                  final newExpression = Expression(
+                                    id: const Uuid().v4(),
+                                    expressionText: text,
+                                    definition: definition,
+                                    example:
+                                    exampleController.text.trim(),
+                                    createdAt: DateTime.now(),
+                                    bookId: widget.bookId,
+                                    userId: user.id,
+                                    isFavorite: false,
+                                  );
+
+                                  await controller
+                                      .addExpression(newExpression);
+                                } else {
+                                  expression.expressionText = text;
+                                  expression.definition = definition;
+                                  expression.example =
+                                      exampleController.text.trim();
+
+                                  await controller
+                                      .updateExpression(expression);
+                                }
+
+                                if (mounted)
+                                  Navigator.pop(context);
+                              } catch (e) {
+                                debugPrint("Erreur: $e");
+                              } finally {
+                                setStateDialog(
+                                        () => isSaving = false);
+                              }
+                            },
+                            child: isSaving
+                                ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child:
+                              CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                                : Text(
+                              expression == null
+                                  ? "Ajouter"
+                                  : "Modifier",
+                              style: const TextStyle(
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -233,7 +274,20 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
               );
             },
           ),
-        ],
+
+            IconButton(
+                icon: const Icon(Icons.account_circle, color: Colors.white),
+                tooltip: "Account profil",
+                onPressed: () async{
+                  await Navigator.push(context,
+                      MaterialPageRoute(
+                          builder: (context) => const ProfilePage()
+                      )
+                  );
+                }
+            ),
+          ],
+
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(

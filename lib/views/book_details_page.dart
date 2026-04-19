@@ -490,6 +490,152 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }*/
 
+  void _editExcerptDialog(Excerpt ex) {
+    final contentController = TextEditingController(text: ex.content);
+    final commentController = TextEditingController(text: ex.comment ?? '');
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            insetPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+
+                    /// 🔥 HEADER (comme tes autres dialogs)
+                    Row(
+                      children: const [
+                        Icon(Icons.edit, color: Colors.deepPurple),
+                        SizedBox(width: 8),
+                        Text(
+                          "Modifier l'extrait",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    /// 📄 CONTENU
+                    TextField(
+                      controller: contentController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: "Texte de l'extrait",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: const Icon(Icons.text_snippet),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: commentController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        labelText: "Commentaire (optionnel)",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        prefixIcon: const Icon(Icons.comment),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    /// 🎯 ACTIONS
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed:
+                          isLoading ? null : () => Navigator.pop(context),
+                          child: const Text("Annuler"),
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepPurple,
+                          ),
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                            final content =
+                            contentController.text.trim();
+
+                            if (content.isEmpty) return;
+
+                            setStateDialog(() => isLoading = true);
+
+                            await context
+                                .read<ExcerptController>()
+                                .updateExcerpt(
+                              ex.id,
+                              content,
+                              commentController.text.trim(),
+                            );
+
+                            await context
+                                .read<ExcerptController>()
+                                .fetchExcerpts(ex.chapterId);
+
+                            setStateDialog(() => isLoading = false);
+
+                            if (mounted) Navigator.pop(context);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Extrait modifié ✅")),
+                            );
+                          },
+
+                          child: isLoading
+                              ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                              : const Text(
+                            "Modifier",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildExcerpts(String chapterId) {
     final excerptController = context.watch<ExcerptController>();
     final excerpts = excerptController.getExcerpts(chapterId);
@@ -531,8 +677,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             child: const Icon(Icons.delete, color: Colors.white),
           ),
           confirmDismiss: (direction) async {
+            if (direction == DismissDirection.startToEnd) {
+              // 👉 MODIFIER
+
+              await Future.delayed(const Duration(milliseconds: 100));
+
+              if (!mounted) return false;
+
+              _editExcerptDialog(ex); // ✅ IMPORTANT
+
+              return false; // empêche la suppression
+            }
+
             if (direction == DismissDirection.endToStart) {
-              // Supprimer
+              // 👉 SUPPRIMER
               return await showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
@@ -544,18 +702,21 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       child: const Text("Annuler"),
                     ),
                     ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                      ),
                       onPressed: () => Navigator.of(context).pop(true),
-                      child: const Text("Supprimer", style: TextStyle(color: Colors.white)),
+                      child: const Text(
+                        "Supprimer",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
               );
-            } else {
-              // Éditer
-              // _editExcerptDialog(ex);
-              return false;
             }
+
+            return false;
           },
           onDismissed: (direction) async {
             if (direction == DismissDirection.endToStart) {

@@ -350,13 +350,17 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
           IconButton(
             icon: const Icon(Icons.star, color: Colors.amber),
             tooltip: "Mots favoris",
-            onPressed: () {
+            onPressed: () async {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => FavoriteVocabularyScreen(),
                 ),
               );
+
+              await context
+                    .read<VocabularyController>()
+                    .fetchVocabulary(widget.bookId);
             },
           ),
 

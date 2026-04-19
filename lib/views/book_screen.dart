@@ -52,7 +52,7 @@ class _BookListPageState extends State<BookListPage> {
   Future<void> _loadBooks() async {
     setState(() => isLoading = true);
     final data = await BookService().fetchBooks();
-    await Future.delayed(const Duration(milliseconds: 500));
+   // await Future.delayed(const Duration(milliseconds: 500));
     setState(() {
       books = data;
       filteredBooks = books;
@@ -308,6 +308,7 @@ class _ModernBookCardState extends State<ModernBookCard> {
   final supabase = Supabase.instance.client;
   bool isLiked = false;
   int likesCount = 0;
+  bool isOpening = false;
 
   @override
   void initState() {
@@ -460,29 +461,68 @@ class _ModernBookCardState extends State<ModernBookCard> {
     return "${(progress * 100).round()}%";
   }
 
+  Future<void> _checkProgress() async {
+    final progress = await context
+        .read<BookController>()
+        .getProgress(widget.book.id);
+
+    if (progress?.isRead == true && mounted) {
+      _showRelireDialog(context, widget.book);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async {
-        final progress = await context
-            .read<BookController>()
-            .getProgress(widget.book.id);
+        onTap: () async {
+      if (isOpening) return;
 
-        if(progress?.isRead == true){
-          _showRelireDialog(context, widget.book);
-        } else if (widget.book.pdf.isNotEmpty) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => PdfViewerPage(book: widget.book)
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("PDF non disponible pour ce livre")),
-          );
-        }
-      },
+      if (widget.book.pdf.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("PDF non disponible pour ce livre")),
+        );
+        return;
+      }
+
+      setState(() => isOpening = true);
+
+      // 🔥 On lance la vérification SANS bloquer l'UI
+      final futureProgress = context
+          .read<BookController>()
+          .getProgress(widget.book.id);
+
+      // ⚡ On attend un peu (rapide) pour voir si réseau répond vite
+      final progress = await futureProgress.timeout(
+        const Duration(milliseconds: 400),
+        onTimeout: () => null,
+      );
+
+      if (progress?.isRead == true) {
+        // ✅ CAS : livre déjà lu → dialog
+        _showRelireDialog(context, widget.book);
+      } else {
+        // ✅ CAS : ouvrir directement
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PdfViewerPage(book: widget.book),
+          ),
+        );
+
+        // 🔥 Si réponse lente → on vérifie après
+        futureProgress.then((value) {
+          if (value?.isRead == true && mounted) {
+            _showRelireDialog(context, widget.book);
+          }
+        });
+      }
+
+      await Future.delayed(const Duration(milliseconds: 400));
+
+      if (mounted) {
+        setState(() => isOpening = false);
+      }
+    },
       child: Card(
         //color: Theme.of(context).cardColor,
         margin: const EdgeInsets.only(bottom: 16),

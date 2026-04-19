@@ -265,14 +265,19 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
           IconButton(
             icon: const Icon(Icons.star, color: Colors.amber),
             tooltip: "Mots favoris",
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => FavoriteExpressionScreen(),
-                ),
-              );
-            },
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => FavoriteExpressionScreen(),
+                  ),
+                );
+
+                // 🔥 RELOAD ICI
+                await context
+                    .read<ExpressionController>()
+                    .fetchExpressions(widget.bookId);
+              }
           ),
 
             IconButton(

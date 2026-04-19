@@ -1,14 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:media_store_plus/media_store_plus.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class UpdateDialog {
 
-  /// 🔔 1. Popup nouvelle version
   static void showUpdateAvailable(
       BuildContext context,
       String apkUrl,
@@ -16,43 +13,38 @@ class UpdateDialog {
       ) {
     showDialog(
       context: context,
-      barrierDismissible: false, // 🔒 empêche clic extérieur
-      builder: (_) => WillPopScope(
-        onWillPop: () async => false, // 🔒 empêche bouton retour Android
-        child: AlertDialog(
-          title: const Text("Mise à jour disponible 🚀"),
-          content: const Text("Une nouvelle version est disponible"),
-          actions: [
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  showDownloadingDialog(context, apkUrl, forceUpdate);
-                },
-                child: const Text("TELECHARGER"),
-              ),
-            ),
-          ],
-        ),
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text("Mise à jour disponible 🚀"),
+        content: const Text("Une nouvelle version est disponible"),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _startDownload(context, apkUrl, forceUpdate);
+            },
+            child: const Text("TELECHARGER"),
+          ),
+        ],
       ),
     );
   }
 
-  /// ⬇️ 2. Dialog téléchargement
-  static void showDownloadingDialog(
+  // ================= DOWNLOAD CONTROLLER =================
+
+  static void _startDownload(
       BuildContext context,
-      String apkUrl,
+      String url,
       bool forceUpdate,
       ) {
     double progress = 0.0;
-    bool isBackground = false;
 
     late StateSetter setStateDialog;
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setState) {
             setStateDialog = setState;
@@ -67,82 +59,67 @@ class UpdateDialog {
                   Text("${(progress * 100).toStringAsFixed(0)}%"),
                 ],
               ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    isBackground = true;
-                    Navigator.pop(context);
-                  },
-                  child: const Text("Arrière-plan"),
-                ),
-              ],
             );
           },
         );
       },
     );
 
-    downloadApk(
-      apkUrl,
+    _downloadApk(
+      url,
       onProgress: (p) {
         progress = p;
-        if (!isBackground) {
-          setStateDialog(() {});
-        }
+        setStateDialog(() {});
       },
-        onComplete: (path) {
-          Navigator.of(context, rootNavigator: true).pop();
-          showInstallDialog(context, path, forceUpdate);
+      onDone: (filePath) async {
+
+        // 1. fermer dialog download
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
         }
+
+        await Future.delayed(const Duration(milliseconds: 300));
+
+        // 2. ouvrir INSTALL
+        _showInstall(context, filePath, forceUpdate);
+      },
     );
   }
 
-  /// 📥 3. Téléchargement APK
-  static Future<void> downloadApk(
+  // ================= DOWNLOAD =================
+
+  static Future<void> _downloadApk(
       String url, {
         required Function(double) onProgress,
-        required Function(String) onComplete,
+        required Function(String) onDone,
       }) async {
     try {
       final dio = Dio();
 
-      // 📥 1. Télécharger en temporaire
-      final tempDir = Directory.systemTemp;
-      final tempPath = "${tempDir.path}/eRead_temp.apk";
+      //final tempPath = "/storage/emulated/0/Download/eRead_update.apk";
+      final dir = await getExternalStorageDirectory();
+      final tempPath = "${dir!.path}/eRead_update.apk";
 
       await dio.download(
         url,
         tempPath,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            onProgress(received / total);
+        onReceiveProgress: (r, t) {
+          if (t != -1) {
+            onProgress(r / t);
           }
         },
       );
 
-      // 📁 2. Sauvegarder dans Download (VISIBLE)
-      final mediaStore = MediaStore();
-
-      await mediaStore.saveFile(
-        tempFilePath: tempPath,
-        dirType: DirType.download,
-        dirName: DirName.download,
-      );
-
-      // 📍 3. Chemin final (FIABLE)
-      final finalPath = "/storage/emulated/0/Download/eRead_update.apk";
-
-      // ✅ Callback
-      onComplete(finalPath);
-      OpenFilex.open(finalPath);
+      onDone(tempPath);
 
     } catch (e) {
-      print("❌ ERREUR DOWNLOAD: $e");
+      print("❌ ERROR: $e");
     }
   }
 
-  /// 📦 4. INSTALL
-  static void showInstallDialog(
+  // ================= INSTALL =================
+
+  static void _showInstall(
       BuildContext context,
       String path,
       bool forceUpdate,
@@ -151,8 +128,8 @@ class UpdateDialog {
       context: context,
       barrierDismissible: !forceUpdate,
       builder: (_) => AlertDialog(
-        title: const Text("Téléchargement terminé"),
-        content: const Text("Installer la mise à jour ?"),
+        title: const Text("Téléchargement terminé ✅"),
+        content: const Text("Installer maintenant ?"),
         actions: [
           if (!forceUpdate)
             TextButton(
@@ -160,12 +137,9 @@ class UpdateDialog {
               child: const Text("Plus tard"),
             ),
 
-          /// 🔥 BOUTON INSTALL
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-
-              /// 👉 C'EST ICI
               OpenFilex.open(path);
             },
             child: const Text("INSTALL"),

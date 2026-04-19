@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:memo_livre/controllers/MessageController.dart';
 import 'package:memo_livre/views/login_page.dart';
 import 'package:memo_livre/views/profil_page.dart';
@@ -25,6 +26,9 @@ Future<void> main() async{
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqdXN3eXp2ZnRra2prbGt0d3h2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc3OTg5NTcsImV4cCI6MjA3MzM3NDk1N30.7QGTmDz_yaGo4B4XXHBA71PivmTElC5Zx4sjpuv_w8Y',
   );
  // await Firebase.initializeApp();
+
+  await MediaStore.ensureInitialized();
+
   runApp(
       MultiProvider(
         providers: [
@@ -42,6 +46,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BookController()),

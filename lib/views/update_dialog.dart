@@ -14,18 +14,59 @@ class UpdateDialog {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        title: const Text("Mise à jour disponible 🚀"),
-        content: const Text("Une nouvelle version est disponible"),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _startDownload(context, apkUrl, forceUpdate);
-            },
-            child: const Text("TELECHARGER"),
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple.shade100,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.system_update, size: 32, color: Colors.deepPurple),
+              ),
+              const SizedBox(height: 12),
+
+              const Text(
+                "Mise à jour disponible",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 8),
+
+              const Text(
+                "Une nouvelle version est prête à être installée 🚀",
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 20),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _startDownload(context, apkUrl, forceUpdate);
+                  },
+                  child: const Text("TÉLÉCHARGER", style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -49,15 +90,47 @@ class UpdateDialog {
           builder: (context, setState) {
             setStateDialog = setState;
 
-            return AlertDialog(
-              title: const Text("Téléchargement..."),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  LinearProgressIndicator(value: progress),
-                  const SizedBox(height: 10),
-                  Text("${(progress * 100).toStringAsFixed(0)}%"),
-                ],
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "Téléchargement en cours...",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 8,
+                        backgroundColor: Colors.grey.shade300,
+                        valueColor: AlwaysStoppedAnimation(Colors.deepPurple),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Text(
+                      "${(progress * 100).toStringAsFixed(0)}%",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    const Text(
+                      "Téléchargement de la mise à jour...",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -126,25 +199,67 @@ class UpdateDialog {
       ) {
     showDialog(
       context: context,
-      barrierDismissible: !forceUpdate,
-      builder: (_) => AlertDialog(
-        title: const Text("Téléchargement terminé ✅"),
-        content: const Text("Installer maintenant ?"),
-        actions: [
-          if (!forceUpdate)
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Plus tard"),
-            ),
-
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              OpenFilex.open(path);
-            },
-            child: const Text("INSTALL"),
+      barrierDismissible: false, // 🔒 empêche clic extérieur
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false, // 🔒 bloque bouton retour
+        child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-        ],
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check_circle, size: 32, color: Colors.green),
+                ),
+
+                const SizedBox(height: 12),
+
+                const Text(
+                  "Téléchargement terminé",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 8),
+
+                const Text(
+                  "Installer la nouvelle version maintenant ?",
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      OpenFilex.open(path);
+                    },
+                    child: const Text(
+                      "INSTALLER",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

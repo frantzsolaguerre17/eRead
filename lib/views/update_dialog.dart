@@ -41,7 +41,7 @@ class UpdateDialog {
               const SizedBox(height: 8),
 
               const Text(
-                "Une nouvelle version est prête à être installée 🚀",
+                "Une nouvelle version est prête à être installée",
                 textAlign: TextAlign.center,
               ),
 

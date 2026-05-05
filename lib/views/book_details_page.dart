@@ -116,8 +116,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   void _addChapterDialog() {
     final titleController = TextEditingController();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     bool isLoading = false;
-
     showDialog(
       context: context,
       builder: (_) => StatefulBuilder(
@@ -153,6 +153,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       controller: titleController,
                       decoration: InputDecoration(
                         labelText: "Saisir le titre du chapitre que vous lisez",
+                        filled: true,
+                        fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -230,6 +232,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     final contentController = TextEditingController();
     final commentController = TextEditingController();
     bool isLoading = false;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
       context: context,
@@ -267,6 +270,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       maxLines: 3,
                       decoration: InputDecoration(
                         labelText: "Texte de l'extrait",
+                        filled:true,
+                        fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -281,6 +286,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       maxLines: 2,
                       decoration: InputDecoration(
                         labelText: "Commentaire (optionnel)",
+                        filled: true,
+                        fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -362,6 +369,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   void _editChapterDialog(String chapterId, String currentTitle) {
     final controller = TextEditingController(text: currentTitle);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
       context: context,
@@ -383,9 +391,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: controller,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Titre du chapitre",
-                  border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: isDark ? Colors.grey.shade900 : Colors.white,
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 20),
@@ -494,6 +504,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     final contentController = TextEditingController(text: ex.content);
     final commentController = TextEditingController(text: ex.comment ?? '');
     bool isLoading = false;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
       context: context,
@@ -539,6 +550,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       maxLines: 3,
                       decoration: InputDecoration(
                         labelText: "Texte de l'extrait",
+                        filled: true,
+                        fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/views/Message_Page.dart';
 import 'package:memo_livre/views/Pending_book_page.dart';
+import 'package:memo_livre/views/comment_lire_un%20_livre_page.dart';
 import 'package:memo_livre/views/favorite_vocabulary_page.dart';
 import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
@@ -246,6 +247,19 @@ class _DashboardScreenState extends State<DashboardScreen>
             // ================= APP BAR =================
             SliverAppBar(
               automaticallyImplyLeading: false,
+
+              leading: IconButton(
+                icon: const Icon(Icons.auto_stories, color: Colors.white),
+                tooltip: "Comment lire un livre",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ResumeLecturePage(),
+                    ),
+                  );
+                },
+              ),
               backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
               expandedHeight: MediaQuery.of(context).size.height * 0.28,
               pinned: true,

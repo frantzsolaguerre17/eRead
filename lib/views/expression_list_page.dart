@@ -48,6 +48,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
     TextEditingController(text: expression?.definition ?? '');
     final exampleController =
     TextEditingController(text: expression?.example ?? '');
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     bool isSaving = false;
 
@@ -94,6 +95,8 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                         controller: textController,
                         decoration: InputDecoration(
                           labelText: "Expression",
+                          filled: true,
+                          fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                           prefixIcon: const Icon(Icons.format_quote),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -108,6 +111,8 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                         controller: definitionController,
                         decoration: InputDecoration(
                           labelText: "Définition",
+                          filled: true,
+                          fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                           prefixIcon: const Icon(Icons.menu_book),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -123,6 +128,8 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                         controller: exampleController,
                         decoration: InputDecoration(
                           labelText: "Exemple (optionnel)",
+                          filled: true,
+                          fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                           prefixIcon: const Icon(Icons.edit),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),

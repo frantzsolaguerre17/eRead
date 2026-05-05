@@ -333,13 +333,24 @@ class _FavoriteModernBookCardState
                                     .bodyMedium
                                     ?.color
                                     ?.withOpacity(0.7),)),
+                          const SizedBox(height: 6),
+
                           Text(
                               "Pages : ${widget.book.number_of_pages}",
                               style: TextStyle(
                                   color: Colors
                                       .grey.shade700)),
+                          const SizedBox(height: 6),
+
                           Text(
                               "Catégorie : ${widget.book.category}",
+                              style: TextStyle(
+                                  color: Colors
+                                      .grey.shade700)),
+                          const SizedBox(height: 6),
+
+                          Text(
+                              "Ajoute par : ${widget.book.user_name}",
                               style: TextStyle(
                                   color: Colors
                                       .grey.shade700)),

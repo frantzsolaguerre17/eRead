@@ -318,7 +318,9 @@ class _AddBookPageState extends State<AddBookPage> {
         color: Theme.of(context).colorScheme.primary,
       ),
       filled: true,
-      fillColor: Theme.of(context).cardColor,
+      fillColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey.shade900   // 🔥 plus sombre en dark mode
+          : Theme.of(context).cardColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
       ),
@@ -335,6 +337,7 @@ class _AddBookPageState extends State<AddBookPage> {
   @override
   Widget build(BuildContext context) {
     final textStyle = const TextStyle(fontSize: 16);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -403,64 +406,79 @@ class _AddBookPageState extends State<AddBookPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (showMessage)
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.orange.shade200),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(Icons.info_outline, color: Colors.orange),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  "Important",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.orange,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                              "Veuillez bien remplir toutes les informations du livre :\n\n"
-                                  "• Bien écrire le nom du livre\n"
-                                  "• Bien écrire le nom de l’auteur\n"
-                                  "• Bien indiquer le nombre de pages\n"
-                                  "• Bien choisir la catégorie\n"
-                                  "• Choisir une image claire, de bonne qualité, correspondant à la couverture officielle du livre (pas une image quelconque)\n\n"
-                                  "⚠️ Toute petite erreur peut entraîner le refus du livre.\n\n"
-                                  "Si le livre est approuvé, il sera ajouté à la liste des livres de l’application et visible par tous les utilisateurs.\n\n"
-                                  "Vous recevrez un message si votre livre est approuvé ou refusé.\n"
-                                  "Allez dans 📩 pour vérifier.",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(height: 10),
-
-                          // ✅ Bouton Compris
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  showMessage = false;
-                                });
-                              },
-                              child: const Text("Compris"),
-                            ),
-                          )
-                        ],
+            Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.orange.shade900.withOpacity(0.2) : Colors.orange.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isDark ? Colors.orange.shade700 : Colors.orange.shade200,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: isDark ? Colors.orange.shade300 : Colors.orange,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "Important",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.orange.shade300 : Colors.orange,
+                        ),
                       ),
                     ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  "Veuillez bien remplir toutes les informations du livre :\n\n"
+                      "• Bien écrire le nom du livre\n"
+                      "• Bien écrire le nom de l’auteur\n"
+                      "• Bien indiquer le nombre de pages\n"
+                      "• Bien choisir la catégorie\n"
+                      "• Choisir une image claire, de bonne qualité, correspondant à la couverture officielle du livre (pas une image quelconque)\n\n"
+                      "⚠️ Toute petite erreur peut entraîner le refus du livre.\n\n"
+                      "Si le livre est approuvé, il sera ajouté à la liste des livres de l’application et visible par tous les utilisateurs.\n\n"
+                      "Vous recevrez un message si votre livre est approuvé ou refusé.\n"
+                      "Allez dans 📩 pour vérifier.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        showMessage = false;
+                      });
+                    },
+                    child: Text(
+                      "Compris",
+                      style: TextStyle(
+                        color: isDark ? Colors.orange.shade300 : Colors.orange,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
 
                    Text(
                     "📘 Nouveau livre",
@@ -509,7 +527,9 @@ class _AddBookPageState extends State<AddBookPage> {
                     child: Container(
                       height: 170,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey.shade900   // 🔥 plus sombre en dark mode
+                            : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                           color: Theme.of(context).dividerColor,

@@ -119,7 +119,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
     TextEditingController(text: vocab?.definition ?? '');
     final exampleController =
     TextEditingController(text: vocab?.example ?? '');
-
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     bool isSaving = false;
 
     showDialog(
@@ -166,6 +166,8 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                         controller: wordController,
                         decoration: InputDecoration(
                           labelText: "Mot",
+                          filled: true,
+                          fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                           prefixIcon:
                           const Icon(Icons.lightbulb_outline),
                           border: OutlineInputBorder(
@@ -181,6 +183,8 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                         controller: definitionController,
                         decoration: InputDecoration(
                           labelText: "Définition",
+                          filled: true,
+                          fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                           prefixIcon: const Icon(Icons.menu_book),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -196,6 +200,8 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                         controller: exampleController,
                         decoration: InputDecoration(
                           labelText: "Exemple (optionnel)",
+                          filled: true,
+                          fillColor: isDark ? Colors.grey.shade900 : Colors.white,
                           prefixIcon: const Icon(Icons.edit),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),

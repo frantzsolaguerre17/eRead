@@ -247,7 +247,8 @@ class FavoriteExpressionShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return ListView.builder(
       padding: const EdgeInsets.all(12),
@@ -256,21 +257,40 @@ class FavoriteExpressionShimmer extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: Shimmer.fromColors(
-            baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-            highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-            child: Card(
-              color: Theme.of(context).cardColor,
-              shape: RoundedRectangleBorder(
-                borderRadius:
-                BorderRadius.circular(12),
+            baseColor: isDark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+            highlightColor: isDark
+                ? Colors.grey.shade700
+                : Colors.grey.shade100,
+            child: Container(
+              height: 120,
+              decoration: BoxDecoration(
+                color: theme.cardColor,
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Container(
-                height: 120,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius:
-                  BorderRadius.circular(12),
-                ),
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 16,
+                    width: double.infinity,
+                    color: theme.cardColor,
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 14,
+                    width: 180,
+                    color: theme.cardColor,
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 14,
+                    width: 140,
+                    color: theme.cardColor,
+                  ),
+                ],
               ),
             ),
           ),

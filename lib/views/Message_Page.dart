@@ -183,7 +183,11 @@ class _PrivateNotificationsScreenState
 }
 
 
+
 Widget _messagesShimmer(BuildContext context) {
+  final theme = Theme.of(context);
+  final isDark = theme.brightness == Brightness.dark;
+
   return ListView.builder(
     padding: const EdgeInsets.all(12),
     itemCount: 6,
@@ -191,12 +195,16 @@ Widget _messagesShimmer(BuildContext context) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Shimmer.fromColors(
-          baseColor: Theme.of(context).dividerColor,
-          highlightColor: Theme.of(context).highlightColor,
+          baseColor: isDark
+              ? Colors.grey[800]!   // 🌙 dark mode
+              : Colors.grey[300]!,  // ☀️ light mode
+          highlightColor: isDark
+              ? Colors.grey[700]!
+              : Colors.grey[100]!,
           child: Container(
             height: 100,
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: theme.cardColor,
               borderRadius: BorderRadius.circular(12),
             ),
           ),

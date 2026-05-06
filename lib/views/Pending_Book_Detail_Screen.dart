@@ -84,7 +84,7 @@ class PendingBookDetailScreen extends StatelessWidget {
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: Theme.of(context).canvasColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

@@ -87,6 +87,8 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -138,19 +140,22 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
 
               );
             },
-            child: Card(
-            color: Theme.of(context).cardColor,
-            elevation: 6,
+
+        child: Card(
+           // color: Theme.of(context).cardColor,
+            elevation: isDark ? 2 : 6,
             shadowColor: Theme.of(context).shadowColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             margin: const EdgeInsets.symmetric(vertical: 12),
             child: SizedBox(
-              height: 160, // Hauteur du card fixe
+              height: 160,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
 
-                  /// IMAGE DU LIVRE
+                  /// IMAGE
                   ClipRRect(
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16),
@@ -180,101 +185,107 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
 
                   const SizedBox(width: 12),
 
-                  /// INFOS LIVRE
+                  /// INFOS
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+
                         Text(
                           book.title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+
+                        const SizedBox(height: 4),
 
                         Text(
                           "Auteur : ${book.author}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
 
-                        Text("Pages : ${book.number_of_pages}"),
+                        Text(
+                          "Pages : ${book.number_of_pages}",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
 
                         Text(
                           "Catégorie : ${book.category}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
 
                         Text(
                           "Ajouté par : ${book.user_name ?? 'Utilisateur'}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.color
+                                ?.withOpacity(0.6),
                           ),
                         ),
                       ],
                     ),
                   ),
 
+                  /// BOUTONS
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
 
-                  const SizedBox(width: 8),
-
-                  /// BOUTONS VERTICAUX
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(
-                        width: 95,
-                        child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center, // 👈 IMPORTANT
-                          children: [
-                            ElevatedButton(
-                              onPressed: () => approveBook(book),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                padding: const EdgeInsets.symmetric(vertical: 6),
-                                minimumSize: const Size.fromHeight(32), // 👈 réduit la hauteur
-                              ),
-                              child: const Text("Approuver", style: TextStyle(fontSize: 11, color: Colors.white)),
-                            ),
-                            const SizedBox(height: 6),
-                            ElevatedButton(
-                              onPressed: () => rejectBook(book),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepOrange,
-                                padding: const EdgeInsets.symmetric(vertical: 6),
-                                minimumSize: const Size.fromHeight(32),
-                              ),
-                              child: const Text("Refuser", style: TextStyle(fontSize: 11, color: Colors.white)),
-                            ),
-                            const SizedBox(height: 6),
-                           /* OutlinedButton(
-                              onPressed: () => downloadPdf(book),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 6),
-                                minimumSize: const Size.fromHeight(32),
-                              ),
-                              child: const Text("PDF", style: TextStyle(fontSize: 11)),
-                            ),*/
-                          ],
+                        ElevatedButton(
+                          onPressed: () => approveBook(book),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isDark
+                                ? Colors.green.shade700
+                                : Colors.green,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(80, 32),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                          ),
+                          child: const Text(
+                            "Approuver",
+                            style: TextStyle(fontSize: 11),
+                          ),
                         ),
-                        )
-                      ),
-                    ],
+
+                        const SizedBox(height: 6),
+
+                        ElevatedButton(
+                          onPressed: () => rejectBook(book),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isDark
+                                ? Colors.deepOrange.shade700
+                                : Colors.deepOrange,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(80, 32),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                          ),
+                          child: const Text(
+                            "Refuser",
+                            style: TextStyle(fontSize: 11),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 8),
                 ],
               ),
             ),
-          ),
+          )
           );
         },
       ),
@@ -288,6 +299,9 @@ class FavoriteVocabularyShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return ListView.builder(
       padding: const EdgeInsets.all(12),
       itemCount: 6,
@@ -295,19 +309,44 @@ class FavoriteVocabularyShimmer extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: Shimmer.fromColors(
-            baseColor: Theme.of(context).dividerColor,
-            highlightColor: Theme.of(context).highlightColor,
+            baseColor: isDark
+                ? Colors.grey[800]!
+                : Colors.grey[300]!,
+            highlightColor: isDark
+                ? Colors.grey[700]!
+                : Colors.grey[100]!,
             child: Card(
               shape: RoundedRectangleBorder(
-                borderRadius:
-                BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Container(
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius:
-                  BorderRadius.circular(12),
+                  color: theme.cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 16,
+                      width: double.infinity,
+                      color: theme.cardColor,
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 14,
+                      width: 200,
+                      color: theme.cardColor,
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 14,
+                      width: 150,
+                      color: theme.cardColor,
+                    ),
+                  ],
                 ),
               ),
             ),

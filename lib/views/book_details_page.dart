@@ -759,17 +759,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
-  Widget _buildChapterShimmer() {
+  Widget _buildChapterShimmer(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: List.generate(3, (index) {
         return Shimmer.fromColors(
-          baseColor: Colors.grey.shade300,
-          highlightColor: Colors.grey.shade100,
+          baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+          highlightColor:
+          isDark ? Colors.grey.shade700 : Colors.grey.shade100,
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
             height: 60,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
             ),
           ),
@@ -998,7 +1001,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       body: RefreshIndicator(
         onRefresh: _loadData,
         child: chapterController.isLoading
-            ? _buildChapterShimmer()
+            ? _buildChapterShimmer(context)
             : ListView(
           padding: const EdgeInsets.all(16),
           children: [

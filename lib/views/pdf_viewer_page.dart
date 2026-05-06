@@ -142,6 +142,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
@@ -300,8 +301,9 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
               padding: const EdgeInsets.only(bottom: 12),
               child: FloatingActionButton(
                 heroTag: "bookmarkFab",
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                //backgroundColor: Colors.orange,
+                backgroundColor: isDark
+                    ? Colors.deepPurple.shade300   // 🌙 mode sombre
+                    : Colors.orange,               // ☀️ mode clair
                 onPressed: () {
                   _pdfController.jumpToPage(_markedPage!);
                 },

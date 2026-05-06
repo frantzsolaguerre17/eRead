@@ -727,7 +727,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         margin: const EdgeInsets.symmetric(horizontal: 6),
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: Theme.of(context).canvasColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(

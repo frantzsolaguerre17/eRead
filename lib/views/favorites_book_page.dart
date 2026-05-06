@@ -310,50 +310,77 @@ class _FavoriteModernBookCardState
                   child: Stack(
                     children: [
                       Column(
-                        mainAxisAlignment:
-                        MainAxisAlignment.center,
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             widget.book.title,
                             maxLines: 2,
-                            overflow:
-                            TextOverflow.ellipsis,
+                            overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                            )
+                            ),
                           ),
+
                           const SizedBox(height: 4),
-                          Text(
-                              "Auteur : ${widget.book.author}",
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.color
-                                    ?.withOpacity(0.7),)),
-                          const SizedBox(height: 6),
 
                           Text(
-                              "Pages : ${widget.book.number_of_pages}",
-                              style: TextStyle(
-                                  color: Colors
-                                      .grey.shade700)),
-                          const SizedBox(height: 6),
+                            "Auteur : ${widget.book.author}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withOpacity(0.75),
+                            ),
+                          ),
+
+                          const SizedBox(height: 4),
 
                           Text(
-                              "Catégorie : ${widget.book.category}",
-                              style: TextStyle(
-                                  color: Colors
-                                      .grey.shade700)),
-                          const SizedBox(height: 6),
+                            "Pages : ${widget.book.number_of_pages}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withOpacity(0.65),
+                            ),
+                          ),
+
+                          const SizedBox(height: 4),
 
                           Text(
-                              "Ajoute par : ${widget.book.user_name}",
-                              style: TextStyle(
-                                  color: Colors
-                                      .grey.shade700)),
+                            "Catégorie : ${widget.book.category}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withOpacity(0.65),
+                            ),
+                          ),
+
+                          const SizedBox(height: 4),
+
+                          Text(
+                            "Ajouté par : ${widget.book.user_name}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withOpacity(0.65),
+                            ),
+                          ),
                         ],
                       ),
 
@@ -382,10 +409,10 @@ class _FavoriteModernBookCardState
                               ),
                               child: Text(
                                 _badgeText(),
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight:
-                                    FontWeight.bold),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],

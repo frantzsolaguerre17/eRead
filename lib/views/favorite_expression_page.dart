@@ -62,7 +62,7 @@ class _FavoriteExpressionScreenState
         centerTitle: true,
         title: Text("Mes expressions favorites",
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Colors.white,
           ),
         ),
         bottom: PreferredSize(

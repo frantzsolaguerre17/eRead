@@ -63,7 +63,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               "Notifications",
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.w600,
+                //fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
             ),

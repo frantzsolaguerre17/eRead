@@ -160,14 +160,14 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                  Text(
                   "Lecture du livre 📖",
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: Colors.white,
                   ),
                 ),
                 Text(
                   widget.book.title,
                   style: TextStyle(
                     fontSize: 15,
-                    color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                    color: Colors.white,
                   ),
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center, // Centre le texte

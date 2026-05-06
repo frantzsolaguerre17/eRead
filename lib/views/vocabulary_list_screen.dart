@@ -348,7 +348,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
         title: Text(
           "Mots appris",
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Colors.white,
             fontSize: 22,
           ),
         ),
@@ -469,10 +469,14 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.error),
+                            backgroundColor: Colors.red, // 🔴 fond rouge fixe
+                            foregroundColor: Colors.white, // 👈 texte + icône en blanc
+                          ),
                           onPressed: () => Navigator.of(ctx).pop(true),
                           child: const Text("Supprimer"),
                         ),
+
+
                       ],
                     ),
                   );
@@ -576,7 +580,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
         label: Text(
           "Mot",
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color:Colors.white,
           ),
         ),
         onPressed: _showVocabularyDialog,

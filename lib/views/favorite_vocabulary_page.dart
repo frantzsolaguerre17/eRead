@@ -61,7 +61,7 @@ class _FavoriteVocabularyScreenState
         centerTitle: true,
         title: Text("Mes mots favoris",
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Colors.white,
           ),
         ),
         bottom: PreferredSize(

@@ -80,10 +80,11 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                             expression == null
                                 ? "Ajouter une expression"
                                 : "Modifier l’expression",
-                            style: Theme.of(context)
+                            style: TextStyle(color: Colors.deepPurple,)
+                            /* Theme.of(context)
                                 .textTheme
                                 .titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
+                                ?.copyWith(fontWeight: FontWeight.bold),*/
                           ),
                         ],
                       ),
@@ -265,13 +266,13 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
         centerTitle: true,
         title: Text("Expressions apprises",
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-      color: Theme.of(context).colorScheme.onPrimary,
+      color: Colors.white,
     )
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.star, color: Colors.amber),
-            tooltip: "Mots favoris",
+            //tooltip: "Mots favoris",
               onPressed: () async {
                 await Navigator.push(
                   context,
@@ -406,10 +407,11 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                           onPressed: () => Navigator.pop(context, false),
                           child: const Text("Annuler"),
                         ),
-                        TextButton(
+                        ElevatedButton(
                           onPressed: () => Navigator.pop(context, true),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.red,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,   // 🔴 fond rouge
+                            foregroundColor: Colors.white, // ⚪ texte blanc
                           ),
                           child: const Text("Supprimer"),
                         ),

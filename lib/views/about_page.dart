@@ -12,7 +12,6 @@ class AboutPage extends StatelessWidget {
         backgroundColor: Colors.deepPurple,
         title: const Text(
           "À propos & Guide",
-          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
 

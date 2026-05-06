@@ -72,7 +72,7 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
         centerTitle: true,
         title: Text("Mes livres favoris",
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Colors.white,
           ),
         ),
         bottom: PreferredSize(

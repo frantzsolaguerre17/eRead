@@ -743,14 +743,34 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             }
           },
           child: Card(
+            color: Theme.of(context).cardColor,
             margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             elevation: 3,
             child: ListTile(
-              tileColor: Colors.deepPurple.shade50,
-              title: Text(ex.content, style: const TextStyle(fontSize: 16)),
+              tileColor: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey.shade900
+                  : Colors.deepPurple.shade50,
+
+              title: Text(
+                ex.content,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
+              ),
+
               subtitle: (ex.comment?.isNotEmpty ?? false)
-                  ? Text("💬 ${ex.comment}")
+                  ? Text(
+                "💬 ${ex.comment}",
+                style: TextStyle(
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.color
+                      ?.withOpacity(0.8),
+                ),
+              )
                   : null,
             ),
           ),
@@ -808,7 +828,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               onTap: () => Navigator.pop(context),
               child: const Padding(
                 padding: EdgeInsets.all(8),
-                child: Icon(Icons.arrow_back, color: Colors.black),
+                child: Icon(Icons.arrow_back, color: Colors.white),
               ),
             ),
             //  ),

@@ -469,8 +469,8 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red, // 🔴 fond rouge fixe
-                            foregroundColor: Colors.white, // 👈 texte + icône en blanc
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
                           ),
                           onPressed: () => Navigator.of(ctx).pop(true),
                           child: const Text("Supprimer"),

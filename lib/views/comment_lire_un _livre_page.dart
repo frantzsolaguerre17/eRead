@@ -9,7 +9,7 @@ class ResumeLecturePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Comment lire un livre"),
+        title: const Text("Comment bien lire un livre"),
         centerTitle: true,
         backgroundColor: Colors.deepPurple,
       ),

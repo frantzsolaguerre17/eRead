@@ -213,11 +213,11 @@ class _NotificationCard extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isRead
-                    ? Theme.of(context).dividerColor
+                    ? Theme.of(context).primaryColor
                     : Theme.of(context).colorScheme.primary.withOpacity(0.15),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.menu_book_rounded, color: Theme.of(context).colorScheme.primary),
+              child: Icon(Icons.menu_book_rounded, color: Theme.of(context).colorScheme.onSecondary),
             ),
             const SizedBox(width: 14),
             Expanded(

@@ -159,7 +159,7 @@ class _PrivateNotificationsScreenState
                   ),
 
                   subtitle: Text(
-                    notif.createdAt.toString(),
+                   _formatDate(notif.createdAt) ,
                     style: const TextStyle(fontSize: 12),
                   ),
 
@@ -180,6 +180,15 @@ class _PrivateNotificationsScreenState
       ),
     );
   }
+
+  static String _formatDate(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inMinutes < 1) return "À l'instant";
+    if (diff.inMinutes < 60) return "Il y a ${diff.inMinutes} min";
+    if (diff.inHours < 24) return "Il y a ${diff.inHours} h";
+    return "${date.day}/${date.month}/${date.year}";
+  }
+
 }
 
 

@@ -46,7 +46,8 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 10),
 
             Text(
-              "eRead (i-rid) est une application de lecture intelligente conçue pour vous aider à lire, apprendre, mémoriser et partager vos connaissances avec une communauté active de lecteurs.\n\n"
+              "eRead (i-rid) est une plateforme de lecture numérique interactive qui permet de lire des livres PDF tout en gardant une trace des éléments importants de votre lecture. Vous pouvez enregistrer des extraits marquants, conserver les nouveaux mots et expressions appris, organiser vos notes personnelles facilement.\n\n"
+                  "L’application offre également la possibilité d'ajouter des livres PDF et les partager avec les autres utilisateurs afin de créer une bibliothèque communautaire accessible à tous.\n\n"
                   "Que vous soyez étudiant, passionné de lecture ou curieux d’apprendre chaque jour, eRead transforme votre lecture en une expérience interactive et enrichissante.",
               style: TextStyle(
                 fontSize: 16,
@@ -77,9 +78,8 @@ class AboutPage extends StatelessWidget {
               "Gardez une trace de ce qui est important pour vous.\n\n"
                   "Vous pouvez ajouter en favoris :\n"
                   "• Des livres\n"
-                  "• Des mots\n"
-                  "• Des expressions\n"
-                  "• Des extraits\n\n"
+                  "• Des mots appris\n"
+                  "• Des expressions apprises\n\n"
                   "Vos favoris sont centralisés pour un accès rapide et une révision efficace.",
             ),
 
@@ -92,9 +92,9 @@ class AboutPage extends StatelessWidget {
               "Améliorez votre vocabulaire pendant votre lecture.\n\n"
                   "Vous pouvez :\n"
                   "• Enregistrer de nouveaux mots et expressions\n"
-                  "• Ajouter des définitions personnalisées\n"
+                  "• Ajouter leurs définitions\n"
                   "• Écrire des exemples d’utilisation\n"
-                  "• Marquer comme appris ou favori\n\n"
+                  "• Marquer comme favori\n\n"
                   "Cette fonctionnalité transforme chaque lecture en opportunité d’apprentissage.",
             ),
 
@@ -122,22 +122,20 @@ class AboutPage extends StatelessWidget {
               "Exprimez vos idées et retenez l’essentiel.\n\n"
                   "Vous pouvez :\n"
                   "• Sauvegarder des extraits de texte\n"
-                  "• Ajouter vos réflexions et commentaires\n"
-                  "• Partager vos impressions\n\n"
+                  "• Ajouter vos réflexions et commentaires\n\n"
                   "Astuce : utilisez le swipe (glisser) à droite ou à gauche pour modifier ou supprimer rapidement vos contenus.",
             ),
 
             const SizedBox(height: 20),
 
             /// 🔐 Compte & synchronisation
-            _buildSectionTitle(context, "🔐 6. Compte & synchronisation"),
+            _buildSectionTitle(context, "🔐 6. Compte"),
             _buildCard(
               context,
-              "Votre compte vous permet de sauvegarder et synchroniser toutes vos données.\n\n"
-                  "• Vos livres, favoris et notes sont sécurisés\n"
+              "Votre compte vous permet de sauvegarder toutes vos données.\n\n"
+                  "• Vos favoris et notes sont sécurisés\n"
                   "• Vos données sont accessibles sur plusieurs appareils\n"
-                  "• Votre progression est sauvegardée automatiquement\n\n"
-                  "Assurez-vous d’être connecté pour ne rien perdre.",
+                  "• Votre progression est sauvegardée automatiquement\n"
             ),
 
             const SizedBox(height: 20),
@@ -149,8 +147,7 @@ class AboutPage extends StatelessWidget {
               "Pour une meilleure expérience :\n\n"
                   "• Lisez régulièrement pour améliorer votre apprentissage\n"
                   "• Ajoutez des mots et expressions dès que vous apprenez quelque chose de nouveau\n"
-                  "• Utilisez les favoris pour réviser facilement\n"
-                  "• Interagissez avec la communauté en partageant vos livres et idées\n\n"
+                  "• Utilisez les favoris pour réviser facilement\n\n"
                   "eRead est plus puissant lorsque vous l’utilisez activement.",
             ),
 
@@ -162,9 +159,9 @@ class AboutPage extends StatelessWidget {
               context,
               "Restez informé en temps réel grâce aux notifications.\n\n"
                   "Types de notifications :\n"
-                  "• Notifications publiques : nouvelles publications, livres ajoutés, activités de la communauté\n"
-                  "• Notifications privées : interactions sur vos contenus (commentaires, réactions, mises à jour personnelles)\n\n"
-                  "Les notifications vous permettent de rester connecté à la communauté eRead et de ne rien manquer.",
+                  "• Notifications publiques : nouveaux livres ajoutés à la bibliothèque communautaire\n"
+                  "• Notifications privées : informations concernant vos livres ajoutés, comme l’approbation ou le refus d’un livre par l'équipe eRead\n\n"
+                  "Les notifications vous permettent de suivre les nouveautés et de rester informé des activités liées à vos contributions sur eRead.",
             ),
 
             const SizedBox(height: 20),
@@ -173,14 +170,13 @@ class AboutPage extends StatelessWidget {
             _buildSectionTitle(context, "👤 9. Votre profil"),
             _buildCard(
               context,
-              "Votre profil est votre espace personnel dans eRead.\n\n"
-                  "Vous pouvez :\n"
-                  "• Voir vos livres ajoutés\n"
-                  "• Accéder à vos favoris\n"
-                  "• Consulter vos mots et expressions enregistrés\n"
-                  "• Voir votre progression de lecture\n"
-                  "• Gérer vos informations personnelles\n\n"
-                  "Votre profil reflète votre activité et votre évolution dans l’application.",
+                "Votre profil est votre espace personnel dans eRead.\n\n"
+                    "Vous pouvez :\n"
+                    "• Voir le nombre de livres que vous avez ajoutés dans l'application\n"
+                    "• Voir le nombre de livres que vous avez déjà lus\n"
+                    "• Voir le nombre de mots appris pendant vos lectures\n"
+                    "• Voir le nombre d'expressions apprises\n\n"
+                    "Votre profil reflète votre parcours de lecture, vos apprentissages et votre contribution à la communauté eRead."
             ),
 
             const SizedBox(height: 20),
@@ -195,10 +191,9 @@ class AboutPage extends StatelessWidget {
                   "• Évitez les réseaux lents ou instables\n\n"
                   "Certaines fonctionnalités comme :\n"
                   "• Le chargement des livres\n"
-                  "• La synchronisation des données\n"
                   "• Les notifications\n"
-                  "• Les interactions avec la communauté\n"
-                  "nécessitent une connexion active.\n\n"
+                  "• Les fonctionnalités LIKE, FAVORIS sur les livres \n"
+                  "nécessitent une bonne connexion internet.\n\n"
                   "Une bonne connexion garantit une utilisation fluide et sans interruption.",
             ),
 

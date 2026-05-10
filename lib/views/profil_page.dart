@@ -179,22 +179,202 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void showTerms() {
+    final ScrollController controller = ScrollController();
+    ValueNotifier<bool> showIndicator = ValueNotifier(true);
+
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Termes & Conditions"),
-        content: const SingleChildScrollView(
-          child: Text(
-            "Bienvenue sur eRead 📚\n\n"
-                "1. Utilisation responsable\n"
-                "2. Respect des contenus\n"
-                "3. Données sécurisées\n"
-                "4. Contact via WhatsApp ou Email\n\n"
-                "Merci ❤️",
+        content: SizedBox(
+          width: double.maxFinite,
+          child: Stack(
+            children: [
+
+              /// 📜 TEXTE SCROLLABLE
+              NotificationListener<ScrollNotification>(
+                onNotification: (scroll) {
+                  if (scroll.metrics.pixels >=
+                      scroll.metrics.maxScrollExtent - 20) {
+                    showIndicator.value = false;
+                  } else {
+                    showIndicator.value = true;
+                  }
+                  return false;
+                },
+                child: SingleChildScrollView(
+                  controller: controller,
+                  child: const Text(
+                    "Conditions Générales d’Utilisation – eRead\n\n"
+
+                        "Dernière mise à jour : Mai 2026\n\n"
+
+                        "Bienvenue sur eRead, une plateforme de lecture numérique interactive permettant de lire des livres PDF, enregistrer des notes personnelles, sauvegarder des extraits importants, apprendre de nouveaux mots et expressions, et partager des livres avec une communauté de lecteurs.\n\n"
+
+                        "En utilisant l’application eRead, vous acceptez les présentes Conditions Générales d’Utilisation. Si vous n’acceptez pas ces conditions, veuillez ne pas utiliser l’application.\n\n"
+
+                        "1. Objet de l’application\n\n"
+                        "eRead est une application de lecture numérique qui permet notamment de :\n"
+                        "• Lire des livres\n"
+                        "• Ajouter et partager des livres PDF\n"
+                        "• Sauvegarder des extraits de lecture\n"
+                        "• Enregistrer des mots et expressions appris\n"
+                        "• Gérer des favoris\n"
+                        "• Suivre sa progression de lecture\n\n"
+
+                        "L’objectif de l’application est de favoriser l’apprentissage, la lecture et le partage de connaissances.\n\n"
+
+                        "2. Création de compte\n\n"
+                        "L'utilisation de l'application nécessite la création d’un compte utilisateur.\n\n"
+
+                        "En créant un compte, vous acceptez de :\n"
+                        "• Fournir des informations exactes\n"
+                        "• Protéger vos identifiants de connexion\n"
+                        "• Être responsable des activités effectuées depuis votre compte\n\n"
+
+                        "eRead se réserve le droit de suspendre ou supprimer tout compte en cas d’utilisation abusive ou non conforme.\n\n"
+
+                        "3. Ajout et partage de livres\n\n"
+                        "Les utilisateurs peuvent ajouter des livres PDF dans l’application afin de les partager avec la communauté.\n\n"
+
+                        "En ajoutant un livre, vous déclarez que :\n"
+                        "• Le contenu ne contient aucun élément offensant, illégal ou dangereux\n\n"
+
+                        "eRead se réserve le droit de :\n"
+                        "• Refuser un livre\n"
+                        "• Supprimer un contenu\n"
+                        "• Suspendre un utilisateur en cas d’abus\n\n"
+
+                        "4. Contenus utilisateur\n\n"
+                        "Les utilisateurs peuvent enregistrer :\n"
+                        "• Des extraits\n"
+                        "• Des commentaires\n"
+                        "• Des mots appris\n"
+                        "• Des expressions\n"
+                        "• Des notes personnelles\n\n"
+
+                        "Chaque utilisateur reste responsable du contenu qu’il publie ou sauvegarde dans l’application.\n\n"
+
+                        "Il est interdit de publier :\n"
+                        "• Des contenus illégaux\n"
+                        "• Des contenus haineux ou offensants\n"
+                        "• Des contenus violant les droits d’autrui\n"
+                        "• Des contenus malveillants ou frauduleux\n\n"
+
+                        "5. Respect de la communauté\n\n"
+                        "Les utilisateurs doivent adopter un comportement respectueux envers les autres membres de la communauté eRead.\n\n"
+
+                        "Toute tentative de :\n"
+                        "• Harcèlement\n"
+                        "• Spam\n"
+                        "• Publication abusive\n"
+                        "• Utilisation frauduleuse\n\n"
+
+                        "peut entraîner une suspension ou suppression du compte.\n\n"
+
+                        "6. Disponibilité du service\n\n"
+                        "eRead s’efforce d’assurer un accès continu à l’application, mais ne garantit pas une disponibilité permanente.\n\n"
+
+                        "L’application peut être temporairement indisponible pour :\n"
+                        "• Maintenance\n"
+                        "• Mise à jour\n"
+                        "• Problèmes techniques\n"
+                        "• Problèmes liés à Internet\n\n"
+
+                        "7. Données et confidentialité\n\n"
+                        "Certaines données utilisateur peuvent être stockées afin d’assurer le bon fonctionnement de l’application, notamment :\n"
+                        "• Informations de compte\n"
+                        "• Progression de lecture\n"
+                        "• Favoris\n"
+                        "• Notes et extraits\n"
+                        "• Livres ajoutés\n\n"
+
+                        "eRead s’engage à protéger les données des utilisateurs et à ne pas vendre leurs informations personnelles à des tiers.\n\n"
+
+                        "8. Propriété intellectuelle\n\n"
+                        "Le nom eRead, son design, son logo et ses fonctionnalités sont protégés.\n\n"
+
+                        "Les contenus ajoutés par les utilisateurs restent la propriété de leurs auteurs respectifs.\n\n"
+
+
+                        "9. Limitation de responsabilité\n\n"
+                        "eRead ne peut être tenu responsable :\n"
+                        "• Des contenus publiés par les utilisateurs\n"
+                        "• Des erreurs ou interruptions de service\n"
+                        "• De la perte de données\n"
+                        "• D’une mauvaise utilisation de l’application\n\n"
+
+                        "L’utilisation de l’application se fait sous la responsabilité de l’utilisateur.\n\n"
+
+                        "10. Modifications des conditions\n\n"
+                        "Ces conditions peuvent être modifiées à tout moment afin d’améliorer l’application ou de respecter de nouvelles obligations.\n\n"
+
+                        "Les utilisateurs seront informés des mises à jour importantes directement dans l’application.\n\n\n"
+
+                        "📧 Email : frantzsolaguerre17@gmail.com\n\n"
+                        "🌐 Portfolio : https://frantzsolaguerre17.github.io/fl-portfolio/\n\n"
+
+                        "Merci d’utiliser eRead 📚",
+                    style: TextStyle(fontSize: 15, height: 1.5),
+                  ),
+                ),
+              ),
+
+              /// 👇 INDICATEUR SCROLL
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: showIndicator,
+                  builder: (context, value, _) {
+                    return AnimatedOpacity(
+                      duration: const Duration(milliseconds: 200),
+                      opacity: value ? 1 : 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Theme.of(context)
+                                  .dialogBackgroundColor
+                                  .withOpacity(0.95),
+                            ],
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.keyboard_arrow_down, size: 22, color: Colors.deepPurple,),
+                            SizedBox(width: 6),
+                            Text(
+                              "Faites défiler pour lire la suite",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.deepPurple
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+            ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Fermer"))
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Fermer"),
+          )
         ],
       ),
     );
@@ -299,8 +479,8 @@ class _ProfilePageState extends State<ProfilePage> {
     // Logout
     ElevatedButton.icon(
     onPressed: _confirmLogout,
-    icon: const Icon(Icons.logout),
-    label: const Text("Se déconnecter"),
+    icon: const Icon(Icons.logout, color: Colors.white,),
+    label: const Text("Se déconnecter", style: TextStyle(color: Colors.white)),
     style: ElevatedButton.styleFrom(
     backgroundColor: Colors.red,
     minimumSize: const Size(double.infinity, 55),

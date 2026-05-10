@@ -302,8 +302,8 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
               child: FloatingActionButton(
                 heroTag: "bookmarkFab",
                 backgroundColor: isDark
-                    ? Colors.deepPurple.shade300   // 🌙 mode sombre
-                    : Colors.orange,               // ☀️ mode clair
+                    ? Colors.deepPurple.shade300
+                    : Colors.orange,
                 onPressed: () {
                   _pdfController.jumpToPage(_markedPage!);
                 },

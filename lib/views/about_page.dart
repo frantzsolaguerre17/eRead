@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memo_livre/views/profil_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -200,6 +201,7 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 30),
 
             /// 🔻 Footer
+            /// 🔻 Footer
             Align(
               alignment: Alignment.center,
               child: Column(
@@ -212,7 +214,9 @@ class AboutPage extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
+
                   const SizedBox(height: 6),
+
                   SelectableText(
                     "frantzsolaguerre17@gmail.com",
                     style: TextStyle(
@@ -223,6 +227,53 @@ class AboutPage extends StatelessWidget {
                           .withOpacity(0.6),
                     ),
                     textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  InkWell(
+                    onTap: () async {
+                      final Uri url = Uri.parse(
+                        'https://frantzsolaguerre17.github.io/fl-portfolio/',
+                      );
+
+                      await launchUrl(
+                        url,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    },
+
+                    borderRadius: BorderRadius.circular(10),
+
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.language,
+                            size: 18,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+
+                          const SizedBox(width: 8),
+
+                          Text(
+                            "Voir le portfolio du développeur",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.primary,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

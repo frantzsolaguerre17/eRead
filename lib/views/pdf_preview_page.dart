@@ -24,6 +24,9 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
   final PdfViewerController _pdfController = PdfViewerController();
   final supabase = Supabase.instance.client;
 
+  /// 🌙 DARK MODE PDF
+  bool _isDarkMode = false;
+
   @override
   void initState() {
     super.initState();
@@ -39,8 +42,9 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
     try {
       final dir = await getApplicationDocumentsDirectory();
 
-      final safeTitle =
-      widget.book.title.replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(' ', '_');
+      final safeTitle = widget.book.title
+          .replaceAll(RegExp(r'[^\w\s-]'), '')
+          .replaceAll(' ', '_');
 
       final filePath = '${dir.path}/$safeTitle.pdf';
       final file = File(filePath);
@@ -51,6 +55,7 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
       }
 
       final response = await http.get(Uri.parse(widget.book.pdf));
+
       if (response.statusCode == 200) {
         await file.writeAsBytes(response.bodyBytes, flush: true);
         return file;
@@ -73,13 +78,14 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      /// ✅ APPBAR LÉGÈREMENT PLUS GRAND
+      /// ✅ APPBAR
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
           backgroundColor: Colors.deepPurple,
           elevation: 4,
           centerTitle: true,
+
           title: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -91,29 +97,57 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+
                 Text(
                   widget.book.title,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.7),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onPrimary
+                        .withOpacity(0.7),
                   ),
                   overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center, // Centre le texte
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
 
           actions: [
+
+            /// 🌙 DARK MODE BUTTON
             IconButton(
-                icon: const Icon(Icons.account_circle, color: Colors.white),
-                tooltip: "Account profil",
-                onPressed: () async{
-                  await Navigator.push(context,
-                      MaterialPageRoute(
-                          builder: (context) => const ProfilePage()
-                      )
-                  );
-                }
+              icon: Icon(
+                _isDarkMode
+                    ? Icons.dark_mode
+                    : Icons.light_mode,
+                color: Colors.white,
+              ),
+
+              onPressed: () {
+                setState(() {
+                  _isDarkMode = !_isDarkMode;
+                });
+              },
+            ),
+
+            /// 👤 PROFILE
+            IconButton(
+              icon: const Icon(
+                Icons.account_circle,
+                color: Colors.white,
+              ),
+
+              tooltip: "Account profil",
+
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfilePage(),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -122,24 +156,53 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
       body: SafeArea(
         child: FutureBuilder<File?>(
           future: _pdfFuture,
+
           builder: (context, snapshot) {
+
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.primary,
-              ));
-            } else if (snapshot.hasData && snapshot.data != null) {
-              return SfPdfViewer.file(
-                snapshot.data!,
-                controller: _pdfController,
-                canShowScrollHead: true,
-                canShowScrollStatus: true,
-                pageLayoutMode: PdfPageLayoutMode.continuous,
+              return Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               );
             }
-            return Center(child: Text(
-              "Impossible de charger le PDF",
-              style: Theme.of(context).textTheme.bodyMedium,
-            ));
+
+            else if (snapshot.hasData && snapshot.data != null) {
+
+              return ColorFiltered(
+
+                colorFilter: _isDarkMode
+
+                    ? const ColorFilter.matrix(<double>[
+                  -1, 0, 0, 0, 255,
+                  0, -1, 0, 0, 255,
+                  0, 0, -1, 0, 255,
+                  0, 0, 0, 1, 0,
+                ])
+
+                    : const ColorFilter.matrix(<double>[
+                  1, 0, 0, 0, 0,
+                  0, 1, 0, 0, 0,
+                  0, 0, 1, 0, 0,
+                  0, 0, 0, 1, 0,
+                ]),
+
+                child: SfPdfViewer.file(
+                  snapshot.data!,
+                  controller: _pdfController,
+                  canShowScrollHead: true,
+                  canShowScrollStatus: true,
+                  pageLayoutMode: PdfPageLayoutMode.continuous,
+                ),
+              );
+            }
+
+            return Center(
+              child: Text(
+                "Impossible de charger le PDF",
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            );
           },
         ),
       ),

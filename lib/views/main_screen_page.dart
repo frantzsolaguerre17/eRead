@@ -39,6 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     int pendingCount = 0;
   late AnimationController _controller;
   late Animation<double> _fadeAnim;
+    RealtimeChannel? _pendingChannel;
 
   String displayName = 'Utilisateur';
   final VocabularyController vocabularyController = VocabularyController();
@@ -50,6 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     final user = Supabase.instance.client.auth.currentUser;
     if (user != null) {
       context.read<GroupChatController>().startListening();
+
     }
 
     //context.read<NotificationController>().startListening();
@@ -63,7 +65,6 @@ class _DashboardScreenState extends State<DashboardScreen>
     _controller.forward();
 
     Future.microtask(() {
-
      // context.read<NotificationController>().loadUnreadCount();
       context.read<MessageController>().loadUnreadCount();
 
@@ -78,11 +79,35 @@ class _DashboardScreenState extends State<DashboardScreen>
     });
 
     loadPendingCount();
+    initPendingRealtime();
 
     Future.delayed(Duration(milliseconds: 500), () {
       UpdateService.checkForUpdate(context);
     });
   }
+
+    void initPendingRealtime() {
+
+      _pendingChannel = supabase
+          .channel('pending_books_channel')
+
+          .onPostgresChanges(
+        event: PostgresChangeEvent.all,
+        schema: 'public',
+        table: 'book',
+
+        callback: (payload) async {
+
+          await Future.delayed(
+            const Duration(milliseconds: 300),
+          );
+
+          await loadPendingCount();
+        },
+      )
+
+          .subscribe();
+    }
 
 
 
@@ -103,8 +128,13 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void dispose() {
     _controller.dispose();
+
+    if (_pendingChannel != null) {
+      supabase.removeChannel(_pendingChannel!);
+    }
     super.dispose();
   }
+
 
     Future<void> _loadUserRole() async {
       final user = Supabase.instance.client.auth.currentUser;
@@ -733,4 +763,5 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
     );
   }
+
 }

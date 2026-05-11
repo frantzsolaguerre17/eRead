@@ -14,7 +14,78 @@ class MessageController extends ChangeNotifier {
   bool isLoading = false;
   int unreadCount = 0;
 
+  RealtimeChannel? _channel;
 
+  MessageController() {
+    _initRealtime();
+  }
+
+  /// =========================
+  /// REALTIME
+  /// =========================
+  void _initRealtime() {
+
+    final user = _supabase.auth.currentUser;
+
+    if (user == null) return;
+
+    _channel = _supabase
+        .channel('private_notifications_${user.id}')
+
+    /// INSERT
+        .onPostgresChanges(
+      event: PostgresChangeEvent.insert,
+      schema: 'public',
+      table: 'notifications',
+      filter: PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'user_id',
+        value: user.id,
+      ),
+      callback: (payload) async {
+
+        final newData = payload.newRecord;
+
+        /// Seulement private_message
+        if (newData['type'] == 'private_message') {
+
+          /// Reload notifications
+          await fetchNotifications();
+
+          /// Reload badge
+          await loadUnreadCount();
+        }
+      },
+    )
+
+    /// UPDATE
+        .onPostgresChanges(
+      event: PostgresChangeEvent.update,
+      schema: 'public',
+      table: 'notifications',
+      filter: PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'user_id',
+        value: user.id,
+      ),
+      callback: (payload) async {
+
+        final updatedData = payload.newRecord;
+
+        if (updatedData['type'] == 'private_message') {
+
+          await fetchNotifications();
+          await loadUnreadCount();
+        }
+      },
+    )
+
+        .subscribe();
+  }
+
+  /// =========================
+  /// FETCH NOTIFICATIONS
+  /// =========================
   Future<void> fetchNotifications() async {
 
     isLoading = true;
@@ -25,11 +96,14 @@ class MessageController extends ChangeNotifier {
     notifications = data
         .map((e) => NotificationModel.fromMap(e))
         .toList();
+
     isLoading = false;
     notifyListeners();
   }
 
-
+  /// =========================
+  /// MARK AS READ
+  /// =========================
   Future<void> markAsRead(String id) async {
 
     await _service.markAsRead(id);
@@ -37,6 +111,7 @@ class MessageController extends ChangeNotifier {
     final index = notifications.indexWhere((n) => n.id == id);
 
     if(index != -1){
+
       notifications[index] = NotificationModel(
         id: notifications[index].id,
         message: notifications[index].message,
@@ -45,19 +120,25 @@ class MessageController extends ChangeNotifier {
       );
     }
 
+    await loadUnreadCount();
+
     notifyListeners();
   }
 
-
+  /// =========================
+  /// LOAD UNREAD COUNT
+  /// =========================
   Future<void> loadUnreadCount() async {
 
     final user = _supabase.auth.currentUser;
+
+    if(user == null) return;
 
     final data = await _supabase
         .from('notifications')
         .select()
         .eq('type', 'private_message')
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .eq('is_read', false);
 
     unreadCount = data.length;
@@ -65,20 +146,46 @@ class MessageController extends ChangeNotifier {
     notifyListeners();
   }
 
-
+  /// =========================
+  /// MARK ALL AS READ
+  /// =========================
   Future<void> markAllAsRead() async {
 
     final user = _supabase.auth.currentUser;
+
+    if(user == null) return;
 
     await _supabase
         .from('notifications')
         .update({'is_read': true})
         .eq('type', 'private_message')
-        .eq('user_id', user!.id);
+        .eq('user_id', user.id);
+
+    /// Mettre à jour localement
+    notifications = notifications.map((n) {
+      return NotificationModel(
+        id: n.id,
+        message: n.message,
+        isRead: true,
+        createdAt: n.createdAt,
+      );
+    }).toList();
 
     unreadCount = 0;
 
     notifyListeners();
   }
 
+  /// =========================
+  /// DISPOSE
+  /// =========================
+  @override
+  void dispose() {
+
+    if (_channel != null) {
+      _supabase.removeChannel(_channel!);
+    }
+
+    super.dispose();
+  }
 }

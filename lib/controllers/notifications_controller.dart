@@ -8,6 +8,10 @@ class NotificationController extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
   final PublicNotificationService _service = PublicNotificationService();
 
+  NotificationController(){
+    startListeningPublic();
+  }
+
   /// 🔹 Séparation public / privé
   List<Map<String, dynamic>> publicNotifications = [];
   List<Map<String, dynamic>> privateNotifications = [];
@@ -16,6 +20,7 @@ class NotificationController extends ChangeNotifier {
   bool isLoadingPublic = true;
 
   StreamSubscription<List<Map<String, dynamic>>>? _privateSubscription;
+  RealtimeChannel? _publicChannel;
 
   /// 🔹 REALTIME : notifications privées uniquement
   void startListeningPrivate() {
@@ -48,6 +53,60 @@ class NotificationController extends ChangeNotifier {
     publicNotifications = List<Map<String, dynamic>>.from(data);
     isLoadingPublic = false;
     notifyListeners();
+  }
+
+  /// 🔹 REALTIME : notifications publiques
+  void startListeningPublic() {
+
+    _publicChannel = _supabase
+        .channel('public_notifications_channel')
+
+        .onPostgresChanges(
+      event: PostgresChangeEvent.insert,
+      schema: 'public',
+      table: 'notifications',
+
+      callback: (payload) async {
+
+        final data = payload.newRecord;
+
+        /// Seulement notifications publiques
+        if (data['type'] == 'book_added') {
+
+          await Future.delayed(
+            const Duration(milliseconds: 300),
+          );
+
+          await fetchPublicNotifications();
+
+          await loadUnreadCount();
+        }
+      },
+    )
+
+        .onPostgresChanges(
+      event: PostgresChangeEvent.update,
+      schema: 'public',
+      table: 'notifications',
+
+      callback: (payload) async {
+
+        final data = payload.newRecord;
+
+        if (data['type'] == 'book_added') {
+
+          await Future.delayed(
+            const Duration(milliseconds: 300),
+          );
+
+          await fetchPublicNotifications();
+
+          await loadUnreadCount();
+        }
+      },
+    )
+
+        .subscribe();
   }
 
   /// 🔹 Mark single notification as read (public)
@@ -163,7 +222,13 @@ class NotificationController extends ChangeNotifier {
 
   @override
   void dispose() {
+
     _privateSubscription?.cancel();
+
+    if (_publicChannel != null) {
+      _supabase.removeChannel(_publicChannel!);
+    }
+
     super.dispose();
   }
 }

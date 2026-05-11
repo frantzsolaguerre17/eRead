@@ -284,11 +284,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                   height: 40,
                   child: Stack(
                     children: [
-                      if (!isLoadingRole && role?.toLowerCase() == 'admin') ...[
 
-                        // 🔹 ICON
+                      /// 🔹 ICONE FIXE
+                      if (!isLoadingRole && role?.toLowerCase() == 'admin')
                         IconButton(
-                          icon: const Icon(Icons.pending_actions, color: Colors.white),
+                          icon: const Icon(
+                            Icons.pending_actions,
+                            color: Colors.white,
+                          ),
                           tooltip: "Livres en attente",
                           onPressed: () async {
                             await Navigator.push(
@@ -302,11 +305,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                           },
                         ),
 
-                        // 🔹 BADGE (lié à admin aussi)
-                        if (pendingCount > 0)
-                          Positioned(
-                            right: 4,
-                            top: 4,
+                      /// 🔹 BADGE SEUL
+                      if (!isLoadingRole &&
+                          role?.toLowerCase() == 'admin' &&
+                          pendingCount > 0)
+                        Positioned(
+                          right: 4,
+                          top: 4,
+                          child: IgnorePointer(
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: const BoxDecoration(
@@ -314,7 +320,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                                 shape: BoxShape.circle,
                               ),
                               child: Text(
-                                pendingCount > 99 ? "99+" : pendingCount.toString(),
+                                pendingCount > 99
+                                    ? "99+"
+                                    : pendingCount.toString(),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
@@ -322,7 +330,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                               ),
                             ),
                           ),
-                      ],
+                        ),
                     ],
                   ),
                 ),
@@ -330,40 +338,48 @@ class _DashboardScreenState extends State<DashboardScreen>
                 Stack(
                   children: [
 
-                    /// Bouton navigation (ne rebuild jamais)
+                    /// 🔔 Bouton messages
                     IconButton(
-                      icon: const Icon(Icons.mail, color: Colors.white),
-                        onPressed: () async {
+                      icon: const Icon(
+                        Icons.mail,
+                        color: Colors.white,
+                      ),
+                      onPressed: () async {
 
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const PrivateNotificationsScreen(),
-                            ),
-                          );
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PrivateNotificationsScreen(),
+                          ),
+                        );
 
-                          Future.microtask(() {
-                            context.read<MessageController>().loadUnreadCount();
-                          });
-                        }
+                        /// Recharge le compteur après retour
+                        context.read<MessageController>().loadUnreadCount();
+                      },
                     ),
 
-                    /// Badge qui rebuild seul
+                    /// 🔴 Badge notifications
                     Positioned(
                       right: 4,
                       top: 4,
-                      child: Selector<MessageController, int>(
-                        selector: (_, controller) => controller.unreadCount,
-                        builder: (_, unreadCount, __) {
+                      child: Consumer<MessageController>(
+                        builder: (_, controller, __) {
 
-                          if (unreadCount == 0) {
+                          if (controller.unreadCount == 0) {
                             return const SizedBox();
                           }
 
-                          return Badge(
-                            label: Text(
-                              unreadCount > 99 ? "99+" : unreadCount.toString(),
-                              style: const TextStyle(fontSize: 10),
+                          return IgnorePointer(
+                            ignoring: true,
+                            child: Badge(
+                              label: Text(
+                                controller.unreadCount > 99
+                                    ? "99+"
+                                    : controller.unreadCount.toString(),
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -372,66 +388,6 @@ class _DashboardScreenState extends State<DashboardScreen>
 
                   ],
                 ),
-
-      /*IconButton(
-                  icon: const Icon(Icons.chat, color: Colors.white),
-                  tooltip: "Chat",
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const GroupChatScreen(),
-                      ),
-                    );
-                  },
-                ),
-*/
-
-               /* Consumer<NotificationController>(
-                  builder: (_, controller, __) {
-
-                    return Stack(
-                      children: [
-
-                        IconButton(
-                          icon: const Icon(Icons.notifications,  color: Colors.white),
-                          onPressed: () {
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const NotificationsScreen(),
-                              ),
-                            );
-
-                            controller.markAllAsRead();
-                          },
-                        ),
-
-                        if (controller.unreadCount > 0)
-                          Positioned(
-                            right: 6,
-                            top: 6,
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Text(
-                                controller.unreadCount.toString(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ),
-                          )
-
-                      ],
-                    );
-                  },
-                ),*/
 
                 Stack(
                   children: [

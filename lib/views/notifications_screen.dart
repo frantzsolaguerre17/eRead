@@ -24,8 +24,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     Future.microtask(() async {
       final controller = context.read<NotificationController>();
 
+      controller.startListeningPublic();
+
       await controller.fetchPublicNotifications(); // fetch d'abord
-      await controller.markAllPublicAsRead(); // ensuite mark as read
+      await controller.markAllPublicAsRead();
       await controller.loadUnreadCount(); // badge
     });
   }

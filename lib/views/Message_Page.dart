@@ -20,12 +20,13 @@ class _PrivateNotificationsScreenState
     super.initState();
 
     Future.microtask(() {
-      //context.read<Messagecontroller>().fetchNotifications());
-
       final controller = context.read<MessageController>();
+
+      controller.startListening();
 
       controller.markAllAsRead(); // ✔ ici
       controller.fetchNotifications();
+      controller.loadUnreadCount();
     });
   }
 
@@ -162,16 +163,6 @@ class _PrivateNotificationsScreenState
                    _formatDate(notif.createdAt) ,
                     style: const TextStyle(fontSize: 12),
                   ),
-
-                  onTap: () {
-
-                    if (!notif.isRead) {
-                      context
-                          .read<MessageController>()
-                          .markAsRead(notif.id);
-                    }
-
-                  },
                 ),
               );
             },

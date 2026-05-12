@@ -16,11 +16,37 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
   final supabase = Supabase.instance.client;
   List<Book> pendingBooks = [];
   bool isLoading = true;
+  RealtimeChannel? _pendingBooksChannel;
 
   @override
   void initState() {
     super.initState();
     fetchPendingBooks();
+
+    /// ✅ REALTIME PENDING BOOKS
+    _pendingBooksChannel = supabase
+        .channel('pending-books-realtime')
+        .onPostgresChanges(
+      event: PostgresChangeEvent.all,
+      schema: 'public',
+      table: 'book',
+      callback: (payload) async {
+
+        final data = payload.newRecord;
+
+        /// seulement livres pending
+        if (data['status'] == 'pending') {
+          await fetchPendingBooks();
+        }
+
+        /// quand approuvé/refusé aussi
+        if (payload.eventType == PostgresChangeEvent.update) {
+          await fetchPendingBooks();
+        }
+      },
+    )
+        .subscribe();
+
   }
 
   Future<void> fetchPendingBooks() async {
@@ -83,6 +109,12 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
 
   void _showSnack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  @override
+  void dispose() {
+    _pendingBooksChannel?.unsubscribe();
+    super.dispose();
   }
 
 

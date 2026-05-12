@@ -70,12 +70,16 @@ class MessageController extends ChangeNotifier {
       ),
       callback: (payload) async {
 
-        final updatedData = payload.newRecord;
+        await fetchNotifications();
 
-        if (updatedData['type'] == 'private_message') {
+        if (payload.eventType == PostgresChangeEvent.insert) {
+          final updatedData = payload.newRecord;
 
-          await fetchNotifications();
-          await loadUnreadCount();
+          if (updatedData['type'] == 'private_message') {
+            await markAsRead(updatedData['id']);
+            await fetchNotifications();
+            await loadUnreadCount();
+          }
         }
       },
     )
@@ -176,6 +180,40 @@ class MessageController extends ChangeNotifier {
     notifyListeners();
   }
 
+
+  void startListening() {
+
+    final user = _supabase.auth.currentUser;
+
+    if (user == null) return;
+
+    /// éviter doublon
+    _channel?.unsubscribe();
+
+    _channel = _supabase.channel('private_notifications_$user');
+
+    _channel!
+        .onPostgresChanges(
+      event: PostgresChangeEvent.all,
+      schema: 'public',
+      table: 'notifications',
+      filter: PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'user_id',
+        value: user.id,
+      ),
+      callback: (payload) async {
+
+        /// recharge notifications
+        await fetchNotifications();
+
+        /// recharge badge
+        await loadUnreadCount();
+      },
+    )
+        .subscribe();
+  }
+
   /// =========================
   /// DISPOSE
   /// =========================
@@ -185,6 +223,7 @@ class MessageController extends ChangeNotifier {
     if (_channel != null) {
       _supabase.removeChannel(_channel!);
     }
+    _channel?.unsubscribe();
 
     super.dispose();
   }

@@ -8,9 +8,9 @@ class NotificationController extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
   final PublicNotificationService _service = PublicNotificationService();
 
-  NotificationController(){
+ /* NotificationController(){
     startListeningPublic();
-  }
+  }*/
 
   /// 🔹 Séparation public / privé
   List<Map<String, dynamic>> publicNotifications = [];
@@ -20,6 +20,7 @@ class NotificationController extends ChangeNotifier {
   bool isLoadingPublic = true;
 
   StreamSubscription<List<Map<String, dynamic>>>? _privateSubscription;
+  StreamSubscription<List<Map<String, dynamic>>>? _publicSubscription;
   RealtimeChannel? _publicChannel;
 
   /// 🔹 REALTIME : notifications privées uniquement
@@ -57,6 +58,11 @@ class NotificationController extends ChangeNotifier {
 
   /// 🔹 REALTIME : notifications publiques
   void startListeningPublic() {
+
+    /// ✅ évite plusieurs listeners
+    if (_publicChannel != null) {
+      _supabase.removeChannel(_publicChannel!);
+    }
 
     _publicChannel = _supabase
         .channel('public_notifications_channel')
@@ -210,6 +216,7 @@ class NotificationController extends ChangeNotifier {
     return Book.fromJson(res);
   }
 
+
   /// 🔹 Reset controller
   void reset() {
     publicNotifications.clear();
@@ -224,6 +231,7 @@ class NotificationController extends ChangeNotifier {
   void dispose() {
 
     _privateSubscription?.cancel();
+    _publicSubscription?.cancel();
 
     if (_publicChannel != null) {
       _supabase.removeChannel(_publicChannel!);

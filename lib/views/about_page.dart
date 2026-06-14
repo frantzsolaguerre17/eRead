@@ -133,10 +133,12 @@ class AboutPage extends StatelessWidget {
             _buildSectionTitle(context, "🔐 6. Compte"),
             _buildCard(
               context,
-              "Votre compte vous permet de sauvegarder toutes vos données.\n\n"
-                  "• Vos favoris et notes sont sécurisés\n"
-                  "• Vos données sont accessibles sur plusieurs appareils\n"
-                  "• Votre progression est sauvegardée automatiquement\n"
+                "Votre compte vous permet de sauvegarder toutes vos données.\n\n"
+                    "• Vos favoris et notes sont sécurisés\n"
+                    "• Vos données sont accessibles sur plusieurs appareils\n"
+                    "• Votre progression est sauvegardée automatiquement\n"
+                    "• Une même adresse e-mail ne peut être utilisée que pour un seul compte eRead\n"
+                    "• En cas d'oubli de votre mot de passe, veuillez contacter l'équipe eRead pour obtenir une assistance\n"
             ),
 
             const SizedBox(height: 20),

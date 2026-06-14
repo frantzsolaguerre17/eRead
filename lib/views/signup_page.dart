@@ -247,7 +247,7 @@ class _SignupPageState extends State<SignupPage>
                     Text(
                       "Créer un compte",
                       style: GoogleFonts.poppins(
-                        fontSize: 25,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
                       ),

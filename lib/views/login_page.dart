@@ -202,7 +202,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 Text(
                   "Bienvenue sur eRead",
                   style: GoogleFonts.poppins(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
                   ),

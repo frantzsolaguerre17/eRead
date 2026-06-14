@@ -558,7 +558,7 @@ class _AddBookPageState extends State<AddBookPage> {
                           children: [
                             Icon(Icons.image_outlined, size: 40, color: Theme.of(context).colorScheme.primary),
                             SizedBox(height: 8),
-                            Text("Image de couverture du livre"),
+                            Text("Choisir l'image de couverture du livre"),
                           ],
                         ),
                       )

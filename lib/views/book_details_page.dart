@@ -408,28 +408,55 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     child: const Text("Annuler"),
                   ),
                   const SizedBox(width: 8),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                    ),
-                    onPressed: () async {
-                      final newTitle = controller.text.trim();
-                      if (newTitle.isEmpty) return;
+                  StatefulBuilder(
+                    builder: (context, setStateDialog) {
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                        ),
+                        onPressed: isLoading
+                            ? null
+                            : () async {
+                          final newTitle = controller.text.trim();
+                          if (newTitle.isEmpty) return;
 
-                      await context
-                          .read<ChapterController>()
-                          .updateChapterTitle(chapterId, newTitle);
+                          setStateDialog(() {
+                            isLoading = true;
+                          });
 
-                      await context
-                          .read<ChapterController>()
-                          .fetchChapters(widget.book.id);
+                          try {
+                            await context
+                                .read<ChapterController>()
+                                .updateChapterTitle(chapterId, newTitle);
 
-                      if (mounted) Navigator.pop(context);
+                            await context
+                                .read<ChapterController>()
+                                .fetchChapters(widget.book.id);
+
+                            if (mounted) Navigator.pop(context);
+                          } finally {
+                            if (mounted) {
+                              setStateDialog(() {
+                                isLoading = false;
+                              });
+                            }
+                          }
+                        },
+                        child: isLoading
+                            ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                            : const Text(
+                          "Modifier",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
                     },
-                    child: const Text(
-                      "Enregistrer",
-                      style: TextStyle(color: Colors.white),
-                    ),
                   ),
                 ],
               ),

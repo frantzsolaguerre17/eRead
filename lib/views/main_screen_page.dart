@@ -644,7 +644,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                         ),
                         _quickAction(
                           Icons.favorite_border,
-                          "Livres Favoris ",
+                          "Livres Fav ",
                               () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -654,7 +654,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                         ),
                         _quickAction(
                           Icons.star_border,
-                          "Mots Favoris",
+                          "Mots Fav",
                               () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -665,7 +665,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                         ),
                         _quickAction(
                           Icons.format_quote,
-                          "Expr Favoris",
+                          "Expr Fav",
                               () => Navigator.push(
                             context,
                             MaterialPageRoute(

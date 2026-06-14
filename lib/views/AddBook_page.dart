@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:memo_livre/views/profil_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -65,12 +66,12 @@ class _AddBookPageState extends State<AddBookPage> {
     return '${Uuid().v4()}_${nameWithoutExt}.$extension';
   }
 
-  Future<void> pickImage() async {
-    /*final hasPermission = await _checkStoragePermission();
+  /*Future<void> pickImage() async {
+    *//*final hasPermission = await _checkStoragePermission();
     if (!hasPermission) {
       _showSnack("Permission refusée pour accéder aux fichiers.");
       return;
-    }*/
+    }*//*
 
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
     if (result != null && result.files.single.path != null) {
@@ -80,6 +81,21 @@ class _AddBookPageState extends State<AddBookPage> {
       await File(result.files.single.path!).copy(tempFile.path);
 
       setState(() => selectedImage = tempFile);
+    }
+  }*/
+
+
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (image != null) {
+      setState(() {
+        selectedImage = File(image.path);
+      });
     }
   }
 
@@ -528,7 +544,7 @@ class _AddBookPageState extends State<AddBookPage> {
                       height: 170,
                       decoration: BoxDecoration(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey.shade900   // 🔥 plus sombre en dark mode
+                            ? Colors.grey.shade900
                             : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
@@ -542,7 +558,7 @@ class _AddBookPageState extends State<AddBookPage> {
                           children: [
                             Icon(Icons.image_outlined, size: 40, color: Theme.of(context).colorScheme.primary),
                             SizedBox(height: 8),
-                            Text("Appuyez pour choisir une image"),
+                            Text("Image de couverture du livre"),
                           ],
                         ),
                       )
@@ -558,7 +574,7 @@ class _AddBookPageState extends State<AddBookPage> {
                     icon: const Icon(Icons.picture_as_pdf_outlined),
                     label: Text(
                       selectedPdf == null
-                          ? "Choisir un fichier PDF"
+                          ? "Choisir le livre (fichier PDF)"
                           : "PDF : ${selectedPdf!.path.split('/').last}",
                       overflow: TextOverflow.ellipsis,
                     ),

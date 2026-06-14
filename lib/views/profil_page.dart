@@ -53,8 +53,8 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       isStatsLoading = true;
     });
-
-    final books = await supabase.from('book').select('id').eq('user_id', user.id);
+    final books = await supabase.from('book').select('id').eq('user_id', user.id).eq('status', 'approved');
+    //final books = await supabase.from('book').select('id').eq('user_id', user.id);
     final read = await supabase.from('user_book_progress').select('id').eq('user_id', user.id).eq('is_read', true);
     final words = await supabase.from('vocabulary').select('id').eq('user_id', user.id);
     final expressions = await supabase.from('expression').select('id').eq('user_id', user.id);
@@ -160,7 +160,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget statItem(String title, int value) {
+    List<String> parts = title.split(" ");
+
+    String line1 = parts.isNotEmpty ? parts[0] : "";
+    String line2 = parts.length > 1 ? parts.sublist(1).join(" ") : "";
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         isStatsLoading
             ? const SizedBox(
@@ -171,9 +177,31 @@ class _ProfilePageState extends State<ProfilePage> {
             : Text(
           value.toString(),
           style: const TextStyle(
-              fontWeight: FontWeight.bold, fontSize: 18),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
-        Text(title, style: const TextStyle(color: Colors.grey)),
+        const SizedBox(height: 6),
+
+        Text(
+          line1.toUpperCase(),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+
+        Text(
+          line2.toLowerCase(),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }

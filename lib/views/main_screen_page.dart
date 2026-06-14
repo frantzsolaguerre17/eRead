@@ -552,7 +552,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Bonjour, $displayName 👋",
+                      "Bonjour, $displayName",
                       style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,

@@ -370,6 +370,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   void _editChapterDialog(String chapterId, String currentTitle) {
     final controller = TextEditingController(text: currentTitle);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    bool isLoading = false;
 
     showDialog(
       context: context,

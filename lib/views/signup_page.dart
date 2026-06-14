@@ -241,14 +241,58 @@ class _SignupPageState extends State<SignupPage>
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                Text(
-                  "Créer un compte",
-                  style: GoogleFonts.poppins(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Créer un compte",
+                      style: GoogleFonts.poppins(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.info_outline,
+                        color: Colors.amber,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: const Text("Validation du compte"),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  'assets/images/verif_email.png',
+                                  height: 250,
+                                  width: 250,
+                                  fit: BoxFit.cover),
+                                const SizedBox(height: 15),
+                                const Text(
+                                  "Veuillez utiliser une adresse e-mail valide et active. "
+                                      "Après la création du compte, un e-mail de confirmation vous sera envoyé. "
+                                      "Vous devrez cliquer sur le lien contenu dans cet e-mail afin d'activer "
+                                      "et valider votre compte eRead avant de pouvoir vous connecter.",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("OK"),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
+
                 const SizedBox(height: 30),
 
                 TextField(

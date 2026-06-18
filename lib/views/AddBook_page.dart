@@ -45,6 +45,14 @@ class _AddBookPageState extends State<AddBookPage> {
     'Roman',
     'Science / Technologie',
     'Spiritualité / Religion',
+    'Communication',
+    'Entrepreneuriat / Business',
+    'Santé',
+    'Formation Académique',
+    'Leadership',
+    'Relations Amoureuses',
+    'Langue',
+    'Motivation',
     'Autre'
   ];
   String? selectedCategory;

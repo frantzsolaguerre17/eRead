@@ -408,10 +408,10 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> shareApk(BuildContext context) async {
+  /*Future<void> shareApk(BuildContext context) async {
     try {
       final dir = await getTemporaryDirectory();
-      final filePath = '${dir.path}/eread.apk';
+      //final filePath = '${dir.path}/eread.apk';
 
       // Charger depuis assets
       final byteData = await rootBundle.load('assets/app_apk/eread.apk');
@@ -434,7 +434,7 @@ class _ProfilePageState extends State<ProfilePage> {
         SnackBar(content: Text("Erreur: $e")),
       );
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -498,9 +498,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             // Options
             buildCard(Icons.description, "Termes & Conditions", showTerms),
-            buildCard(Icons.share, "Partager l'APK", () {
+            /*buildCard(Icons.share, "Partager l'APK", () {
               shareApk(context);
-            }),
+            }),*/
 
     const SizedBox(height: 20),
 

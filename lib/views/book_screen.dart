@@ -24,16 +24,27 @@ class _BookListPageState extends State<BookListPage> {
 
   final List<String> categories = [
     'Toutes',
-    'Biographie',
-    'Développement Personnel',
-    'Économie / Finance',
-    'Histoire',
-    'Philosophie',
-    'Psychologie',
-    'Roman',
-    'Science / Technologie',
-    'Spiritualité / Religion',
-    'Autre',
+    'Biographie'
+    'Communication'
+    'Développement personnel'
+    'Économie / Finance'
+    'Éducation'
+    'Entrepreneuriat / Business'
+    'Formation professionnelle'
+    'Géographie'
+    'Histoire'
+    'Langue'
+    'Leadership'
+    'Motivation'
+    'Philosophie'
+    'Psychologie'
+    'Romance'
+    'Roman'
+    'Santé'
+    'Science-fiction'
+    'Sciences et Technologie'
+    'Spiritualité / Religion'
+    'Autre'
   ];
 
   String selectedCategory = 'Toutes';

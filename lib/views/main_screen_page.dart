@@ -388,7 +388,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       },
                     ),
 
-                    /// 🔴 Badge notifications
+                    /// Badge notifications
                     Positioned(
                       right: 4,
                       top: 4,

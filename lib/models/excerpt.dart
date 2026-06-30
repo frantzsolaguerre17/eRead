@@ -1,5 +1,5 @@
 class Excerpt {
-  // 🔒 Attributs privés
+  //Attributs privés
   String _id;
   String _chapter_id;
   String _content;
@@ -8,7 +8,7 @@ class Excerpt {
   DateTime _created_at;
   bool _isSynced;
 
-  // 🔹 Constructeur avec paramètres nommés
+  //Constructeur avec paramètres nommés
   Excerpt({
     required String id,
     required String chapterId,
@@ -25,7 +25,7 @@ class Excerpt {
         _comment = comment,
         _isSynced = isSynced;
 
-  // 🔹 Getters
+  // Getters
   String get id => _id;
   String get chapterId => _chapter_id;
   String get content => _content;
@@ -34,13 +34,13 @@ class Excerpt {
   DateTime get createdAt => _created_at;
   bool get isSynced => _isSynced;
 
-  // 🔹 Setters
+  //Setters
   set content(String value) => _content = value;
   set example(String? value) => _example = value;
   set comment(String? value) => _comment = value;
   set isSynced(bool value) => _isSynced = value;
 
-  // 🔹 Depuis JSON (Supabase)
+  //Depuis JSON (Supabase)
   factory Excerpt.fromJson(Map<String, dynamic> json) {
     return Excerpt(
       id: json['id'],
@@ -53,7 +53,7 @@ class Excerpt {
     );
   }
 
-  // 🔹 Vers JSON (Supabase)
+  //Vers JSON (Supabase)
   Map<String, dynamic> toJson() {
     return {
       'id': _id,
@@ -65,7 +65,7 @@ class Excerpt {
     };
   }
 
-  // 🔹 Vers Map (SQLite)
+  // Vers Map (SQLite)
   Map<String, dynamic> toMap() {
     return {
       'id': _id,
@@ -78,7 +78,7 @@ class Excerpt {
     };
   }
 
-  // 🔹 Depuis Map (SQLite)
+  //Depuis Map (SQLite)
   factory Excerpt.fromMap(Map<String, dynamic> map) {
     return Excerpt(
       id: map['id'],

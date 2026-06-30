@@ -1,12 +1,12 @@
 class Profil {
-  // 🔒 Attributs privés
+  //Attributs privés
   String _id;
   DateTime _createdAt;
   String _username;
   String _email;
   String _userId;
 
-  // 🧱 Constructeur
+  //Constructeur
   Profil({
     required String id,
     required DateTime createdAt,
@@ -19,19 +19,19 @@ class Profil {
         _email = email,
         _userId = userId;
 
-  // 🧩 Getters
+  // Getters
   String get id => _id;
   DateTime get createdAt => _createdAt;
   String get username => _username;
   String get email => _email;
   String get userId => _userId;
 
-  // ✏️ Setters
+  // Setters
   set username(String value) => _username = value;
   set email(String value) => _email = value;
   set userId(String value) => _userId = value;
 
-  // 🔁 Convertir depuis JSON (lecture depuis Supabase)
+  // Convertir depuis JSON (lecture depuis Supabase)
   factory Profil.fromJson(Map<String, dynamic> json) {
     return Profil(
       id: json['id'] as String,
@@ -42,7 +42,7 @@ class Profil {
     );
   }
 
-  // 🔁 Convertir vers JSON (insertion / mise à jour Supabase)
+  //Convertir vers JSON (insertion / mise à jour Supabase)
   Map<String, dynamic> toJson() {
     return {
       'id': _id,

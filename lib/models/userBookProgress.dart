@@ -1,7 +1,7 @@
 class UserBookProgress {
   final String userId;
   final String bookId;
-  int readingProgress; // en pourcentage
+  int readingProgress;
   bool isRead;
 
   UserBookProgress({

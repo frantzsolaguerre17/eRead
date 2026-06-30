@@ -6,7 +6,7 @@ class Expression {
   DateTime _createdAt;
   String _bookId;
   String _userId;
-  bool _isFavorite; // ⭐ NOUVEAU
+  bool _isFavorite;
 
   Expression({
     required String id,
@@ -51,7 +51,7 @@ class Expression {
       createdAt: DateTime.parse(json['created_at']),
       bookId: json['book_id'],
       userId: json['user_id'],
-      isFavorite: json['is_favorite'] ?? false, // ⭐
+      isFavorite: json['is_favorite'] ?? false,
     );
   }
 
@@ -64,7 +64,7 @@ class Expression {
       'created_at': _createdAt.toIso8601String(),
       'book_id': _bookId,
       'user_id': _userId,
-      'is_favorite': _isFavorite, // ⭐
+      'is_favorite': _isFavorite,
     };
   }
 }

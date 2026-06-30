@@ -1,5 +1,5 @@
 class Chapter {
-  // 🔒 Attributs privés
+  // Attributs privés
   String _id;
   String _title;
   DateTime _createdAt;
@@ -7,7 +7,7 @@ class Chapter {
   bool _isSynced;
   String _userId;
 
-  // 🧱 Constructeur
+  // Constructeur
   Chapter({
     required String id,
     required String title,
@@ -22,7 +22,7 @@ class Chapter {
         _isSynced = isSynced,
         _userId = userId;
 
-  // 🧩 Getters
+  // Getters
   String get id => _id;
   String get title => _title;
   DateTime get createdAt => _createdAt;
@@ -30,7 +30,7 @@ class Chapter {
   bool get isSynced => _isSynced;
   String get userId => _userId;
 
-  // ✏️ Setters
+  // Setters
   set title(String value) => _title = value;
   set bookId(String value) => _bookId = value;
   set isSynced(bool value) => _isSynced = value;
@@ -48,7 +48,7 @@ class Chapter {
   }
 
 
-  // 🔁 Convertir vers JSON (insertion dans Supabase)
+  // Convertir vers JSON (insertion dans Supabase)
   Map<String, dynamic> toJson() {
     return {
       'id': _id,

@@ -1,5 +1,5 @@
 class Vocabulary {
-  // 🔒 Attributs privés
+  //Attributs privés
   String _id;
   String _word;
   String _definition;
@@ -30,7 +30,7 @@ class Vocabulary {
         _userId = userId,
         _isFavorite = isFavorite;
 
-  // 🧩 Getters
+  //Getters
   String get id => _id;
   String get word => _word;
   String get definition => _definition;
@@ -41,7 +41,7 @@ class Vocabulary {
   String get userId => _userId;
   bool get isFavorite => _isFavorite;
 
-  // ✏️ Setters
+  //Setters
   set word(String value) => _word = value;
   set definition(String value) => _definition = value;
   set example(String value) => _example = value;
@@ -50,7 +50,7 @@ class Vocabulary {
   set userId(String value) => _userId = value;
   set isFavorite(bool value) => _isFavorite = value;
 
-  // 🔁 Convertir depuis JSON (lecture depuis Supabase)
+  //Convertir depuis JSON (lecture depuis Supabase)
   factory Vocabulary.fromJson(Map<String, dynamic> json) {
     return Vocabulary(
       id: json['id'] as String,
@@ -65,7 +65,7 @@ class Vocabulary {
     );
   }
 
-  // 🔁 Convertir vers JSON (insertion dans Supabase)
+  //Convertir vers JSON (insertion dans Supabase)
   Map<String, dynamic> toJson() {
     return {
       'id': _id,

@@ -12,8 +12,7 @@ class Book {
   String? _user_name;
   String _status;
 
-  // Nouveaux champs
-  int _readingProgress; // 0..100
+  int _readingProgress;
   bool _isRead;
 
   Book({
@@ -63,7 +62,7 @@ class Book {
   bool get isRead => _isRead;
   String get status => _status;
 
-  // setters si besoin
+  // setters
   set readingProgress(int v) => _readingProgress = v;
   set isRead(bool v) => _isRead = v;
 
@@ -83,7 +82,7 @@ class Book {
       user_name: json['user_name'] as String? ?? 'Inconnu',
       readingProgress: json['reading_progress'] ?? 0,
       isRead: json['is_read'] ?? false,
-      status: json['status'] ?? 'pending', //
+      status: json['status'] ?? 'pending',
     );
   }
 
@@ -102,7 +101,7 @@ class Book {
       'user_name': _user_name,
       'reading_progress': _readingProgress,
       'is_read': _isRead,
-      'status': _status, // 🔥
+      'status': _status,
     };
   }
 

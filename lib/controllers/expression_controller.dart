@@ -23,11 +23,13 @@ class ExpressionController extends ChangeNotifier {
     notifyListeners();
   }
 
+
   Future<void> addExpression(Expression exp) async {
     final inserted = await service.addExpression(exp);
     _expressions.insert(0, inserted);
     notifyListeners();
   }
+
 
   Future<void> updateExpression(Expression exp) async {
     await service.updateExpression(exp);
@@ -38,13 +40,15 @@ class ExpressionController extends ChangeNotifier {
     }
   }
 
+
   Future<void> deleteExpression(String id) async {
     await service.deleteExpression(id);
     _expressions.removeWhere((e) => e.id == id);
     notifyListeners();
   }
 
-  /// ⭐ FAVORIS
+
+  //FAVORIS
   Future<void> toggleFavorite(Expression exp) async {
     exp.isFavorite = !exp.isFavorite;
     notifyListeners();

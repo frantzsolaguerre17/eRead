@@ -12,7 +12,7 @@ class NotificationController extends ChangeNotifier {
     startListeningPublic();
   }*/
 
-  /// 🔹 Séparation public / privé
+  ///Séparation public / privé
   List<Map<String, dynamic>> publicNotifications = [];
   List<Map<String, dynamic>> privateNotifications = [];
 
@@ -23,7 +23,7 @@ class NotificationController extends ChangeNotifier {
   StreamSubscription<List<Map<String, dynamic>>>? _publicSubscription;
   RealtimeChannel? _publicChannel;
 
-  /// 🔹 REALTIME : notifications privées uniquement
+  ///REALTIME : notifications privées uniquement
   void startListeningPrivate() {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
@@ -38,7 +38,8 @@ class NotificationController extends ChangeNotifier {
     });
   }
 
-  /// 🔹 Fetch notifications publiques
+
+  /// Fetch notifications publiques
   Future<void> fetchPublicNotifications() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
@@ -56,10 +57,11 @@ class NotificationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 🔹 REALTIME : notifications publiques
+
+  ///REALTIME : notifications publiques
   void startListeningPublic() {
 
-    /// ✅ évite plusieurs listeners
+    /// évite plusieurs listeners
     if (_publicChannel != null) {
       _supabase.removeChannel(_publicChannel!);
     }
@@ -115,7 +117,7 @@ class NotificationController extends ChangeNotifier {
         .subscribe();
   }
 
-  /// 🔹 Mark single notification as read (public)
+
   Future<void> markAsRead(String notificationId) async {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
@@ -127,7 +129,8 @@ class NotificationController extends ChangeNotifier {
     await loadUnreadCount();
   }
 
-  /// 🔹 Check if notification is read
+
+  /// Check if notification is read
   Future<bool> isRead(String notificationId) async {
     final user = _supabase.auth.currentUser;
     if (user == null) return false;
@@ -142,7 +145,8 @@ class NotificationController extends ChangeNotifier {
     return data != null;
   }
 
-  /// 🔹 Charger compteur badge public
+
+  /// Charger compteur badge public
   Future<void> loadUnreadCount() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
@@ -156,7 +160,8 @@ class NotificationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 🔹 Marquer toutes les notifications publiques comme lues
+
+  /// Marquer toutes les notifications publiques comme lues
   Future<void> markAllPublicAsRead() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
@@ -181,7 +186,8 @@ class NotificationController extends ChangeNotifier {
     await loadUnreadCount();
   }
 
-  /// 🔹 Marquer toutes les notifications privées comme lues (optionnel)
+
+  /// Marquer toutes les notifications privées comme lues
   Future<void> markAllPrivateAsRead() async {
     final user = _supabase.auth.currentUser;
     if (user == null) return;
@@ -190,7 +196,7 @@ class NotificationController extends ChangeNotifier {
         .from('notifications')
         .select('id')
         .eq('user_id', user.id)
-        .neq('type', 'book_added'); // exclure public
+        .neq('type', 'book_added');
 
     if (notifs.isEmpty) return;
 
@@ -205,7 +211,8 @@ class NotificationController extends ChangeNotifier {
     );
   }
 
-  /// 🔹 Obtenir un livre par id
+
+  /// Obtenir un livre par id
   Future<Book> getBookById(String bookId) async {
     final res = await _supabase
         .from('book')
@@ -217,7 +224,7 @@ class NotificationController extends ChangeNotifier {
   }
 
 
-  /// 🔹 Reset controller
+  /// Reset controller
   void reset() {
     publicNotifications.clear();
     privateNotifications.clear();
@@ -226,6 +233,7 @@ class NotificationController extends ChangeNotifier {
     isLoadingPublic = true;
     notifyListeners();
   }
+
 
   @override
   void dispose() {

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
-
 import '../models/book.dart';
 import '../models/userBookProgress.dart';
 import '../services/book_service.dart';
@@ -14,12 +12,11 @@ class BookController extends ChangeNotifier {
 
   List<Book> get books => _books;
 
-  // Liste des IDs des livres favoris
   List<String> favoriteBooks = [];
   final supabase = Supabase.instance.client;
 
 
-  /// 🔹 Charger tous les livres
+  //Charger tous les livres
   Future<void> fetchBooks() async {
     isLoading = true;
     notifyListeners();
@@ -27,7 +24,7 @@ class BookController extends ChangeNotifier {
     try {
       _books = await _service.fetchBooks();
 
-      /// Charger les favoris depuis Supabase
+      //Charger les favoris depuis Supabase
       await loadFavorites();
     } catch (e) {
       debugPrint("Erreur fetchBooks: $e");
@@ -37,7 +34,8 @@ class BookController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 🔹 Ajouter un nouveau livre
+
+  //Ajouter un nouveau livre
   Future<void> addBook(
       Book newBook, {
         required String title,
@@ -55,19 +53,7 @@ class BookController extends ChangeNotifier {
         throw Exception("Utilisateur non connecté");
       }
 
-      // 🔥 INSERT RÉEL EN BASE
       await supabase.from('book').insert(newBook.toJson());
-
-      // 🔔 NOTIFICATIONS
-      /*await supabase.rpc(
-        'notify_new_book',
-        params: {
-          'p_sender_id': user.id,
-          'p_sender_name': newBook.user_name,
-          'p_book_id': newBook.id,
-          'p_message': '📚 ${newBook.user_name} a ajouté le livre "${newBook.title}"',
-        },
-      );*/
 
     } catch (e) {
       debugPrint("Erreur addBook controller: $e");
@@ -78,11 +64,9 @@ class BookController extends ChangeNotifier {
 
 
 
-  // ============================================================
-  //                     FAVORIS
-  // ============================================================
+  ///FAVORIS
 
-  /// 🔹 Charger les favoris depuis Supabase
+  //Charger les favoris depuis Supabase
   Future<void> loadFavorites() async {
     try {
       favoriteBooks = await _service.getUserFavorites();
@@ -92,7 +76,8 @@ class BookController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 🔹 Ajouter / Retirer un favori
+
+  //Ajouter / Retirer un favori
   Future<void> toggleFavorite(String bookId) async {
     try {
       final isFavorite = favoriteBooks.contains(bookId);
@@ -112,13 +97,14 @@ class BookController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 🔹 Vérifier si un livre est favori
+
+  //Vérifier si un livre est favori
   bool isFavorite(String bookId) {
     return favoriteBooks.contains(bookId);
   }
 
 
-  /// Met à jour la progression d'un livre (localement et en DB)
+  // Met à jour la progression d'un livre (localement et en DB)
   Future<UserBookProgress?> getProgress(String bookId) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return null;
@@ -136,6 +122,7 @@ class BookController extends ChangeNotifier {
     return null;
   }
 
+
   Future<void> updateReadingProgress(String bookId, int progress, {bool? isRead}) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) return;
@@ -152,7 +139,6 @@ class BookController extends ChangeNotifier {
           .from('user_book_progress')
           .upsert(payload, onConflict: 'user_id,book_id');
 
-      // Optionnel: mettre à jour localement
       int index = books.indexWhere((b) => b.id == bookId);
       if (index != -1) {
         books[index].readingProgress = progress;
@@ -176,7 +162,6 @@ class BookController extends ChangeNotifier {
           .eq('user_id', user.id)
           .eq('is_read', true);
 
-      // response est une List
       if (response is List) {
         return response.length;
       } else {

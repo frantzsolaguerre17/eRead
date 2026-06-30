@@ -4,6 +4,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/book.dart';
 import '../models/userBookProgress.dart';
+import '../services/book_mark_service.dart';
 import '../services/book_service.dart';
 import 'pdf_viewer_page.dart';
 
@@ -266,16 +267,20 @@ class _FavoriteModernBookCardState
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        if (widget.book.pdf.isNotEmpty) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  PdfViewerPage(book: widget.book),
+      onTap: () async {
+        if (widget.book.pdf.isEmpty) return;
+
+        final page = await BookmarkService.getBookmarkPage(widget.book.id);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PdfViewerPage(
+              book: widget.book,
+              initialPage: page,
             ),
-          );
-        }
+          ),
+        );
       },
       child: Card(
         color: Theme.of(context).cardColor,

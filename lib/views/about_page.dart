@@ -12,8 +12,7 @@ class AboutPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: const Text(
-          "À propos & Guide",
-        ),
+          "À propos & Guide", style: TextStyle(color: Colors.white)),
         centerTitle: true,
 
         actions: [

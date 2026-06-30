@@ -126,7 +126,7 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Livres en attente"),
+        title: const Text("Livres en attente", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple,
         actions: [
           IconButton(

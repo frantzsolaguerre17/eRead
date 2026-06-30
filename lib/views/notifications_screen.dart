@@ -125,21 +125,21 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 onTap: () async {
                  // await controller.markAsRead(notif['id']);
 
-                  final book = await controller.getBookById(notif['book_id']);
+                 /* final book = await controller.getBookById(notif['book_id']);
 
                   if (book == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Livre introuvable")),
                     );
                     return;
-                  }
+                  }*/
 
-                  Navigator.push(
+                  /*Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => PdfViewerPage(book: book),
                     ),
-                  );
+                  );*/
                 },
               );
             },

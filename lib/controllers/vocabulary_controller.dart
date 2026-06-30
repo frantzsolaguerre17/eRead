@@ -9,20 +9,18 @@ class VocabularyController extends ChangeNotifier {
 
   List<Vocabulary> _vocabularies = [];
 
-  /// ⭐ AJOUTÉ
   List<Vocabulary> _favoriteVocabularies = [];
 
   bool isLoading = false;
 
   List<Vocabulary> get vocabularies => _vocabularies;
 
-  /// ⭐ AJOUTÉ
   List<Vocabulary> get favoriteVocabularies =>
       _favoriteVocabularies;
 
   final SupabaseClient supabase = Supabase.instance.client;
 
-  /// 🔄 Récupérer les vocabulaires pour un livre
+  /// Récupérer les vocabulaires pour un livre
   Future<void> fetchVocabulary(String bookId) async {
 
     try {
@@ -44,7 +42,8 @@ class VocabularyController extends ChangeNotifier {
     }
   }
 
-  /// ➕ Ajouter
+
+  /// Ajouter
   Future<void> addVocabulary(Vocabulary vocab) async {
 
     try {
@@ -65,7 +64,8 @@ class VocabularyController extends ChangeNotifier {
     }
   }
 
-  /// ✏️ Modifier
+
+  /// Modifier
   Future<void> updateVocabulary(Vocabulary vocab) async {
 
     try {
@@ -89,7 +89,8 @@ class VocabularyController extends ChangeNotifier {
     }
   }
 
-  /// 🗑️ Supprimer
+
+  /// Supprimer
   Future<void> deleteVocabulary(String vocabId) async {
 
     try {
@@ -107,7 +108,8 @@ class VocabularyController extends ChangeNotifier {
     }
   }
 
-  /// ⭐ Toggle Favoris
+
+  /// Toggle Favoris
   Future<void> toggleFavorite(Vocabulary vocab) async {
 
     try {
@@ -129,11 +131,13 @@ class VocabularyController extends ChangeNotifier {
     }
   }
 
-  /// 🔢 Nombre de mots appris
+
+  /// Nombre de mots appris
   Future<int> getLearnedWordsCount() async {
 
     return await service.getLearnedWordsCount();
   }
+
 
   Future<void> fetchFavoriteVocabulary() async {
 
@@ -159,7 +163,7 @@ class VocabularyController extends ChangeNotifier {
           .eq('is_favorite', true)
           .order('created_at', ascending: false);
 
-      /// ⭐ CORRECTION
+      /// CORRECTION
       _favoriteVocabularies = (response as List)
           .map((json) => Vocabulary.fromJson(json))
           .toList();

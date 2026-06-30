@@ -252,7 +252,7 @@ class _SignupPageState extends State<SignupPage>
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    IconButton(
+                   /* IconButton(
                       icon: const Icon(
                         Icons.info_outline,
                         color: Colors.amber,
@@ -289,7 +289,7 @@ class _SignupPageState extends State<SignupPage>
                           ),
                         );
                       },
-                    ),
+                    ),*/
                   ],
                 ),
 

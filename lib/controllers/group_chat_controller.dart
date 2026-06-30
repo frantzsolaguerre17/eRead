@@ -19,9 +19,8 @@ class GroupChatController extends ChangeNotifier {
     if (user == null) return;
     currentUserId = user.id;
 
-    // On peut récupérer username et role depuis la table users si tu as ces champs
     final data = await _supabase
-        .from('users_profile') // table custom avec username/role
+        .from('users_profile')
         .select()
         .eq('id', user.id)
         .maybeSingle();
@@ -32,19 +31,20 @@ class GroupChatController extends ChangeNotifier {
     notifyListeners();
   }
 
+
   /// Stream temps réel
   void startListening() {
     _subscription = _supabase
         .from('group_messages')
         .stream(primaryKey: ['id'])
         .listen((updates) {
-      // ⚡ updates = List<Map<String,dynamic>> contenant les changements
+      //updates = List<Map<String,dynamic>> contenant les changements
       for (var change in updates) {
         final index = messages.indexWhere((m) => m['id'] == change['id']);
         if (index != -1) {
-          messages[index] = change; // update existant
+          messages[index] = change;
         } else {
-          messages.add(change); // nouveau message
+          messages.add(change);
         }
       }
       messages.sort((a, b) =>
@@ -55,12 +55,13 @@ class GroupChatController extends ChangeNotifier {
     });
   }
 
+
   /// Envoyer un message
   Future<void> sendMessage(String text) async {
     if (currentUserId == null) return;
 
     final newMessage = {
-      'id': const Uuid().v4(), // temporaire
+      'id': const Uuid().v4(),
       'user_id': currentUserId,
       'username': currentUserName,
       'role': currentUserRole ?? 'user',
@@ -69,7 +70,7 @@ class GroupChatController extends ChangeNotifier {
     };
 
     messages.add(newMessage);
-    notifyListeners(); // affichage instantané
+    notifyListeners();
 
     // envoi au serveur
     await _supabase.from('group_messages').insert({

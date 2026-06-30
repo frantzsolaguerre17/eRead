@@ -9,7 +9,7 @@ class ChapterController with ChangeNotifier {
   bool isLoading = false;
   final uuid = const Uuid();
 
-  // 🔹 Récupérer les chapitres d’un livre
+  //Récupérer les chapitres d’un livre
   Future<void> fetchChapters(String bookId) async {
     try {
       isLoading = true;
@@ -38,7 +38,8 @@ class ChapterController with ChangeNotifier {
     }
   }
 
-  // 🔹 Ajouter un chapitre
+
+  //Ajouter un chapitre
   Future<void> addChapter(String title, String bookId, String userId) async {
     try {
       final chapter = Chapter(
@@ -62,35 +63,34 @@ class ChapterController with ChangeNotifier {
   }
 
 
-  // 🔹 Supprimer un chapitre
+  //Supprimer un chapitre
   Future<void> deleteChapter(String chapterId, String bookId) async {
     try {
-      // 🔥 Supprimer le chapitre (cascade automatique)
       await _supabase
           .from('chapter')
           .delete()
           .eq('id', chapterId);
 
-      // 🧠 Mise à jour locale immédiate
       _chaptersByBook[bookId]?.removeWhere(
             (chapter) => chapter.id == chapterId,
       );
 
       notifyListeners();
     } catch (e, stack) {
-      debugPrint("❌ Erreur deleteChapter: $e");
+      debugPrint("Erreur deleteChapter: $e");
       debugPrint("$stack");
-      rethrow; // utile si tu veux afficher un message plus haut
+      rethrow;
     }
   }
 
 
-  // 🔹 Récupérer les chapitres d’un livre
+  //Récupérer les chapitres d’un livre
   List<Chapter> getChapters(String bookId) {
     return _chaptersByBook[bookId] ?? [];
   }
 
-  // 🔹 Vider les chapitres
+
+  //Vider les chapitres
   void clearChapters() {
     _chaptersByBook.clear();
     notifyListeners();

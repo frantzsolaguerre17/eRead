@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:memo_livre/views/Don_page.dart';
 import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../controllers/book_controller.dart';
 import '../models/book.dart';
 import '../models/userBookProgress.dart';
+import '../services/book_mark_service.dart';
 import '../services/book_service.dart';
 import 'AddBook_page.dart';
 import 'pdf_viewer_page.dart';
@@ -24,26 +26,26 @@ class _BookListPageState extends State<BookListPage> {
 
   final List<String> categories = [
     'Toutes',
-    'Biographie'
-    'Communication'
-    'Développement personnel'
-    'Économie / Finance'
-    'Éducation'
-    'Entrepreneuriat / Business'
-    'Formation professionnelle'
-    'Géographie'
-    'Histoire'
-    'Langue'
-    'Leadership'
-    'Motivation'
-    'Philosophie'
-    'Psychologie'
-    'Romance'
-    'Roman'
-    'Santé'
-    'Science-fiction'
-    'Sciences et Technologie'
-    'Spiritualité / Religion'
+    'Biographie',
+    'Communication',
+    'Développement personnel',
+    'Économie / Finance',
+    'Éducation',
+    'Entrepreneuriat / Business',
+    'Formation professionnelle',
+    'Géographie',
+    'Histoire',
+    'Langue',
+    'Leadership',
+    'Motivation',
+    'Philosophie',
+    'Psychologie',
+    'Romance',
+    'Roman',
+    'Santé',
+    'Science-fiction',
+    'Sciences et Technologie',
+    'Spiritualité / Religion',
     'Autre'
   ];
 
@@ -110,7 +112,7 @@ class _BookListPageState extends State<BookListPage> {
         centerTitle: true,
         elevation: 4,
         title: const Text(
-          "Mes livres",
+          "Bibliothèque",
           style: TextStyle(fontSize: 22, color: Colors.white),
         ),
         bottom: PreferredSize(
@@ -159,6 +161,18 @@ class _BookListPageState extends State<BookListPage> {
           ),
         ),
         actions: [
+
+          IconButton(
+            icon: const Icon(Icons.monetization_on, color: Colors.orange),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const DonationPage()),
+              );
+            },
+          ),
+
           IconButton(
             icon: const Icon(Icons.favorite, color: Colors.redAccent),
             onPressed: () {
@@ -454,11 +468,13 @@ class _ModernBookCardState extends State<ModernBookCard> {
   }
 
   Future<void> ouvrirLivreDepuisDebut(Book book) async {
+    final page = await BookmarkService.getBookmarkPage(widget.book.id);
+
     await context
         .read<BookController>()
         .updateReadingProgress(book.id, 0, isRead: false);
 
-    PdfViewerPage(book: widget.book);
+    PdfViewerPage(book: widget.book, initialPage: page,);
   }
 
   Color _getBadgeColor() {
@@ -512,11 +528,12 @@ class _ModernBookCardState extends State<ModernBookCard> {
         // ✅ CAS : livre déjà lu → dialog
         _showRelireDialog(context, widget.book);
       } else {
-        // ✅ CAS : ouvrir directement
+        final page = await BookmarkService.getBookmarkPage(widget.book.id);
+
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => PdfViewerPage(book: widget.book),
+            builder: (_) => PdfViewerPage(book: widget.book, initialPage: page),
           ),
         );
 

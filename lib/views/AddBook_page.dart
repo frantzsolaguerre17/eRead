@@ -36,27 +36,27 @@ class _AddBookPageState extends State<AddBookPage> {
   String? pdfUrl;
 
   final List<String> categories = [
-  'Biographie'
-  'Communication'
-  'Développement personnel'
-  'Économie / Finance'
-  'Éducation'
-  'Entrepreneuriat / Business'
-  'Formation professionnelle'
-  'Géographie'
-  'Histoire'
-  'Langue'
-  'Leadership'
-  'Motivation'
-  'Philosophie'
-  'Psychologie'
-  'Romance'
-  'Roman'
-  'Santé'
-  'Science-fiction'
-  'Sciences et Technologie'
-  'Spiritualité / Religion'
-  'Autre'
+    'Biographie',
+    'Communication',
+    'Développement personnel',
+    'Économie / Finance',
+    'Éducation',
+    'Entrepreneuriat / Business',
+    'Formation professionnelle',
+    'Géographie',
+    'Histoire',
+    'Langue',
+    'Leadership',
+    'Motivation',
+    'Philosophie',
+    'Psychologie',
+    'Romance',
+    'Roman',
+    'Santé',
+    'Science-fiction',
+    'Sciences et Technologie',
+    'Spiritualité / Religion',
+    'Autre'
   ];
   String? selectedCategory;
 

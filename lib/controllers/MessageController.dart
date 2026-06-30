@@ -20,9 +20,8 @@ class MessageController extends ChangeNotifier {
     _initRealtime();
   }
 
-  /// =========================
+
   /// REALTIME
-  /// =========================
   void _initRealtime() {
 
     final user = _supabase.auth.currentUser;
@@ -58,6 +57,7 @@ class MessageController extends ChangeNotifier {
       },
     )
 
+
     /// UPDATE
         .onPostgresChanges(
       event: PostgresChangeEvent.update,
@@ -87,9 +87,8 @@ class MessageController extends ChangeNotifier {
         .subscribe();
   }
 
-  /// =========================
+
   /// FETCH NOTIFICATIONS
-  /// =========================
   Future<void> fetchNotifications() async {
 
     isLoading = true;
@@ -105,9 +104,9 @@ class MessageController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// =========================
+
+
   /// MARK AS READ
-  /// =========================
   Future<void> markAsRead(String id) async {
 
     await _service.markAsRead(id);
@@ -129,9 +128,8 @@ class MessageController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// =========================
+
   /// LOAD UNREAD COUNT
-  /// =========================
   Future<void> loadUnreadCount() async {
 
     final user = _supabase.auth.currentUser;
@@ -150,9 +148,8 @@ class MessageController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// =========================
+
   /// MARK ALL AS READ
-  /// =========================
   Future<void> markAllAsRead() async {
 
     final user = _supabase.auth.currentUser;
@@ -165,7 +162,6 @@ class MessageController extends ChangeNotifier {
         .eq('type', 'private_message')
         .eq('user_id', user.id);
 
-    /// Mettre à jour localement
     notifications = notifications.map((n) {
       return NotificationModel(
         id: n.id,
@@ -214,9 +210,8 @@ class MessageController extends ChangeNotifier {
         .subscribe();
   }
 
-  /// =========================
+
   /// DISPOSE
-  /// =========================
   @override
   void dispose() {
 

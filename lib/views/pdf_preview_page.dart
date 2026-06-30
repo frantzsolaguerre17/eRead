@@ -94,7 +94,6 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
                   "Consultation du livre 📖",
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
 

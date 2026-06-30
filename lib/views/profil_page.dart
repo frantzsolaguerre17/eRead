@@ -137,7 +137,31 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
 
-
+  void showDonationDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Soutenir eRead"),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("MonCash : +509 XXXX XXXX"),
+            SizedBox(height: 10),
+            Text("NatCash : +509 XXXX XXXX"),
+            SizedBox(height: 10),
+            Text("PayPal : paypal.me/eRead"),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Fermer"),
+          ),
+        ],
+      ),
+    );
+  }
 
 
   Widget buildCard(IconData icon, String title, VoidCallback onTap) {
@@ -489,7 +513,11 @@ class _ProfilePageState extends State<ProfilePage> {
             // Support
             buildCard(Icons.chat, "WhatsApp", openWhatsApp),
             buildCard(Icons.email, "Email", sendEmail),
-
+            buildCard(
+              Icons.favorite,
+              "Soutenir eRead",
+              showDonationDialog,
+            ),
             // Dark mode
             SwitchListTile(
               value: theme.isDarkMode,

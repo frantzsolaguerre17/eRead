@@ -15,12 +15,13 @@ class FavoriteController {
       });
       return true;
     } catch (e) {
-      print("❌ Erreur addFavorite: $e");
+      print("Erreur addFavorite: $e");
       return false;
     }
   }
 
-  /// Retirer un livre des favoris
+
+  //Retirer un livre des favoris
   Future<bool> removeFavorite(String bookId) async {
     final user = supabase.auth.currentUser;
     if (user == null) return false;
@@ -32,12 +33,13 @@ class FavoriteController {
           .match({'user_id': user.id, 'book_id': bookId});
       return true;
     } catch (e) {
-      print("❌ Erreur removeFavorite: $e");
+      print("Erreur removeFavorite: $e");
       return false;
     }
   }
 
-  /// Vérifier si un livre est favori
+
+  // Vérifier si un livre est favori
   Future<bool> isFavorite(String bookId) async {
     final user = supabase.auth.currentUser;
     if (user == null) return false;
@@ -50,10 +52,11 @@ class FavoriteController {
 
       return result.isNotEmpty;
     } catch (e) {
-      print("❌ Erreur isFavorite: $e");
+      print("Erreur isFavorite: $e");
       return false;
     }
   }
+
 
   /// Récupérer tous les favoris de l'utilisateur
   Future<List<String>> getFavorites() async {
@@ -68,7 +71,7 @@ class FavoriteController {
 
       return result.map<String>((row) => row['book_id']).toList();
     } catch (e) {
-      print("❌ Erreur getFavorites: $e");
+      print("Erreur getFavorites: $e");
       return [];
     }
   }

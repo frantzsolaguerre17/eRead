@@ -13,10 +13,12 @@ class ExcerptController extends ChangeNotifier {
   List<Excerpt> getExcerpts(String chapterId) =>
       _excerpts[chapterId] ?? [];
 
+
   void clearExcerpts() {
     _excerpts.clear();
     notifyListeners();
   }
+
 
   Future<void> fetchExcerpts(String chapterId) async {
     try {
@@ -32,6 +34,7 @@ class ExcerptController extends ChangeNotifier {
       notifyListeners();
     }
   }
+
 
   Future<void> addExcerpt(String chapterId, String content, String comment) async {
     try {
@@ -67,7 +70,6 @@ class ExcerptController extends ChangeNotifier {
         .select();
 
     if (response != null && response.isNotEmpty) {
-      // Mettre à jour localement
       _excerpts.forEach((chapterId, excerpts) {
         final index = excerpts.indexWhere((ex) => ex.id == id);
         if (index != -1) {

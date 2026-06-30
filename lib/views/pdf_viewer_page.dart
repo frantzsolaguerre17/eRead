@@ -12,8 +12,9 @@ import 'book_details_page.dart';
 
 class PdfViewerPage extends StatefulWidget {
   final Book book;
+  final int initialPage;
 
-  const PdfViewerPage({required this.book, super.key});
+  const PdfViewerPage({required this.book, required this.initialPage, super.key});
 
   @override
   State<PdfViewerPage> createState() => _PdfViewerPageState();
@@ -33,7 +34,8 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
   @override
   void initState() {
     super.initState();
-    _loadSavedPages();
+    //_loadSavedPages();
+    _loadMarkedPage();
     _loadThemePreference();
     _pdfFuture = _downloadAndCachePdf();
   }
@@ -49,7 +51,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     await prefs.setInt('lastPage_${widget.book.id}', pageNumber);
   }
 
-  Future<void> _saveMarkedPage(int pageNumber) async {
+  /*Future<void> _saveMarkedPage(int pageNumber) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('markedPage_${widget.book.id}', pageNumber);
 
@@ -61,18 +63,83 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         duration: const Duration(seconds: 2),
       ),
     );
+  }*/
+
+
+  Future<void> _saveMarkedPage(int pageNumber) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    try {
+      await supabase.from('bookmarks').upsert({
+        'user_id': user.id,
+        'book_id': widget.book.id,
+        'page_number': pageNumber,
+        'updated_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'book_id,user_id');
+
+      setState(() => _markedPage = pageNumber);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("🔖 Page $pageNumber enregistrée")),
+      );
+    } catch (e) {
+      print("Erreur marque-page: $e");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur: $e")),
+      );
+    }
   }
 
-  Future<void> _removeMarkedPage() async {
+
+  Future<void> _loadMarkedPage() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    final res = await supabase
+        .from('bookmarks')
+        .select('page_number')
+        .eq('user_id', user.id)
+        .eq('book_id', widget.book.id)
+        .maybeSingle();
+
+    if (res != null) {
+      setState(() {
+        _markedPage = res['page_number'];
+      });
+    }
+  }
+
+  Future<void> deleteBookmark(String bookId) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    await supabase
+        .from('bookmarks')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('book_id', bookId);
+
+    setState(() {
+      _markedPage = null;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Marque-page supprimé")),
+    );
+  }
+
+ /* Future<void> _removeMarkedPage() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('markedPage_${widget.book.id}');
     setState(() => _markedPage = null);
-  }
+  }*/
 
 
   Future<File?> _downloadAndCachePdf() async {
     try {
-      final dir = await getApplicationDocumentsDirectory(); // ✅ stockage permanent
+      final dir = await getApplicationDocumentsDirectory();
 
       final safeTitle =
       widget.book.title.replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(' ', '_');
@@ -194,7 +261,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                 if (value == 'mark') {
                   _saveMarkedPage(_pdfController.pageNumber);
                 } else if (value == 'remove') {
-                  _removeMarkedPage();
+                  deleteBookmark(widget.book.id);
                 }
               },
               itemBuilder: (context) => [

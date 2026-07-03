@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memo_livre/views/profil_page.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -147,7 +145,8 @@ class _AddBookPageState extends State<AddBookPage> {
     }
   }
 
-  // 🔹 Alerte de confirmation avant l'ajout
+
+  //Alerte de confirmation avant l'ajout
   Future<void> _showConfirmationDialog() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -193,7 +192,7 @@ class _AddBookPageState extends State<AddBookPage> {
     setState(() => isLoading = true);
 
     try {
-      // 🔍 Vérification du doublon
+      //Vérification du doublon
       final existingBooks = await supabase
           .from('book')
           .select()
@@ -206,7 +205,7 @@ class _AddBookPageState extends State<AddBookPage> {
         return;
       }
 
-      // 🔹 Image par défaut si aucune sélection
+      //Image par défaut si aucune sélection
       if (selectedImage != null) {
         imageUrl = await uploadFile(selectedImage!, 'book_covers');
       } else {
@@ -262,7 +261,7 @@ class _AddBookPageState extends State<AddBookPage> {
             (route) => false,
       );
 
-// Puis ouvrir BookScreen
+//Ouvrir BookScreen
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => const BookListPage()),
       );
@@ -308,7 +307,7 @@ class _AddBookPageState extends State<AddBookPage> {
   }
 
 
-  // 🔹 Boîte de dialogue en cas de doublon
+  //Boîte de dialogue en cas de doublon
   void _showDuplicateDialog() {
     showDialog(
       context: context,
@@ -346,7 +345,7 @@ class _AddBookPageState extends State<AddBookPage> {
       ),
       filled: true,
       fillColor: Theme.of(context).brightness == Brightness.dark
-          ? Colors.grey.shade900   // 🔥 plus sombre en dark mode
+          ? Colors.grey.shade900
           : Theme.of(context).cardColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),

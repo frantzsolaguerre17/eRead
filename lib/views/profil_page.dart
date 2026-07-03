@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../controllers/notifications_controller.dart';
@@ -118,15 +116,11 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
 
-    // 👇 ICI SE PASSE LA MAGIE
     if (shouldLogout == true) {
-      // 1️⃣ RESET notifications
       context.read<NotificationController>().reset();
 
-      // 2️⃣ Supabase logout
       await Supabase.instance.client.auth.signOut();
 
-      // 3️⃣ Redirection vers login
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -243,7 +237,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Stack(
             children: [
 
-              /// 📜 TEXTE SCROLLABLE
+              ///TEXTE SCROLLABLE
               NotificationListener<ScrollNotification>(
                 onNotification: (scroll) {
                   if (scroll.metrics.pixels >=
@@ -372,7 +366,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-              /// 👇 INDICATEUR SCROLL
+              /// INDICATEUR SCROLL
               Positioned(
                 bottom: 0,
                 left: 0,

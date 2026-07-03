@@ -110,8 +110,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
   }
 
 
-  /// Dialogue pour ajouter ou modifier un mot (version professionnelle)
-  /// Dialogue pour ajouter ou modifier un mot (même style que Chapitre / Extrait)
+  /// Dialogue pour ajouter ou modifier un mot
   void _showVocabularyDialog({Vocabulary? vocab}) {
     final wordController =
     TextEditingController(text: vocab?.word ?? '');
@@ -222,7 +221,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                           ),
                           const SizedBox(width: 8),
 
-                          /// 🔥 BOUTON AVEC LOADING
+                          ///BOUTON AVEC LOADING
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.deepPurple,
@@ -534,7 +533,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
                                   fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                           ),
-                          // ⭐ Bouton Favoris
+                          // Bouton Favoris
                           IconButton(
                             icon: Icon(
                               vocab.isFavorite ? Icons.star : Icons.star_border,
@@ -575,7 +574,7 @@ class _VocabularyListScreenState extends State<VocabularyListScreen> {
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'addVocabulary',
         backgroundColor: Colors.deepPurple.shade700,
-        shape: const StadiumBorder(), // ✅ PILULE
+        shape: const StadiumBorder(),
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
           "Mot",

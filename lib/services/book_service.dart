@@ -4,12 +4,12 @@ import '../models/book.dart';
 class BookService {
   final supabase = Supabase.instance.client;
 
-  /// 🔹 Ajouter un livre
+  ///Ajouter un livre
   Future<void> addBook(Book book) async {
     await supabase.from('book').insert(book.toJson());
   }
 
-  /// 🔹 Récupérer tous les livres (sans username)
+  ///Récupérer tous les livres (sans username)
   Future<List<Book>> fetchBooks() async {
     final response = await supabase
         .from('book')
@@ -24,11 +24,11 @@ class BookService {
         .toList();
   }
 
-  /// 🔹 Récupérer les livres d’un utilisateur spécifique (sans username)
+  ///Récupérer les livres d’un utilisateur spécifique (sans username)
   Future<List<Book>> getBooksByUser(String userId) async {
     final response = await supabase
         .from('book')
-        .select('*')                    // juste les colonnes de book
+        .select('*')
         .eq('user_id', userId);
 
     if (response == null) return [];
@@ -39,7 +39,7 @@ class BookService {
   }
 
 
-  /// 🔹 Ajouter en favoris
+  ///Ajouter en favoris
   Future<void> addFavorite(String bookId) async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return;
@@ -50,7 +50,7 @@ class BookService {
     });
   }
 
-  /// 🔹 Retirer des favoris
+  ///Retirer des favoris
   Future<void> removeFavorite(String bookId) async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return;
@@ -62,7 +62,7 @@ class BookService {
         .eq('book_id', bookId);
   }
 
-  /// 🔹 Récupérer les favoris de l'utilisateur
+  ///Récupérer les favoris de l'utilisateur
   Future<List<String>> getUserFavorites() async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return [];
@@ -80,7 +80,7 @@ class BookService {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) return [];
 
-    // 1️⃣ Récupérer les IDs des favoris
+    // Récupérer les IDs des favoris
     final favRes = await supabase
         .from('favorites')
         .select('book_id')
@@ -92,11 +92,10 @@ class BookService {
 
     if (favIds.isEmpty) return [];
 
-    // 2️⃣ Récupérer les livres correspondants correctement
     final booksRes = await supabase
         .from('book')
         .select('*')
-        .filter('id', 'in', favIds); // ✅ passe directement la List<String>
+        .filter('id', 'in', favIds);
 
     return (booksRes as List)
         .map((json) => Book.fromJson(json as Map<String, dynamic>))
@@ -107,11 +106,11 @@ class BookService {
   /// Met à jour la progression et le flag is_read
   Future<void> updateReadingProgress(String bookId, int progress, {bool? isRead}) async {
     final payload = <String, dynamic>{
-      'reading_progress': progress, // progress doit être un int
+      'reading_progress': progress,
     };
 
     if (isRead != null) {
-      payload['is_read'] = isRead; // bool, ok
+      payload['is_read'] = isRead;
     }
 
     await supabase
@@ -132,7 +131,6 @@ class BookService {
           .eq('user_id', user.id)
           .eq('is_read', true);
 
-      // response est une List
       if (response is List) {
         return response.length;
       } else {

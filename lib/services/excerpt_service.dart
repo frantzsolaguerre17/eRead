@@ -4,7 +4,7 @@ import '../models/excerpt.dart';
 class ExcerptService {
   final supabase = Supabase.instance.client;
 
-  /// ➕ Ajouter un extrait dans la base de données
+  ///Ajouter un extrait dans la base de données
   Future<Excerpt> addExcerpt(Excerpt excerpt, String userId) async {
     try {
       final response = await supabase
@@ -18,7 +18,7 @@ class ExcerptService {
         'user_id': userId,
       })
           .select()
-          .single(); // récupère directement l’élément inséré
+          .single();
 
       return Excerpt.fromJson(response);
     } catch (e) {
@@ -26,7 +26,8 @@ class ExcerptService {
     }
   }
 
-  /// 📚 Récupérer les extraits d’un chapitre donné
+
+  ///Récupérer les extraits d’un chapitre
   Future<List<Excerpt>> fetchExcerpts(String chapterId) async {
     try {
       final userId = supabase.auth.currentUser!.id;

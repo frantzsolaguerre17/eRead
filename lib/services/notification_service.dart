@@ -28,6 +28,7 @@ class PublicNotificationService {
     return data.length;
   }
 
+
   Future<int> loadUnreadCount() async {
 
     final user = supabase.auth.currentUser;
@@ -39,6 +40,7 @@ class PublicNotificationService {
 
     return count ?? 0;
   }
+
 
   Future<void> markAllAsRead() async {
 

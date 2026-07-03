@@ -25,7 +25,6 @@ class BookListShimmer extends StatelessWidget {
                   color: Colors.white,
                 ),
                 const SizedBox(width: 16),
-                // Texte du titre/auteur (skeleton)
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

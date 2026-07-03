@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login_page.dart';
-import 'main_screen_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -64,7 +63,7 @@ class _SignupPageState extends State<SignupPage>
       final confirmPassword = confirmPasswordController.text.trim();
       final name = displayNameController.text.trim();
 
-      // ✅ VALIDATION
+      //VALIDATION
       if (name.isEmpty || email.isEmpty || password.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -106,7 +105,7 @@ class _SignupPageState extends State<SignupPage>
         return;
       }
 
-      // 🔥 SIGN UP SUPABASE
+      //SIGN UP SUPABASE
       final response = await supabase.auth.signUp(
         email: email,
         password: password,

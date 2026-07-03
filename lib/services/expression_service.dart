@@ -21,6 +21,7 @@ class ExpressionService {
         .toList();
   }
 
+
   Future<Expression> addExpression(Expression exp) async {
     final res = await supabase
         .from('expression')
@@ -31,6 +32,7 @@ class ExpressionService {
     return Expression.fromJson(res);
   }
 
+
   Future<void> updateExpression(Expression exp) async {
     await supabase
         .from('expression')
@@ -38,6 +40,7 @@ class ExpressionService {
         .eq('id', exp.id)
         .eq('user_id', exp.userId);
   }
+
 
   Future<void> deleteExpression(String id) async {
     final user = supabase.auth.currentUser;
@@ -50,7 +53,8 @@ class ExpressionService {
         .eq('user_id', user.id);
   }
 
-  /// ⭐ FAVORIS
+
+  ///FAVORIS
   Future<void> toggleFavorite(String id, bool value) async {
     final user = supabase.auth.currentUser;
     if (user == null) return;

@@ -38,9 +38,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
         .fetchExpressions(widget.bookId);
   }
 
-  /// =========================
   /// DIALOG AJOUT / MODIFICATION
-  /// =========================
   void _showExpressionDialog({Expression? expression}) {
     final textController =
     TextEditingController(text: expression?.expressionText ?? '');
@@ -151,7 +149,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                           ),
                           const SizedBox(width: 8),
 
-                          /// 🔥 BOUTON AVEC LOADING
+                          ///BOUTON AVEC LOADING
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.deepPurple,
@@ -246,9 +244,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
     );
   }
 
-  /// =========================
   /// BUILD
-  /// =========================
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<ExpressionController>();
@@ -281,7 +277,6 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                   ),
                 );
 
-                // 🔥 RELOAD ICI
                 await context
                     .read<ExpressionController>()
                     .fetchExpressions(widget.bookId);
@@ -389,13 +384,13 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
               ),
               confirmDismiss: (direction) async {
                 if (direction == DismissDirection.startToEnd) {
-                  // 👉 Swipe DROITE → MODIFIER
+                  //Swipe DROITE → MODIFIER
                   _showExpressionDialog(expression: exp);
-                  return false; // ❌ on ne dismiss PAS
+                  return false;
                 }
 
                 if (direction == DismissDirection.endToStart) {
-                  // 👈 Swipe GAUCHE → SUPPRIMER
+                  //Swipe GAUCHE → SUPPRIMER
                   return await showDialog<bool>(
                     context: context,
                     builder: (context) => AlertDialog(
@@ -410,8 +405,8 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
                         ElevatedButton(
                           onPressed: () => Navigator.pop(context, true),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,   // 🔴 fond rouge
-                            foregroundColor: Colors.white, // ⚪ texte blanc
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
                           ),
                           child: const Text("Supprimer"),
                         ),
@@ -497,7 +492,7 @@ class _ExpressionListScreenState extends State<ExpressionListScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.deepPurple.shade700,
-        shape: const StadiumBorder(), // ✅ STYLE PILULE
+        shape: const StadiumBorder(),
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
           "Expression",

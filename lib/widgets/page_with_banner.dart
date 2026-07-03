@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'banner_widget.dart';
 
 class PageWithBanner extends StatelessWidget {
   final Widget child;

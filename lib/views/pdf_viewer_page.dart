@@ -147,7 +147,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
       final filePath = '${dir.path}/$safeTitle.pdf';
       final file = File(filePath);
 
-      // ✅ Si le fichier existe déjà, on ne recharge PAS
+      //Si le fichier existe déjà, on ne recharge PAS
       if (await file.exists()) {
         return file;
       }
@@ -213,7 +213,6 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      /// ✅ APPBAR LÉGÈREMENT PLUS GRAND
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
@@ -237,7 +236,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                     color: Colors.white,
                   ),
                   overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center, // Centre le texte
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -301,7 +300,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
               return Column(
                 children: [
 
-                  /// 🔥 BARRE DE PROGRESSION
+                  ///BARRE DE PROGRESSION
                   LinearProgressIndicator(
                     value: _progress,
                     minHeight: 4,
@@ -311,7 +310,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
                         .surfaceVariant,
                   ),
 
-                  /// 📖 PDF
+                  ///PDF
                   Expanded(
                     child: Container(
                       color: _isDarkMode
@@ -359,7 +358,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
         ),
       ),
 
-      /// ✅ FLOATING BUTTONS
+      ///FLOATING BUTTONS
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -393,7 +392,7 @@ class _PdfViewerPageState extends State<PdfViewerPage> {
     FloatingActionButton.extended(
     heroTag: "notesFab",
     backgroundColor: Colors.deepPurple,
-    shape: const StadiumBorder(), //
+    shape: const StadiumBorder(),
     icon: const Icon(Icons.note_alt_outlined, color: Colors.white),
     label: const Text(
     "Notes",

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:open_filex/open_filex.dart';
@@ -71,8 +70,8 @@ class UpdateDialog {
     );
   }
 
-  // ================= DOWNLOAD CONTROLLER =================
 
+  //DOWNLOAD CONTROLLER
   static void _startDownload(
       BuildContext context,
       String url,
@@ -159,8 +158,8 @@ class UpdateDialog {
     );
   }
 
-  // ================= DOWNLOAD =================
 
+  //DOWNLOAD
   static Future<void> _downloadApk(
       String url, {
         required Function(double) onProgress,
@@ -190,8 +189,7 @@ class UpdateDialog {
     }
   }
 
-  // ================= INSTALL =================
-
+  //INSTALL
   static void _showInstall(
       BuildContext context,
       String path,
@@ -199,9 +197,9 @@ class UpdateDialog {
       ) {
     showDialog(
       context: context,
-      barrierDismissible: false, // 🔒 empêche clic extérieur
+      barrierDismissible: false,
       builder: (_) => WillPopScope(
-        onWillPop: () async => false, // 🔒 bloque bouton retour
+        onWillPop: () async => false,
         child: Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),

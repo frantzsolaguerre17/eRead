@@ -40,7 +40,7 @@ class _FavoriteVocabularyScreenState
     final controller =
     context.watch<VocabularyController>();
 
-    // 🔍 Filtrage
+    //Filtrage
     final favoriteList = controller.vocabularies
         .where((vocab) =>
     vocab.isFavorite &&
@@ -55,7 +55,6 @@ class _FavoriteVocabularyScreenState
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      // ================= APPBAR IDENTIQUE À FAVORIS LIVRES =================
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
@@ -133,7 +132,8 @@ class _FavoriteVocabularyScreenState
         ],
       ),
 
-      // ================= BODY =================
+
+      //BODY
       body: controller.isLoading
           ? const FavoriteVocabularyShimmer()
           : RefreshIndicator(
@@ -270,7 +270,8 @@ class _FavoriteVocabularyScreenState
   }
 }
 
-// ================= SHIMMER =================
+
+//SHIMMER
 class FavoriteVocabularyShimmer extends StatelessWidget {
   const FavoriteVocabularyShimmer({super.key});
 

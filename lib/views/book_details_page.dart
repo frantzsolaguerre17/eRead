@@ -42,8 +42,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     await vocabController.fetchVocabulary(widget.book.id);
   }
 
-  // ==================== DIALOGUE GÉNÉRIQUE ====================
-
+  //DIALOGUE GÉNÉRIQUE
   Future<void> _showStyledDialog({
     required String title,
     required Widget content,
@@ -554,7 +553,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
 
-                    /// 🔥 HEADER (comme tes autres dialogs)
+                    ///HEADER (comme tes autres dialogs)
                     Row(
                       children: const [
                         Icon(Icons.edit, color: Colors.deepPurple),
@@ -572,7 +571,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
                     const SizedBox(height: 16),
 
-                    /// 📄 CONTENU
+                    ///CONTENU
                     TextField(
                       controller: contentController,
                       maxLines: 3,
@@ -603,7 +602,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
                     const SizedBox(height: 20),
 
-                    /// 🎯 ACTIONS
+                    ///ACTIONS
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -719,19 +718,17 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           ),
           confirmDismiss: (direction) async {
             if (direction == DismissDirection.startToEnd) {
-              // 👉 MODIFIER
 
               await Future.delayed(const Duration(milliseconds: 100));
 
               if (!mounted) return false;
 
-              _editExcerptDialog(ex); // ✅ IMPORTANT
+              _editExcerptDialog(ex);
 
-              return false; // empêche la suppression
+              return false;
             }
 
             if (direction == DismissDirection.endToStart) {
-              // 👉 SUPPRIMER
               return await showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
@@ -829,8 +826,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
-  // ==================== BUILD ====================
 
+  //BUILD
   @override
   Widget build(BuildContext context) {
     final chapterController = context.watch<ChapterController>();
@@ -922,14 +919,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           alignment: Alignment.bottomCenter,
           children: [
 
-            /// ================= FAB GAUCHE =================
+            ///FAB GAUCHE
             Positioned(
               left: 40,
               bottom: 0,
               child: FloatingActionButton.extended(
                 heroTag: 'leftFab',
                 backgroundColor: Colors.deepPurple,
-                shape: const StadiumBorder(), // style pilule
+                shape: const StadiumBorder(),
                 icon: const Icon(
                   Icons.add,
                   color: Colors.white,
@@ -946,7 +943,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
             ),
 
-            /// ================= FAB DROITE (MENU) =================
+            /// FAB DROITE (MENU)
             Positioned(
               right: 16,
               bottom: 0,
@@ -965,7 +962,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       child: FloatingActionButton.extended(
                         heroTag: 'expressionsFab',
                         backgroundColor: Colors.deepPurple.shade400,
-                        shape: const StadiumBorder(), // ✅ ARRONDI
+                        shape: const StadiumBorder(),
                         icon: const Icon(Icons.format_quote, color: Colors.white),
                         label: const Text(
                           "Expressions",
@@ -997,7 +994,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       child: FloatingActionButton.extended(
                         heroTag: 'vocabFab',
                         backgroundColor: Colors.deepPurple.shade600,
-                        shape: const StadiumBorder(), // ✅ ARRONDI
+                        shape: const StadiumBorder(),
                         icon: const Icon(Icons.lightbulb, color: Colors.white),
                         label: const Text(
                           "Mots appris",
@@ -1019,7 +1016,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
                   const SizedBox(height: 14),
 
-                  /// BOUTON PRINCIPAL (déjà rond, OK)
+                  /// BOUTON PRINCIPAL
                   FloatingActionButton(
                     heroTag: 'mainFab',
                     backgroundColor: Colors.deepPurple,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:media_store_plus/media_store_plus.dart';
 import 'package:memo_livre/controllers/MessageController.dart';
 import 'package:memo_livre/views/login_page.dart';
-import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'controllers/ChapterController.dart';
@@ -56,7 +55,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ExpressionController()),
         ChangeNotifierProvider(create: (_) => NotificationController()),
         ChangeNotifierProvider(create: (_) => MessageController()),
-        ChangeNotifierProvider(create: (_) => ThemeController()), // ⚡ important
+        ChangeNotifierProvider(create: (_) => ThemeController()),
       ],
       child: Consumer<ThemeController>(
         builder: (context, themeController, child) {
@@ -91,7 +90,7 @@ class MyApp extends StatelessWidget {
             ),
             themeMode: themeController.isDarkMode
                 ? ThemeMode.dark
-                : ThemeMode.light, // ⚡ ThemeMode change en temps réel
+                : ThemeMode.light,
             home: const LoginPage(),
           );
         },

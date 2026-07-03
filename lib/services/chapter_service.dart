@@ -4,7 +4,7 @@ import '../models/chapter.dart';
 class ChapterService {
   final supabase = Supabase.instance.client;
 
-  /// 🔹 Récupérer tous les chapitres d’un livre pour l’utilisateur connecté
+  ///Récupérer tous les chapitres d’un livre pour l’utilisateur connecté
   Future<List<Chapter>> getChaptersByBook(String bookId) async {
     final user = supabase.auth.currentUser;
     if (user == null) throw Exception("Utilisateur non authentifié");
@@ -21,7 +21,8 @@ class ChapterService {
         .toList();
   }
 
-  /// 🔹 Ajouter un chapitre
+
+  ///Ajouter un chapitre
   Future<void> addChapter(Chapter chapter) async {
     try {
       final response = await supabase.from('chapter').insert(chapter.toJson());
@@ -34,7 +35,8 @@ class ChapterService {
     }
   }
 
-  /// 🔹 Supprimer un chapitre
+
+  ///Supprimer un chapitre
   Future<void> deleteChapter(String chapterId) async {
     final user = supabase.auth.currentUser;
     if (user == null) throw Exception("Utilisateur non authentifié");

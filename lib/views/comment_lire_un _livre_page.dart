@@ -19,7 +19,7 @@ class ResumeLecturePage extends StatelessWidget {
         child: Column(
           children: [
 
-            /// 🟣 HEADER
+            ///HEADER
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -36,7 +36,7 @@ class ResumeLecturePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "📘 Comment lire un livre",
+                    "📘 Comment bien lire un livre",
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -110,7 +110,7 @@ class ResumeLecturePage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// 🎯 CONCLUSION
+            ///CONCLUSION
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
@@ -136,7 +136,7 @@ class ResumeLecturePage extends StatelessWidget {
     );
   }
 
-  /// 🔹 CARD DESIGN
+  ///CARD DESIGN
   Widget _card(BuildContext context, String title, String content) {
     return Container(
       width: double.infinity,

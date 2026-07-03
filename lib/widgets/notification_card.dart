@@ -42,7 +42,7 @@ class _NotificationCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 🔔 ICON
+            /// ICON
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -61,7 +61,7 @@ class _NotificationCard extends StatelessWidget {
 
             const SizedBox(width: 14),
 
-            /// 📝 CONTENT
+            /// CONTENT
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +87,7 @@ class _NotificationCard extends StatelessWidget {
               ),
             ),
 
-            /// 🔵 DOT (NON LU)
+            /// DOT (NON LU)
             if (!isRead)
               Container(
                 margin: const EdgeInsets.only(left: 8, top: 6),
@@ -104,7 +104,7 @@ class _NotificationCard extends StatelessWidget {
     );
   }
 
-  /// ⏱️ DATE FORMAT SIMPLE
+  /// DATE FORMAT SIMPLE
   static String _formatDate(DateTime date) {
     final diff = DateTime.now().difference(date);
 

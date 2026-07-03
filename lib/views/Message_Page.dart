@@ -24,7 +24,7 @@ class _PrivateNotificationsScreenState
 
       controller.startListening();
 
-      controller.markAllAsRead(); // ✔ ici
+      controller.markAllAsRead();
       controller.fetchNotifications();
       controller.loadUnreadCount();
     });
@@ -196,8 +196,8 @@ Widget _messagesShimmer(BuildContext context) {
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Shimmer.fromColors(
           baseColor: isDark
-              ? Colors.grey[800]!   // 🌙 dark mode
-              : Colors.grey[300]!,  // ☀️ light mode
+              ? Colors.grey[800]!
+              : Colors.grey[300]!,
           highlightColor: isDark
               ? Colors.grey[700]!
               : Colors.grey[100]!,

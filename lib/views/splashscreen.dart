@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'login_page.dart'; // Assure-toi que LoginPage existe
+import 'login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple.shade700, // Couleur principale
+      backgroundColor: Colors.deepPurple.shade700,
       body: FadeTransition(
         opacity: _fadeAnim,
         child: Center(

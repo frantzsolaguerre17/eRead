@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   Future<bool> signIn() async {
     try {
-      // 🔍 Vérifier connexion internet
+      //Vérifier connexion internet
       final connectivityResult = await Connectivity().checkConnectivity();
 
       if (connectivityResult == ConnectivityResult.none) {
@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         return false;
       }
 
-      // 🔍 validation
+      //validation
       if (emailController.text.isEmpty || passwordController.text.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Veuillez remplir tous les champs")),
@@ -98,7 +98,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
     } catch (e) {
 
-      // 🔥 fallback sécurité (si supabase bug)
       if (e.toString().toLowerCase().contains('socket')) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -170,7 +169,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             ),
             child: Column(
               children: [
-                // Image arrondie en haut
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(

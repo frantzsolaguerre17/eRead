@@ -106,7 +106,7 @@ class _BookListPageState extends State<BookListPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      // ===================== APPBAR =====================
+      //APPBAR
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
@@ -196,7 +196,7 @@ class _BookListPageState extends State<BookListPage> {
             ),
           ],
       ),
-      // =================================================
+
 
       body: isLoading
           ? const BookListShimmer()
@@ -268,7 +268,7 @@ class _BookListPageState extends State<BookListPage> {
             Icon(Icons.menu_book, color: Colors.white),
           ],
         ),
-        label: const SizedBox(), // Pas de texte
+        label: const SizedBox(),
         onPressed: () async {
           final result = await Navigator.push(
             context,
@@ -286,7 +286,8 @@ class _BookListPageState extends State<BookListPage> {
   }
 }
 
-// ================= SHIMMER =================
+
+//SHIMMER
 class BookListShimmer extends StatelessWidget {
   const BookListShimmer({super.key});
 
@@ -317,7 +318,7 @@ class BookListShimmer extends StatelessWidget {
   }
 }
 
-// ================= CARTE LIVRE =================
+//CARTE LIVRE
 class ModernBookCard extends StatefulWidget {
   final Book book;
   const ModernBookCard({required this.book, super.key});
@@ -418,13 +419,13 @@ class _ModernBookCardState extends State<ModernBookCard> {
     final user = supabase.auth.currentUser;
     if (user == null) return;
 
-    // 🔢 Compter les likes
+    //Compter les likes
     final likes = await supabase
         .from('book_likes')
         .select('id')
         .eq('book_id', widget.book.id);
 
-    // 👍 Est-ce que moi j’ai liké ?
+    //Est-ce que moi j’ai liké ?
     final liked = await supabase
         .from('book_likes')
         .select('id')
@@ -513,19 +514,17 @@ class _ModernBookCardState extends State<ModernBookCard> {
 
       setState(() => isOpening = true);
 
-      // 🔥 On lance la vérification SANS bloquer l'UI
       final futureProgress = context
           .read<BookController>()
           .getProgress(widget.book.id);
 
-      // ⚡ On attend un peu (rapide) pour voir si réseau répond vite
       final progress = await futureProgress.timeout(
         const Duration(milliseconds: 400),
         onTimeout: () => null,
       );
 
       if (progress?.isRead == true) {
-        // ✅ CAS : livre déjà lu → dialog
+        //CAS : livre déjà lu → dialog
         _showRelireDialog(context, widget.book);
       } else {
         final page = await BookmarkService.getBookmarkPage(widget.book.id);
@@ -537,7 +536,6 @@ class _ModernBookCardState extends State<ModernBookCard> {
           ),
         );
 
-        // 🔥 Si réponse lente → on vérifie après
         futureProgress.then((value) {
           if (value?.isRead == true && mounted) {
             _showRelireDialog(context, widget.book);

@@ -67,7 +67,7 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      // ================= APPBAR AVEC RECHERCHE =================
+      //APPBAR AVEC RECHERCHE
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
@@ -135,7 +135,8 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
         ],
       ),
 
-      // ================= BODY =================
+
+      //BODY
       body: isLoading
           ? const FavoriteShimmer()
           : filteredFavorites.isEmpty
@@ -165,9 +166,8 @@ class _FavoriteBooksPageState extends State<FavoriteBooksPage> {
   }
 }
 
-//
-// ================= SHIMMER =================
-//
+
+//SHIMMER
 class FavoriteShimmer extends StatelessWidget {
   const FavoriteShimmer({super.key});
 
@@ -203,9 +203,8 @@ class FavoriteShimmer extends StatelessWidget {
   }
 }
 
-//
-// ================= CARD FAVORI AVEC BADGE PROGRESSION =================
-//
+
+//CARD FAVORI AVEC BADGE PROGRESSION
 class FavoriteModernBookCard extends StatefulWidget {
   final Book book;
   final VoidCallback onRemove;

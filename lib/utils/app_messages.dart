@@ -1,8 +1,3 @@
-/// ======================================================
-/// AppMessages
-///  Fichier centralisé pour tous les messages de l'application
-/// ======================================================
-
 class AppMessages {
 
   // --- Connexion / Réseau ---
@@ -59,21 +54,21 @@ class AppMessages {
 
   // --- Succès ---
   static const String loginSuccess =
-      "Connexion réussie ✅";
+      "Connexion réussie";
   static const String registerSuccess =
       "Enregistrement effectué avec succès";
   static const String passwordUpdateSuccess =
-      "Mot de passe mis à jour avec succès 🔒";
+      "Mot de passe mis à jour avec succès";
   static const String profileUpdateSuccess =
       "Profil mis à jour avec succès ";
   static const String syncSuccess =
-      "Données synchronisées avec succès ☁️";
+      "Données synchronisées avec succès ️";
   static const String pageMarked =
-      "Page marquée comme dernière page lue ✅";
+      "Page marquée comme dernière page lue";
   static const String bookmarkRemoved =
-      "Marque-page supprimé avec succès 🗑️";
+      "Marque-page supprimé avec succès ";
   static const String downloadComplete =
-      "Téléchargement terminé ✅";
+      "Téléchargement terminé ";
 
 
 

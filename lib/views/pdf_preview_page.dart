@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/book.dart';
-import 'book_details_page.dart';
 
 class PdfPreviewPage extends StatefulWidget {
   final Book book;
@@ -24,7 +23,7 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
   final PdfViewerController _pdfController = PdfViewerController();
   final supabase = Supabase.instance.client;
 
-  /// 🌙 DARK MODE PDF
+  ///DARK MODE PDF
   bool _isDarkMode = false;
 
   @override
@@ -49,7 +48,7 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
       final filePath = '${dir.path}/$safeTitle.pdf';
       final file = File(filePath);
 
-      // ✅ Si le fichier existe déjà, on ne recharge PAS
+      //Si le fichier existe déjà, on ne recharge PAS
       if (await file.exists()) {
         return file;
       }
@@ -78,7 +77,7 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      /// ✅ APPBAR
+      ///APPBAR
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
@@ -114,7 +113,7 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
 
           actions: [
 
-            /// 🌙 DARK MODE BUTTON
+            ///DARK MODE BUTTON
             IconButton(
               icon: Icon(
                 _isDarkMode
@@ -130,7 +129,7 @@ class _PdfViewerPageState extends State<PdfPreviewPage> {
               },
             ),
 
-            /// 👤 PROFILE
+            ///PROFILE
             IconButton(
               icon: const Icon(
                 Icons.account_circle,

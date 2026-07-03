@@ -23,7 +23,7 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
     super.initState();
     fetchPendingBooks();
 
-    /// ✅ REALTIME PENDING BOOKS
+    ///REALTIME PENDING BOOKS
     _pendingBooksChannel = supabase
         .channel('pending-books-realtime')
         .onPostgresChanges(
@@ -39,7 +39,6 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
           await fetchPendingBooks();
         }
 
-        /// quand approuvé/refusé aussi
         if (payload.eventType == PostgresChangeEvent.update) {
           await fetchPendingBooks();
         }
@@ -69,7 +68,7 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
     }
   }
 
-  // ✅ Approuver un livre
+  // Approuver un livre
   Future<void> approveBook(Book book) async {
     try {
       await supabase.from('book').update({'status': 'approved'}).eq('id', book.id);
@@ -80,7 +79,7 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
     }
   }
 
-  // ❌ Refuser un livre
+  //Refuser un livre
   Future<void> rejectBook(Book book) async {
     try {
       await supabase.from('book').update({'status': 'rejected'}).eq('id', book.id);
@@ -91,10 +90,8 @@ class _AdminPendingBooksScreenState extends State<AdminPendingBooksScreen> {
     }
   }
 
-  // ❌ Refuser un livre
 
-
-  // 📥 Télécharger le PDF
+  //Télécharger le PDF
   Future<void> downloadPdf(Book book) async {
     if (book.pdf.isEmpty) {
       _showSnack("Pas de PDF disponible");

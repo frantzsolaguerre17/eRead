@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memo_livre/views/pdf_viewer_page.dart';
 import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -20,15 +19,14 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    // 🔹 1. Fetch public notifications avant mark as read
     Future.microtask(() async {
       final controller = context.read<NotificationController>();
 
       controller.startListeningPublic();
 
-      await controller.fetchPublicNotifications(); // fetch d'abord
+      await controller.fetchPublicNotifications();
       await controller.markAllPublicAsRead();
-      await controller.loadUnreadCount(); // badge
+      await controller.loadUnreadCount();
     });
   }
 
@@ -38,7 +36,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     super.dispose();
   }
 
-  // 🔹 Re-fetch si l'app revient
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
@@ -95,17 +92,16 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       ),
       body: Builder(
         builder: (_) {
-          // 🔹 Loading
+          //Loading
           if (controller.isLoadingPublic) {
             return _notificationsShimmer(context);
           }
 
-          // 🔹 Empty state
           if (controller.publicNotifications.isEmpty) {
             return _emptyState();
           }
 
-          // 🔹 ListView publique
+          //ListView publique
           return ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: controller.publicNotifications.length,
@@ -210,7 +206,7 @@ class _NotificationCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🔔 Icon
+            //Icon
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -246,7 +242,7 @@ class _NotificationCard extends StatelessWidget {
                 ],
               ),
             ),
-            // 🔵 Dot non lu
+
             if (!isRead)
               Container(
                 margin: const EdgeInsets.only(left: 8, top: 6),
@@ -284,8 +280,8 @@ Widget _notificationsShimmer(BuildContext context) {
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Shimmer.fromColors(
           baseColor: isDark
-              ? Colors.grey[800]!   // 🌙 dark mode
-              : Colors.grey[300]!,  // ☀️ light mode
+              ? Colors.grey[800]!
+              : Colors.grey[300]!,
           highlightColor: isDark
               ? Colors.grey[700]!
               : Colors.grey[100]!,

@@ -9,7 +9,7 @@ class LocalDBService {
 
   static Database? _database;
 
-  /// 📦 Accès à la base de données locale
+  ///Accès à la base de données locale
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDB('memo_livre.db');
@@ -17,7 +17,7 @@ class LocalDBService {
   }
 
 
-  /// 🏗️ Initialisation de la base
+  ///Initialisation de la base
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
@@ -30,7 +30,7 @@ class LocalDBService {
   }
 
 
-  /// 🧱 Création des tables locales
+  ///Création des tables locales
   Future<void> _createDB(Database db, int version) async {
     await db.execute('''
       CREATE TABLE book (
@@ -82,10 +82,7 @@ class LocalDBService {
   }
 
 
-  // --------------------------------------------------------------------------
-  // 📚 BOOKS
-  // --------------------------------------------------------------------------
-
+  //BOOKS
   Future<void> insertBook(Book book) async {
     final db = await database;
     await db.insert(
@@ -97,7 +94,7 @@ class LocalDBService {
   }
 
 
-  /// 🔄 Insérer ou mettre à jour un livre
+  ///Insérer ou mettre à jour un livre
   Future<void> insertOrUpdateBook(Book book) async {
     final db = await database;
     await db.insert(
@@ -135,7 +132,7 @@ class LocalDBService {
   }
 
 
-  /// 🧹 Supprimer tous les livres (utile pour reset)
+  ///Supprimer tous les livres (utile pour reset)
   Future<void> clearBooks() async {
     final db = await database;
     await db.delete('book');
@@ -143,10 +140,7 @@ class LocalDBService {
 
 
 
-  // --------------------------------------------------------------------------
-  // 📖 CHAPTERS
-  // --------------------------------------------------------------------------
-
+  // CHAPTERS
   Future<void> insertChapter(Chapter chapter) async {
     final db = await database;
     await db.insert('chapter', chapter.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
@@ -170,10 +164,7 @@ class LocalDBService {
   }
 
 
-  // --------------------------------------------------------------------------
-  // 📝 EXCERPTS
-  // --------------------------------------------------------------------------
-
+  //EXCERPTS
   Future<void> insertExcerpt(Excerpt excerpt) async {
     final db = await database;
     await db.insert(
@@ -224,10 +215,7 @@ class LocalDBService {
   }
 
 
-  // --------------------------------------------------------------------------
-  // 🧠 VOCABULARY
-  // --------------------------------------------------------------------------
-
+  //VOCABULARY
   Future<void> insertVocabulary(Vocabulary vocab) async {
     final db = await database;
     await db.insert('vocabulary', vocab.toJson(), conflictAlgorithm: ConflictAlgorithm.replace);
@@ -255,7 +243,7 @@ class LocalDBService {
     await db.insert(
       'vocabulary',
       vocab.toJson(),
-      conflictAlgorithm: ConflictAlgorithm.replace, // ✅ évite les doublons
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
@@ -270,10 +258,7 @@ class LocalDBService {
 
 
 
-  // --------------------------------------------------------------------------
-  // 🧹 Nettoyage
-  // --------------------------------------------------------------------------
-
+  //Nettoyage
   /// Supprimer toutes les lignes d’une table spécifique
   Future<void> clearTable(String tableName) async {
     final db = await database;

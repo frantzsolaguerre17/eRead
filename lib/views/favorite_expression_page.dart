@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../controllers/expression_controller.dart';
-import '../models/expression.dart';
 
 class FavoriteExpressionScreen extends StatefulWidget {
   const FavoriteExpressionScreen({super.key});
@@ -41,7 +40,7 @@ class _FavoriteExpressionScreenState
     final controller =
     context.watch<ExpressionController>();
 
-    /// 🔍 Filtrage
+    ///Filtrage
     final favoriteList = controller.expressions
         .where((exp) =>
     exp.isFavorite &&
@@ -56,7 +55,7 @@ class _FavoriteExpressionScreenState
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      // ================= APPBAR =================
+      //APPBAR
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
@@ -131,7 +130,7 @@ class _FavoriteExpressionScreenState
         ],
       ),
 
-      // ================= BODY =================
+      //BODY
       body: controller.isLoading
           ? const FavoriteExpressionShimmer()
           : RefreshIndicator(
@@ -241,7 +240,8 @@ class _FavoriteExpressionScreenState
   }
 }
 
-// ================= SHIMMER =================
+
+//SHIMMER
 class FavoriteExpressionShimmer extends StatelessWidget {
   const FavoriteExpressionShimmer({super.key});
 

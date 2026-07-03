@@ -4,7 +4,7 @@ import '../models/vocabulary.dart';
 class VocabularyService {
   final SupabaseClient supabase = Supabase.instance.client;
 
-  /// ➕ Ajouter un vocabulaire
+  ///Ajouter un vocabulaire
   Future<Vocabulary> addVocabulary(Vocabulary vocab) async {
     final res = await supabase
         .from('vocabulary')
@@ -14,7 +14,7 @@ class VocabularyService {
     return Vocabulary.fromJson(res);
   }
 
-  /// 🔄 Récupérer les vocabulaires du livre pour l'utilisateur actuel
+  ///Récupérer les vocabulaires du livre pour l'utilisateur actuel
   Future<List<Vocabulary>> fetchVocabulary(String bookId) async {
     final user = supabase.auth.currentUser;
     if (user == null) return [];
@@ -31,7 +31,8 @@ class VocabularyService {
         .toList();
   }
 
-  /// 🗑️ Supprimer
+
+  ///Supprimer
   Future<void> deleteVocabulary(String id) async {
     final user = supabase.auth.currentUser;
     if (user == null) return;
@@ -43,7 +44,8 @@ class VocabularyService {
         .eq('user_id', user.id); // RLS : ne peut supprimer que ses propres mots
   }
 
-  /// ✏️ Modifier un vocabulaire
+
+  ///Modifier un vocabulaire
   Future<void> updateVocabulary(Vocabulary vocab) async {
     final user = supabase.auth.currentUser;
     if (user == null) return;
@@ -55,7 +57,7 @@ class VocabularyService {
         .eq('user_id', user.id); // RLS : ne peut modifier que ses propres mots
   }
 
-  /// ⭐ Favoris
+  ///Favoris
   Future<void> toggleFavorite(String id, bool newValue) async {
     final user = supabase.auth.currentUser;
     if (user == null) return;
@@ -67,7 +69,7 @@ class VocabularyService {
         .eq('user_id', user.id); // RLS : ne peut changer que ses propres mots
   }
 
-  /// 🔢 Compter les mots appris par l'utilisateur
+  ///Compter les mots appris par l'utilisateur
   Future<int> getLearnedWordsCount() async {
     final userId = Supabase.instance.client.auth.currentUser!.id;
     final res = await supabase

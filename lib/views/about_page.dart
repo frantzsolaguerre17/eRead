@@ -57,7 +57,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            /// 📘 Lire & partager des livres
+            ///Lire & partager des livres
             _buildSectionTitle(context, "📘 1. Lire et partager des livres"),
             _buildCard(
               context,
@@ -71,7 +71,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// ❤️ Favoris
+            ///Favoris
             _buildSectionTitle(context, "❤️ 2. Gérer vos favoris"),
             _buildCard(
               context,
@@ -85,7 +85,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// 📖 Mots & expressions
+            ///Mots & expressions
             _buildSectionTitle(context, "📖 3. Suivi des mots et expressions appris"),
             _buildCard(
               context,
@@ -100,7 +100,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// 📚 Lecture interactive
+            ///Lecture interactive
             _buildSectionTitle(context, "📚 4. Lecture interactive"),
             _buildCard(
               context,
@@ -115,7 +115,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// ✍️ Extraits & avis
+            ///Extraits & avis
             _buildSectionTitle(context, "✍️ 5. Extraits, avis et commentaires"),
             _buildCard(
               context,
@@ -128,7 +128,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// 🔐 Compte & synchronisation
+            ///Compte & synchronisation
             _buildSectionTitle(context, "🔐 6. Compte"),
             _buildCard(
               context,
@@ -142,7 +142,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// 🚀 Conseils
+            ///Conseils
             _buildSectionTitle(context, "🚀 7. Conseils pour bien utiliser eRead"),
             _buildCard(
               context,
@@ -155,7 +155,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// 🔔 Notifications
+            ///Notifications
             _buildSectionTitle(context, "🔔 8. Notifications"),
             _buildCard(
               context,
@@ -168,7 +168,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// 👤 Profil
+            ///Profil
             _buildSectionTitle(context, "👤 9. Votre profil"),
             _buildCard(
               context,
@@ -183,7 +183,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// 🌐 Connexion
+            ///Connexion
             _buildSectionTitle(context, "🌐 10. Connexion Internet"),
             _buildCard(
               context,
@@ -201,8 +201,7 @@ class AboutPage extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            /// 🔻 Footer
-            /// 🔻 Footer
+            ///Footer
             Align(
               alignment: Alignment.center,
               child: Column(
@@ -285,7 +284,7 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  /// 🔧 Widgets réutilisables
+  ///Widgets réutilisables
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,

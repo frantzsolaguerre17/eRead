@@ -7,7 +7,6 @@ import 'package:memo_livre/views/profil_page.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../controllers/MessageController.dart';
 import '../controllers/book_controller.dart';
 import '../controllers/expression_controller.dart';
@@ -16,11 +15,9 @@ import '../controllers/notifications_controller.dart';
 import '../controllers/vocabulary_controller.dart';
 import '../services/update_service.dart';
 import '../views/book_screen.dart';
-import '../widgets/banner_widget.dart';
 import 'about_page.dart';
 import 'favorite_expression_page.dart';
 import 'favorites_book_page.dart';
-import 'group_chat_page.dart';
 import 'login_page.dart';
 import 'notifications_screen.dart';
 
@@ -188,15 +185,13 @@ class _DashboardScreenState extends State<DashboardScreen>
       },
     );
 
-    // 👇 ICI SE PASSE LA MAGIE
     if (shouldLogout == true) {
-      // 1️⃣ RESET notifications
       context.read<NotificationController>().reset();
 
-      // 2️⃣ Supabase logout
+      //Supabase logout
       await Supabase.instance.client.auth.signOut();
 
-      // 3️⃣ Redirection vers login
+      //Redirection vers login
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -209,7 +204,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   Future<String> getCurrentUserRole() async {
     final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) return 'user'; // rôle par défaut si pas connecté
+    if (user == null) return 'user';
 
     final data = await Supabase.instance.client
         .from('profil')
@@ -274,7 +269,7 @@ class _DashboardScreenState extends State<DashboardScreen>
         opacity: _fadeAnim,
         child: CustomScrollView(
           slivers: [
-            // ================= APP BAR =================
+            //APP BAR
             SliverAppBar(
               automaticallyImplyLeading: false,
 
@@ -315,7 +310,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                   child: Stack(
                     children: [
 
-                      /// 🔹 ICONE FIXE
                       if (!isLoadingRole && role?.toLowerCase() == 'admin')
                         IconButton(
                           icon: const Icon(
@@ -335,7 +329,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                           },
                         ),
 
-                      /// 🔹 BADGE SEUL
                       if (!isLoadingRole &&
                           role?.toLowerCase() == 'admin' &&
                           pendingCount > 0)
@@ -368,7 +361,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                 Stack(
                   children: [
 
-                    /// 🔔 Bouton messages
+                    ///Bouton messages
                     IconButton(
                       icon: const Icon(
                         Icons.mail,
@@ -438,7 +431,6 @@ class _DashboardScreenState extends State<DashboardScreen>
                     }
                 ),
 
-                /// Badge qui rebuild seul
                 Positioned(
                   right: 4,
                   top: 4,
@@ -544,7 +536,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               ),
             ),
 
-            // ================= CONTENU =================
+            //CONTENU
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -756,7 +748,8 @@ class _DashboardScreenState extends State<DashboardScreen>
           CircleAvatar(
             radius: 32,
             backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-            child: Icon(icon, color: Theme.of(context).colorScheme.primary),          ),
+            child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+          ),
           const SizedBox(height: 6),
           Text(label),
         ],

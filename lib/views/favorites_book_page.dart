@@ -328,8 +328,16 @@ class _FavoriteModernBookCardState
 
                           const SizedBox(height: 4),
 
-                          Text(
-                            "Auteur : ${widget.book.author}",
+                          Row (
+                            children: [
+                              const Icon(Icons.person,
+                                size: 18,
+                              color: Colors.deepPurple),
+
+                          const SizedBox(width: 5),
+                          Expanded(
+                              child: Text(
+                            "${widget.book.author}",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -339,12 +347,20 @@ class _FavoriteModernBookCardState
                                   ?.color
                                   ?.withOpacity(0.75),
                             ),
+                              ),
+                          ),
+                                ],
                           ),
 
                           const SizedBox(height: 4),
 
-                          Text(
-                            "Pages : ${widget.book.number_of_pages}",
+                          Row(
+                            children: [
+                              const Icon(Icons.numbers,
+                                  size: 18,
+                                  color: Colors.orange),
+                          Expanded(child: Text(
+                            "${widget.book.number_of_pages}",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -355,11 +371,42 @@ class _FavoriteModernBookCardState
                                   ?.withOpacity(0.65),
                             ),
                           ),
+                          ),
+                          ],
+                          ),
 
                           const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(Icons.category,
+                                  size: 18,
+                                  color: Colors.deepPurple),
+                          Expanded(
+                            child: Text(
+                            "${widget.book.category}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withOpacity(0.65),
+                            ),
+                            ),
+                          ),
+                           ],
+                          ),
+                          const SizedBox(height: 4),
 
-                          Text(
-                            "Catégorie : ${widget.book.category}",
+                          Row(
+                            children: [
+                              const Icon(Icons.person_add,
+                                  size: 18,
+                                  color: Colors.orange),
+
+                         Expanded(child: Text(
+                            "${widget.book.user_name}",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -370,20 +417,8 @@ class _FavoriteModernBookCardState
                                   ?.withOpacity(0.65),
                             ),
                           ),
-
-                          const SizedBox(height: 4),
-
-                          Text(
-                            "Ajouté par : ${widget.book.user_name}",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.color
-                                  ?.withOpacity(0.65),
-                            ),
+                         ),
+                            ],
                           ),
                         ],
                       ),

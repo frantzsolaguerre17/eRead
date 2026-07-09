@@ -163,17 +163,6 @@ class _BookListPageState extends State<BookListPage> {
         actions: [
 
           IconButton(
-            icon: const Icon(Icons.monetization_on, color: Colors.orange),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => const DonationPage()),
-              );
-            },
-          ),
-
-          IconButton(
             icon: const Icon(Icons.favorite, color: Colors.redAccent),
             onPressed: () {
               Navigator.push(
@@ -612,31 +601,88 @@ class _ModernBookCardState extends State<ModernBookCard> {
 
                             const SizedBox(height: 4),
 
-                            Text(
-                              "Auteur : ${widget.book.author}",
+                         //Auteur
+                         Row(
+                           children: [
+                           const Icon(
+                           Icons.person,
+                           size: 18,
+                           color: Colors.deepPurple,
+                         ),
+                        const SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                              "${widget.book.author}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
+                            ),
+                              ],
+                            ),
 
-                            Text("Pages : ${widget.book.number_of_pages}"),
+                        //Page
+                        Row(
+                          children: [
+                          const Icon(
+                          Icons.numbers,
+                          size: 18,
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child:
+                            Text("${widget.book.number_of_pages}"),
+                        ),
+                          ],
+                        ),
 
+
+                            //Catégorie
+                        Row(
+                          children: [
+                          const Icon(
+                          Icons.category,
+                          size: 18,
+                          color: Colors.deepPurple,
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child:
                             Text(
-                              "Catégorie : ${widget.book.category}",
+                              "${widget.book.category}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
+                        ),
+                            ],
+                        ),
+
 
                             const SizedBox(height: 4),
 
+                        //Ajouté par
+                        Row(
+                          children: [
+                          const Icon(
+                          Icons.person_add_alt_rounded,
+                          size: 18,
+                          color: Colors.orange
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child:
                             Text(
-                              "Ajouté par : ${widget.book.user_name}",
+                              "${widget.book.user_name}",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
+                        ),
+                            ],
+                        ),
 
                             Row(
                               children: [

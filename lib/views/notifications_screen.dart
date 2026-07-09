@@ -73,7 +73,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           ],
         ),
         iconTheme: IconThemeData(
-          color: Theme.of(context).iconTheme.color,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : Colors.black,
         ),
 
         actions: [

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memo_livre/views/profil_page.dart';
 
 class ResumeLecturePage extends StatelessWidget {
   const ResumeLecturePage({super.key});
@@ -12,6 +13,20 @@ class ResumeLecturePage extends StatelessWidget {
         title: const Text("Comment bien lire un livre", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.deepPurple,
+
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.account_circle, color: Colors.white),
+              tooltip: "Account profil",
+              onPressed: () async{
+                await Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProfilePage()
+                    )
+                );
+              }
+          ),
+        ],
       ),
 
       body: SingleChildScrollView(

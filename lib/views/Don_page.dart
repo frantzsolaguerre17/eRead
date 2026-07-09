@@ -119,7 +119,7 @@ class DonationPage extends StatelessWidget {
           const SizedBox(height: 15),
 
           const Text(
-            "Merci de soutenir eRead ❤️",
+            "Merci de soutenir eRead",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 22,
@@ -176,7 +176,7 @@ class DonationPage extends StatelessWidget {
 
           const Center(
             child: Text(
-              "Merci pour votre soutien 💜",
+              "Merci pour votre soutien",
               style: TextStyle(
                 color: Colors.deepPurple,
                 fontWeight: FontWeight.bold,

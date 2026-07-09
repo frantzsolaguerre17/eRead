@@ -4,6 +4,7 @@ import 'package:memo_livre/views/Pending_book_page.dart';
 import 'package:memo_livre/views/comment_lire_un%20_livre_page.dart';
 import 'package:memo_livre/views/favorite_vocabulary_page.dart';
 import 'package:memo_livre/views/profil_page.dart';
+import 'package:memo_livre/views/read_books_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -272,8 +273,54 @@ class _DashboardScreenState extends State<DashboardScreen>
             //APP BAR
             SliverAppBar(
               automaticallyImplyLeading: false,
+              leadingWidth: 110, // espace réservé pour les 2 icônes
 
-              leading: IconButton(
+              leading: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+
+                  // 📖 Comment lire un livre
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(
+                      Icons.auto_stories,
+                      color: Colors.white,
+                    ),
+                    tooltip: "Comment lire un livre",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ResumeLecturePage(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  // ✅ Livres lus
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(
+                      Icons.menu_book_sharp,
+                      color: Colors.white,
+                    ),
+                    tooltip: "Livres lus",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ReadBooksScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+
+
+
+
+              /*leading: IconButton(
                 icon: const Icon(Icons.auto_stories, color: Colors.white),
                 tooltip: "Comment lire un livre",
                 onPressed: () {
@@ -285,6 +332,19 @@ class _DashboardScreenState extends State<DashboardScreen>
                   );
                 },
               ),
+
+              title: IconButton(
+                icon: const Icon(Icons.task_alt_rounded, color: Colors.white),
+                tooltip: "Livres Lus",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ReadBooksScreen(),
+                    ),
+                  );
+                },
+              ),*/
               backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
               expandedHeight: MediaQuery.of(context).size.height * 0.28,
               pinned: true,
@@ -625,7 +685,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _quickAction(
-                          Icons.book_outlined,
+                          Icons.auto_stories,
                           "Livres",
                               () => Navigator.push(
                             context,

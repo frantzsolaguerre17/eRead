@@ -695,7 +695,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           ),
                         ),
                         _quickAction(
-                          Icons.favorite_border,
+                          Icons.favorite_outlined,
                           "Livres Fav ",
                               () => Navigator.push(
                             context,
@@ -705,7 +705,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           ),
                         ),
                         _quickAction(
-                          Icons.star_border,
+                          Icons.star_outlined,
                           "Mots Fav",
                               () => Navigator.push(
                             context,
